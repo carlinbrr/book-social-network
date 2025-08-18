@@ -26,6 +26,7 @@ public class BaseEntity {
     @GeneratedValue
     private Integer id;
 
+    //JpaAuditing annotation in the Main Class only works for these two
     @CreatedDate
     @Column(updatable = false, nullable = false)
     private LocalDateTime creationDate;
