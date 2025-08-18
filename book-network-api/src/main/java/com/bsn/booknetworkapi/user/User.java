@@ -1,5 +1,7 @@
 package com.bsn.booknetworkapi.user;
 
+import com.bsn.booknetworkapi.book.Book;
+import com.bsn.booknetworkapi.history.BookTransactionHistory;
 import com.bsn.booknetworkapi.roles.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,6 +58,12 @@ public class User implements UserDetails, Principal {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
+
+    @OneToMany(mappedBy = "user")
+    private List<BookTransactionHistory> histories;
 
     @Override
     public String getName() {
