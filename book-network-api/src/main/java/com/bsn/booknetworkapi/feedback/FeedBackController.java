@@ -1,5 +1,6 @@
 package com.bsn.booknetworkapi.feedback;
 
+import com.bsn.booknetworkapi.common.PageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

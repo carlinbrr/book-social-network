@@ -1,6 +1,7 @@
 package com.bsn.booknetworkapi.book;
 
 import com.bsn.booknetworkapi.common.PageResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("books")
-@Tag(name = "Book")
+@Tag(name = "Book", description = "API for Books")
 public class BookController {
 
     private final BookService bookService;
@@ -21,6 +22,7 @@ public class BookController {
     }
 
     @PostMapping
+    @Operation(summary = "Save a new book")
     public ResponseEntity<Integer> saveBook(
             @Valid @RequestBody BookRequest request,
             Authentication connectedUser
@@ -29,6 +31,7 @@ public class BookController {
     }
 
     @GetMapping("/{book-id}")
+    @Operation(summary = "Find a book by book-id")
     public ResponseEntity<BookResponse> findById(
             @PathVariable("book-id") Integer bookId
     ) {
@@ -36,6 +39,7 @@ public class BookController {
     }
 
     @GetMapping
+    @Operation(summary = "Find all displayable books")
     public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
@@ -45,6 +49,7 @@ public class BookController {
     }
 
     @GetMapping("/owner")
+    @Operation(summary = "Find all owner's books")
     public ResponseEntity<PageResponse<BookResponse>> findAllBooksByOwner(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
