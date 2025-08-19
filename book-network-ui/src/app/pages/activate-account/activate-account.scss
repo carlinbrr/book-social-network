@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.activation-successful, .activation-error {
+  text-align: center;
+}
+
+.activation-error {
+  h2 {
+    color: red;
+  }
+}
+
+.activation-successful {
+  h2 {
+    color: green;
+  }
+
+}

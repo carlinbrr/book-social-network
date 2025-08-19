@@ -3,6 +3,7 @@ import {AuthenticationRequest, AuthenticationResponse} from '../../services/mode
 import { FormsModule } from '@angular/forms';
 import {AuthenticationService} from '../../services/services/authentication.service';
 import {Router} from '@angular/router';
+import {TokenService} from '../../services/token/token.service';
 
 @Component({
   selector: 'app-login',
@@ -18,16 +19,17 @@ export class Login {
 
   errorMsg = signal<Array<string>>([]);
 
-  authService = inject(AuthenticationService);
+  authenticationService = inject(AuthenticationService);
   router = inject(Router);
+  tokenService = inject(TokenService);
 
   login() {
     this.errorMsg.set([]);
-    this.authService.authenticate({
+    this.authenticationService.authenticate({
       body: this.authRequest
     }).subscribe({
       next: (res : AuthenticationResponse) => {
-        // todo save the token
+        this.tokenService.token = res.token as string;
         this.router.navigate(['books']);
       },
       error: err => {
@@ -37,7 +39,6 @@ export class Login {
         } else {
           this.errorMsg.update(errors => [...errors, err.error.error]);
         }
-
       }
     })
 
