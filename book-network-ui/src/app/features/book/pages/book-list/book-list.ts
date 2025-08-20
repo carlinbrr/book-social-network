@@ -18,6 +18,7 @@ export class BookList implements OnInit {
 
   page = 0;
   size = 5;
+  pages : Array<number> = [];
 
   bookService = inject(BookService);
   router = inject(Router);
@@ -33,8 +34,32 @@ export class BookList implements OnInit {
     }).subscribe({
       next: result => {
         this.bookResponse.set(result);
+        this.pages = Array(result.totalPages);
       }
     })
   }
 
+  goToFirstPage() {
+
+  }
+
+  goToPreviousPage() {
+
+  }
+
+  goToPage(number: number) {
+
+  }
+
+  gotToNextPage() {
+
+  }
+
+  goToLastPage() {
+
+  }
+
+  get isLastPage() : boolean {
+    return this.page + 1 === this.bookResponse().totalPages;
+  }
 }
