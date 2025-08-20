@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {BookService} from '../../../../services/services/book.service';
 import { Router } from '@angular/router';
 import {PageResponseBookResponse} from '../../../../services/models/page-response-book-response';
@@ -14,7 +14,7 @@ import {BookCard} from '../../components/book-card/book-card';
 })
 export class BookList implements OnInit {
 
-  bookResponse : PageResponseBookResponse = {};
+  bookResponse = signal<PageResponseBookResponse>({});
 
   page = 0;
   size = 5;
@@ -32,7 +32,7 @@ export class BookList implements OnInit {
       size: this.size
     }).subscribe({
       next: result => {
-        this.bookResponse = result;
+        this.bookResponse.set(result);
       }
     })
   }
