@@ -3,7 +3,7 @@ import {BookCard} from '../../components/book-card/book-card';
 import {PaginationFooter} from '../../components/pagination-footer/pagination-footer';
 import {PageResponseBookResponse} from '../../../../services/models/page-response-book-response';
 import {BookService} from '../../../../services/services/book.service';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {BookAction, BookActionType} from '../../models/book-card.model';
 
 @Component({
@@ -22,6 +22,7 @@ export class MyBooks implements OnInit {
   totalPages : number = 0;
 
   bookService = inject(BookService);
+  router = inject(Router);
 
   ngOnInit(): void {
     this.findAllBooks(0);
@@ -47,13 +48,25 @@ export class MyBooks implements OnInit {
     const book = bookAction.book;
     switch (bookAction.actionType) {
       case BookActionType.EDIT:
+        this.router.navigate(['books', 'manage', book.id]);
         break;
-
       case BookActionType.SHARE:
+        this.bookService.updateShareableStatus({
+          'book-id': book.id as number
+        }).subscribe({
+          next: () => {
+            book.shareable = !book.shareable;
+          }
+        });
         break;
-
       case BookActionType.ARCHIVE:
-        break;
+        this.bookService.updateArchivedStatus({
+          'book-id': book.id as number
+        }).subscribe({
+          next: () => {
+            book.archived = !book.archived;
+          }
+        });
     }
   }
 

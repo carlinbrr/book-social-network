@@ -30,7 +30,7 @@ export class BookList implements OnInit {
   private findAllBooks(page: number) {
     this.bookService.findAllBooks({
       page: page,
-      size: 1
+      size: 5
     }).subscribe({
       next: result => {
         this.bookResponse.set(result);
