@@ -34,13 +34,14 @@
         </a>
       </li>
 
-      @for (page of pages; track $index) {
+      @for (_ of pages; track $index) {
         <li class="page-item">
           <a
             class="page-link"
             href="javascript:void(0)"
             aria-label="Go to Page"
             (click)="goToPage($index)"
+            [class.active]="page === $index"
           >
             {{ $index + 1 }}
           </a>

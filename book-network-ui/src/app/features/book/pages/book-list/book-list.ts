@@ -17,7 +17,7 @@ export class BookList implements OnInit {
   bookResponse = signal<PageResponseBookResponse>({});
 
   page = 0;
-  size = 5;
+  size = 4;
   pages : Array<number> = [];
 
   bookService = inject(BookService);
@@ -40,26 +40,32 @@ export class BookList implements OnInit {
   }
 
   goToFirstPage() {
-
+    this.page = 0;
+    this.findAllBooks();
   }
 
   goToPreviousPage() {
-
+    this.page --;
+    this.findAllBooks();
   }
 
-  goToPage(number: number) {
-
+  goToPage(page: number) {
+    this.page = page;
+    this.findAllBooks();
   }
 
   gotToNextPage() {
-
+    this.page++;
+    this.findAllBooks();
   }
 
   goToLastPage() {
-
+    this.page = this.bookResponse().totalPages as number - 1;
+    this.findAllBooks();
   }
 
   get isLastPage() : boolean {
     return this.page + 1 === this.bookResponse().totalPages;
   }
+
 }
