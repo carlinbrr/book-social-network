@@ -30,7 +30,7 @@
           }
         </span>
       </div>
-      @if (!manage) {
+      @if (!manage()) {
         <div class="d-flex gap-2">
           <i (click)="onShowDetails()" class="fas fa-circle-info text-primary"></i>
           <i (click)="onBorrow()" class="fas fa-list-check text-primary"></i>

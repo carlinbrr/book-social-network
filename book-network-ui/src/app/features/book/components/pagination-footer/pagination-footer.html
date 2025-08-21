@@ -1,0 +1,67 @@
+<div class="d-flex justify-content-center mt-3">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="javascript:void(0)"
+          aria-label="First"
+          (click)="goToFirstPage()"
+          [class.disabled]="current_page === 0"
+        >
+          <i class="fas fa-angles-left"></i>
+        </a>
+      </li>
+
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="javascript:void(0)"
+          aria-label="Previous"
+          (click)="goToPreviousPage()"
+          [class.disabled]="current_page === 0"
+        >
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      </li>
+
+      @for (_ of pages; track $index) {
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="javascript:void(0)"
+            aria-label="Go to Page"
+            (click)="goToPage($index)"
+            [class.active]="current_page === $index"
+          >
+            {{ $index + 1 }}
+          </a>
+        </li>
+      }
+
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="javascript:void(0)"
+          aria-label="Next"
+          (click)="gotToNextPage()"
+          [class.disabled]="isLastPage"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </li>
+
+      <li class="page-item">
+        <a
+          class="page-link"
+          href="javascript:void(0)"
+          aria-label="Last"
+          (click)="goToLastPage()"
+          [class.disabled]="isLastPage"
+        >
+          <i class="fas fa-angles-right"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

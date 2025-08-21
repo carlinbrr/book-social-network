@@ -1,13 +1,16 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {BookService} from '../../../../services/services/book.service';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import {PageResponseBookResponse} from '../../../../services/models/page-response-book-response';
 import {BookCard} from '../../components/book-card/book-card';
+import {BookAction, BookActionType} from '../../models/book-card.model';
+import {PaginationFooter} from '../../components/pagination-footer/pagination-footer';
 
 @Component({
   selector: 'app-book-list',
   imports: [
-    BookCard
+    BookCard,
+    PaginationFooter
   ],
   templateUrl: './book-list.html',
   styleUrl: './book-list.scss'
@@ -15,57 +18,56 @@ import {BookCard} from '../../components/book-card/book-card';
 export class BookList implements OnInit {
 
   bookResponse = signal<PageResponseBookResponse>({});
-
-  page = 0;
-  size = 4;
-  pages : Array<number> = [];
+  message = signal<string>('');
+  isMessageSuccess : boolean = false;
+  totalPages : number = 0;
 
   bookService = inject(BookService);
   router = inject(Router);
 
   ngOnInit(): void {
-      this.findAllBooks();
+      this.findAllBooks(0);
   }
 
-  private findAllBooks() {
+
+  private findAllBooks(page: number) {
     this.bookService.findAllBooks({
-      page: this.page,
-      size: this.size
+      page: page,
+      size: 1
     }).subscribe({
       next: result => {
         this.bookResponse.set(result);
-        this.pages = Array(result.totalPages);
+        this.totalPages = this.bookResponse().totalPages || 0;
       }
     })
   }
 
-  goToFirstPage() {
-    this.page = 0;
-    this.findAllBooks();
+  onPageChanges(page: number) {
+    this.findAllBooks(page);
   }
 
-  goToPreviousPage() {
-    this.page --;
-    this.findAllBooks();
-  }
+  handleBookAction(bookAction: BookAction) {
+    this.message.set('');
+    this.isMessageSuccess = false;
+    const book = bookAction.book;
 
-  goToPage(page: number) {
-    this.page = page;
-    this.findAllBooks();
-  }
-
-  gotToNextPage() {
-    this.page++;
-    this.findAllBooks();
-  }
-
-  goToLastPage() {
-    this.page = this.bookResponse().totalPages as number - 1;
-    this.findAllBooks();
-  }
-
-  get isLastPage() : boolean {
-    return this.page + 1 === this.bookResponse().totalPages;
+    switch (bookAction.actionType) {
+      case BookActionType.BORROW:
+        this.bookService.borrowBook({
+          'book-id': book.id as number
+        }).subscribe({
+          next: result => {
+            this.message.set('Book successfully added to your list');
+            this.isMessageSuccess = true;
+          },
+          error: err => {
+            console.log(err);
+            this.isMessageSuccess = false;
+            this.message.set(err.error.error);
+          }
+        });
+        break;
+    }
   }
 
 }
