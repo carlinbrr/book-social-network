@@ -1,1 +1,21 @@
-<p>my-books works!</p>
+<script src="../book-list/book-list.ts"></script><h3>My books list</h3>
+<hr>
+<div class="d-flex justify-content-end mb-3">
+  <a routerLink="/books/manage" class="btn btn-outline-primary">
+    <i class="fas fa-plus"></i>
+    &nbsp;New book
+  </a>
+</div>
+<div class="d-flex justify-content-start gap-2 flex-wrap">
+  @for (book of bookResponse().content; track book.id) {
+    <app-book-card
+      [book]="book"
+      [manage]="true"
+      (bookAction)="handleBookAction($event)">
+    </app-book-card>
+  }
+</div>
+<app-pagination-footer
+  [totalPages]="totalPages"
+  (pageChanged)="onPageChanges($event)">
+</app-pagination-footer>

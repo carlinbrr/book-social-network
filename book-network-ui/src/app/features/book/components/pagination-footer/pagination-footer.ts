@@ -46,6 +46,9 @@ export class PaginationFooter implements OnChanges {
   }
 
   get isLastPage() : boolean {
+    if (this.totalPages() === 0) {
+      return true;
+    }
     return this.current_page + 1 === this.totalPages();
   }
 

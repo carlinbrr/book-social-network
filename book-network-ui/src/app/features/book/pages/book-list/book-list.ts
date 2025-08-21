@@ -1,6 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {BookService} from '../../../../services/services/book.service';
-import {Router} from '@angular/router';
 import {PageResponseBookResponse} from '../../../../services/models/page-response-book-response';
 import {BookCard} from '../../components/book-card/book-card';
 import {BookAction, BookActionType} from '../../models/book-card.model';
@@ -23,12 +22,10 @@ export class BookList implements OnInit {
   totalPages : number = 0;
 
   bookService = inject(BookService);
-  router = inject(Router);
 
   ngOnInit(): void {
       this.findAllBooks(0);
   }
-
 
   private findAllBooks(page: number) {
     this.bookService.findAllBooks({

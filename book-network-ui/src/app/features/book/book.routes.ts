@@ -12,6 +12,14 @@ export const bookRoutes: Routes = [
       {
         path: 'my-books',
         loadComponent: () => import('./pages/my-books/my-books').then(m => m.MyBooks)
+      },
+      {
+        path: 'manage',
+        loadComponent: () => import('./pages/manage-book/manage-book').then(m => m.ManageBook)
+      },
+      {
+        path: 'manage/:bookId',
+        loadComponent: () => import('./pages/manage-book/manage-book').then(m => m.ManageBook)
       }
     ]
   }
