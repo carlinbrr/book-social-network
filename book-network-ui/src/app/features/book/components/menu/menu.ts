@@ -1,5 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
+import {TokenService} from '../../../../services/token/token.service';
 
 @Component({
   selector: 'app-menu',
@@ -12,7 +13,10 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 })
 export class Menu {
 
-  logout() {
+  jwtService = inject(TokenService);
 
+  logout() {
+    this.jwtService.removeToken();
+    window.location.reload();
   }
 }
