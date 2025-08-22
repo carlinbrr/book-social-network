@@ -205,8 +205,8 @@ public class BookService {
         }
         User user = (User) connectedUser.getPrincipal();
 
-        if (Objects.equals(user.getId(), book.getOwner().getId())) {
-            throw new OperationNotPermittedException("You cannot borrow or return your own book");
+        if (!Objects.equals(user.getId(), book.getOwner().getId())) {
+            throw new OperationNotPermittedException("You cannot approve the return of a book that you don't own");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndOwnerId(bookId, user.getId())
                 .orElseThrow(() -> new OperationNotPermittedException("The book is not returned yet so you can't approve its return"));
