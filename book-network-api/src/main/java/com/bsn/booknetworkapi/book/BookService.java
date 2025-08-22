@@ -210,7 +210,7 @@ public class BookService {
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndOwnerId(bookId, user.getId())
                 .orElseThrow(() -> new OperationNotPermittedException("The book is not returned yet so you can't approve its return"));
-        bookTransactionHistory.setReturned(true);
+        bookTransactionHistory.setReturnApproved(true);
         return bookTransactionHistoryRepository.save(bookTransactionHistory).getId();
     }
 
