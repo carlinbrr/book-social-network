@@ -18,7 +18,7 @@ export class BookList implements OnInit {
 
   bookResponse = signal<PageResponseBookResponse>({});
   message = signal<string>('');
-  isMessageSuccess : boolean = false;
+  isMessageSuccess : boolean = true;
   totalPages : number = 0;
 
   bookService = inject(BookService);

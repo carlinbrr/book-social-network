@@ -1,0 +1,47 @@
+<h2>My returned books</h2>
+<hr>
+@if (message()) {
+  <div class="alert" [class.alert-success]="isMessageSuccess" [class.alert-danger]="!isMessageSuccess">
+    {{message()}}
+  </div>
+}
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Title</th>
+    <th scope="col">Author</th>
+    <th scope="col">ISBN</th>
+    <th scope="col">Rate</th>
+    <th scope="col"><i class="fas fa-cogs"></i></th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (returnedBook of returnedBooks().content; track $index) {
+      <tr>
+        <th scope="row">{{ $index }}</th>
+        <td>{{ returnedBook.title }}</td>
+        <td>{{ returnedBook.authorName }}</td>
+        <td>{{ returnedBook.isbn }}</td>
+        <td>
+          <i class="fas fa-star text-warning"></i>
+          {{ returnedBook.rate }}
+        </td>
+        <td>
+          <div class="d-flex gap-2">
+            @if (returnedBook.returned) {
+              <i class="fa-regular fa-paper-plane text-primary"></i>
+            } @else {
+              <i class="fa-solid fa-paper-plane text-success"></i>
+            }
+            <i class="cursor-pointer fa-solid fa-circle-check" (click)="approveBookReturn(returnedBook)" [class.text-success]="returnedBook.returnApproved"></i>
+          </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+<app-pagination-footer
+  [totalPages]="totalPages"
+  (pageChanged)="onPageChanged($event)"
+></app-pagination-footer>

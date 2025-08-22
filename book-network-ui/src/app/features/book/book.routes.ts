@@ -24,6 +24,10 @@ export const bookRoutes: Routes = [
       {
         path: 'my-borrowed-books',
         loadComponent: () => import('./pages/borrowed-book-list/borrowed-book-list').then(m => m.BorrowedBookList)
+      },
+      {
+        path: 'my-returned-books',
+        loadComponent: () => import('./pages/returned-books/returned-books').then(m => m.ReturnedBooks)
       }
     ]
   }
