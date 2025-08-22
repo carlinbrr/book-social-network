@@ -1,0 +1,99 @@
+<h2>My borrowed books</h2>
+<hr>
+@if (selectedBook) {
+  <div class="d-flex flex-column col-6">
+    <h2>Return and share feedback</h2>
+    <div class="d-flex flex-column col-12">
+      <div class="d-flex">
+        <div class="col-1">
+          <strong>Title</strong>
+        </div>
+        <div class="col-11">{{ selectedBook.title }}</div>
+      </div>
+      <div class="d-flex">
+        <div class="col-1">
+          <strong>Author</strong>
+        </div>
+        <div class="col-11">{{ selectedBook.authorName }}</div>
+      </div>
+      <div class="d-flex">
+        <div class="col-1">
+          <strong>Isbn</strong>
+        </div>
+        <div class="col-11">{{ selectedBook.isbn }}</div>
+      </div>
+    </div>
+    <div>
+      <hr>
+      <div class="col-12">
+        <form class="row g-3">
+          <div class="d-flex gap-3">
+            <input [(ngModel)]="feedbackRequest.note" type="range" id="rate" name="rate" class="form-range w-25" min="0" max="5" step="0.5">
+            <app-rating
+              [rating]="feedbackRequest.note || 0"
+            ></app-rating>
+          </div>
+          <div class="col-12">
+            <label for="feedback" class="form-label">Feedback</label>
+            <textarea [(ngModel)]="feedbackRequest.comment" rows="4" class="form-control" id="feedback" name="feedback" placeholder="Enter your feedback"></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2 col-12">
+            <button (click)="returnBook(true)" type="submit" class="btn btn-outline-primary">
+              <i class="fas fa-save"></i>
+              &nbsp;Rate the book & return
+            </button>
+            <button (click)="returnBook(false)" type="submit" class="btn btn-outline-success">
+              <i class="fas fa-paper-plane"></i>
+              &nbsp;Just return
+            </button>
+            <button (click)="selectedBook = null" class="btn btn-link text-danger">
+              <i class="fas fa-times"></i>
+              &nbsp;Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+} @else {
+  <table class="table">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">ISBN</th>
+      <th scope="col">Rate</th>
+      <th scope="col"><i class="fas fa-cogs"></i></th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (borrowedBook of borrowedBooks().content; track $index) {
+        <tr>
+          <th scope="row">{{ $index }}</th>
+          <td>{{ borrowedBook.title }}</td>
+          <td>{{ borrowedBook.authorName }}</td>
+          <td>{{ borrowedBook.isbn }}</td>
+          <td>
+            <i class="fas fa-star text-warning"></i>
+            {{ borrowedBook.rate }}
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              @if (borrowedBook.returned) {
+                <i class="cursor-pointer fa-regular fa-paper-plane text-primary"></i>
+              } @else {
+                <i class="cursor-pointer fa-solid fa-paper-plane text-success" (click)="selectedBook = borrowedBook"></i>
+              }
+              <i class="cursor-pointer fa-solid fa-circle-check" [class.text-success]="borrowedBook.returnApproved"></i>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <app-pagination-footer
+    [totalPages]="totalPages"
+    (pageChanged)="onPageChanged($event)"
+  ></app-pagination-footer>
+}

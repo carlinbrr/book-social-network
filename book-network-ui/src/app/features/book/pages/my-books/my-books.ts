@@ -35,12 +35,12 @@ export class MyBooks implements OnInit {
     }).subscribe({
       next: result => {
         this.bookResponse.set(result);
-        this.totalPages = this.bookResponse().totalPages || 0;
+        this.totalPages = result.totalPages || 0;
       }
     })
   }
 
-  onPageChanges(page: number) {
+  onPageChanged(page: number) {
     this.findAllBooks(page);
   }
 
