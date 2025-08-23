@@ -1,5 +1,6 @@
 package com.bsn.booknetworkapi.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -26,8 +27,12 @@ public class SecurityConfig {
 
     private final JwtFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtFilter jwtAuthFilter) {
+    private final String frontEndHost;
+
+    public SecurityConfig(JwtFilter jwtAuthFilter,
+                          @Value("${frontend.host}") String frontEndHost) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.frontEndHost = frontEndHost;
     }
 
     @Bean
@@ -69,8 +74,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedOrigin("http://localhost");
+        config.addAllowedOrigin(frontEndHost);
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.ORIGIN,
                 HttpHeaders.CONTENT_TYPE,
