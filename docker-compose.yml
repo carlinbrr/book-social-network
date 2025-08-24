@@ -21,14 +21,6 @@ services:
     ports:
       - 8088:8088
     environment:
-      # Others
-      FRONTEND_HOST: http://localhost
-      ACTIVE_PROFILE: dev
-      # Email properties
-      EMAIL_HOST_NAME: smtp.gmail.com
-      EMAIL_USER_NAME: carlosdev050@gmail.com
-      EMAIL_PASSWORD: sfos rxef bmqt vctn
-      # PostgreSQL database properties
       POSTGRESQL_DB_URL: jdbc:postgresql://postgres-sql-bsn:5432/book_social_network
       POSTGRESQL_DB_USERNAME: username
       POSTGRESQL_DB_PASSWORD: password
