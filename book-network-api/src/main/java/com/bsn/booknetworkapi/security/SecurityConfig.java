@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final String frontEndHost;
 
     public SecurityConfig(JwtFilter jwtAuthFilter,
-                          @Value("${frontend.host}") String frontEndHost) {
+                          @Value("${frontend.http.url}") String frontEndHost) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.frontEndHost = frontEndHost;
     }
