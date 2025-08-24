@@ -51,8 +51,11 @@ jobs:
     steps:
       - name: Setup ssh
         run: |
-          mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" |  sed 's/./& /g'
+          mkdir -p ~/.ssh
+            cat <<EOF > ~/.ssh/id_rsa
+          ${{ secrets.DEPLOY_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_IP}} >> ~/.ssh/known_hosts
 
