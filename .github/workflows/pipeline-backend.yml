@@ -95,6 +95,7 @@ jobs:
       - name: Extract project version
         id: extract_version
         run: |
+          chmod +x mvnw
           cd book-network-api
           echo "VERSION=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
 
@@ -124,8 +125,8 @@ jobs:
       - name: Setup ssh
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }} > ~/.ssh/id_rsa"
-          chmod 600 ~.ssh/id_rsa
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_IP}} >> ~/.ssh/known_hosts
 
       - name: Copy docker-compose.yml file
