@@ -19,4 +19,4 @@ EXPOSE 8088
 
 ENV JAR_VERSION=${APP_VERSION}
 
-CMD java -jar -Dspring.profiles.active=${ACTIVE_PROFILE} book-network-api-${JAR_VERSION}.jar
+CMD ["java", "-jar", "-Dspring.profiles.active=${ACTIVE_PROFILE}", "book-network-api-${JAR_VERSION}.jar"]
