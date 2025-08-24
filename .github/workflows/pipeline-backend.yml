@@ -28,6 +28,7 @@ jobs:
       - name: Compile project
         run: |
           cd book-network-api
+          chmod +x mvnw
           ./mvnw clean compile
 
   unit-tests:
@@ -48,6 +49,7 @@ jobs:
       - name: Run unit tests
         run: |
           cd book-network-api
+          chmod +x mvnw
           ./mvnw clean test
 
   build:
@@ -71,6 +73,7 @@ jobs:
       - name: Compile project
         run: |
           cd book-network-api
+          chmod +x mvnw
           ./mvnw clean package
 
   build-image:
@@ -138,6 +141,6 @@ jobs:
           export EMAIL_USER_NAME=${{ secrets.EMAIL_USER_NAME }}
           export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
           cd ci-cd
-          docker-compose pull -q
-          docker-compose up -d
+          sudo docker-compose pull -q
+          sudo docker-compose up -d
           EOF
