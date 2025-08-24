@@ -16,9 +16,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   mail:
-    host: ${EMAIL_HOST_NAME}
+    host: ${EMAIL_HOSTNAME}
     port: 465
-    username: ${EMAIL_USER_NAME}
+    username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
     properties:
       mail:
@@ -47,4 +47,4 @@ server:
   port: 8088
 
 frontend:
-  host: ${FRONT_END_HOST}
+  host: ${FRONTEND_HOST}
