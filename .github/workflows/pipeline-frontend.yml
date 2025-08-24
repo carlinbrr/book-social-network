@@ -50,9 +50,12 @@ jobs:
     needs: build-image
     steps:
       - name: Setup ssh
+        env:
+          PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}"
+          echo "$PRIVATE_KEY"
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_IP}} >> ~/.ssh/known_hosts
 
