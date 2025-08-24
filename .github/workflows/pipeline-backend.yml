@@ -115,6 +115,7 @@ jobs:
           tags:  ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
           build-args: |
             APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
+            PROFILE=dev
 
   deploy:
     name: Deploy backend
