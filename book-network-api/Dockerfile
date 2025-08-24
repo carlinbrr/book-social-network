@@ -11,7 +11,6 @@ RUN mvn clean package -DskipTests
 # Runtime stage
 FROM openjdk:21-jdk AS runtime
 ARG APP_VERSION=1.0.0
-ARG PROFIE=dev
 
 WORKDIR /app
 COPY --from=build ./build/target/book-network-api-*.jar /app/
@@ -19,6 +18,5 @@ COPY --from=build ./build/target/book-network-api-*.jar /app/
 EXPOSE 8088
 
 ENV JAR_VERSION=${APP_VERSION}
-ENV ACTIVE_PROFILE=${PROFIE}
 
 CMD java -jar -Dspring.profiles.active=${ACTIVE_PROFILE} book-network-api-${JAR_VERSION}.jar

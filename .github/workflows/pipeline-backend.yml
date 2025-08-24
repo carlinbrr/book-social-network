@@ -115,7 +115,6 @@ jobs:
           tags:  ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
           build-args: |
             APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
-            PROFILE=dev
 
   deploy:
     name: Deploy backend
@@ -142,11 +141,13 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs:
+            PROFILE=env
+            FRONTEND_HOST="http://${{ secrets.VPS_HOST }}"
+            EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
+            EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
           script: |
-            export FRONTEND_HOST="http://${{ secrets.VPS_HOST }}"
-            export EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
-            export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
-            export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
             cd ci-cd
             sudo docker-compose pull -q
             sudo docker-compose up -d
