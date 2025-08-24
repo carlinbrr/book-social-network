@@ -28,8 +28,8 @@ services:
       # Frontend host variable
       FRONTEND_HOST: ${FRONTEND_HOST}
       # Email variables
-      EMAIL_HOST_NAME: ${EMAIL_HOSTNAME}
-      EMAIL_USER_NAME: ${EMAIL_USERNAME}
+      EMAIL_HOSTNAME: ${EMAIL_HOSTNAME}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
     networks:
       - spring-demo
