@@ -147,7 +147,4 @@ jobs:
             EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
             EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
             EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-          script: |
-            cd ci-cd
-            sudo docker-compose pull -q
-            sudo docker-compose up -d
+          script: entrypoint.sh
