@@ -9,11 +9,11 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Runtime stage
-FROM openjdk:21-jdk AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 ARG APP_VERSION=1.0.0
 
 WORKDIR /app
-COPY --from=build ./build/target/book-network-api-*.jar /app/
+COPY --from=build ./build/target/book-network-api-*.jar .
 
 EXPOSE 8088
 

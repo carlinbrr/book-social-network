@@ -137,14 +137,18 @@ jobs:
 
       - name: Deploy
         uses: appleboy/ssh-action@master
+        env:
+          PROFILE: dev
+          FRONTEND_HOST: "http://${{ secrets.VPS_HOST }}"
+          EMAIL_HOSTNAME: ${{ secrets.EMAIL_HOSTNAME }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs:
-            PROFILE=env
-            FRONTEND_HOST="http://${{ secrets.VPS_HOST }}"
-            EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
-            EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
-            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-          script: entrypoint.sh
+          envs: PROFILE,FRONTEND_HOST,EMAIL_HOSTNAME,EMAIL_USERNAME,EMAIL_PASSWORD
+          script: |
+            cd ci-cd
+            sudo docker-compose pull -q
+            sudo docker-compose up -d
