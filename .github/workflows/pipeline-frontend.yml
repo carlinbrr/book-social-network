@@ -54,6 +54,9 @@ jobs:
           mkdir -p ~/.ssh
           printf "%s\n" "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          head -n 5 ~/.ssh/id_rsa
+          ls -la ~/.ssh/
+          ssh -i ~/.ssh/id_rsa -v ${VPS_USERNAME}@${VPS_IP} || true
           ssh-keyscan -H ${{ secrets.VPS_IP}} >> ~/.ssh/known_hosts
 
       - name: Copy docker-compose.yml file
