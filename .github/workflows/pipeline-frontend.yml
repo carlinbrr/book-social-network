@@ -72,4 +72,4 @@ jobs:
           script: |
             cd ci-cd
             sudo docker-compose pull -q
-            sudo docker-compose docker-compose.yml up -d
+            sudo docker-compose up -d
