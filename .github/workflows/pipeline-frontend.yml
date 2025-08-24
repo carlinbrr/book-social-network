@@ -52,9 +52,7 @@ jobs:
       - name: Setup ssh
         run: |
           mkdir -p ~/.ssh
-          cat <<EOF > ~/.ssh/id_rsa
-            ${{ secrets.DEPLOY_KEY }}
-          EOF
+          printf "%s\n" "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.VPS_IP}} >> ~/.ssh/known_hosts
 
