@@ -142,7 +142,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            export ACTIVE_PROFILE=dev
+            export ACTIVE_PROFILE="dev"
             export FRONTEND_HOST="http://${{ secrets.VPS_HOST }}"
             export EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
             export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
