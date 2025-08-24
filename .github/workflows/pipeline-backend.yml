@@ -139,7 +139,7 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-          FRONTEND_HTTP_URL:  ${{ secrets.VPS_HTTP_URL }}
+          FRONTEND_HTTP_URL: ${{ secrets.VPS_HTTP_URL }}
           EMAIL_HOSTNAME: ${{ secrets.EMAIL_HOSTNAME }}
           EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
