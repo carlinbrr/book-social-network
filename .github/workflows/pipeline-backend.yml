@@ -138,7 +138,7 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-          ACTIVE_PROFILE: dev
+          ACTIVE_PROFILE: "dev"
           FRONTEND_HOST: "http://${{ secrets.VPS_HOST }}"
           EMAIL_HOSTNAME: ${{ secrets.EMAIL_HOSTNAME }}
           EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
