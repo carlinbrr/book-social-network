@@ -150,5 +150,5 @@ jobs:
           envs: FRONTEND_HTTP_URL,EMAIL_HOSTNAME,EMAIL_USERNAME,EMAIL_PASSWORD
           script: |
             cd ci-cd
-            sudo docker-compose pull -q
-            sudo docker-compose up -d
+            sudo -E docker-compose pull -q
+            sudo -E docker-compose up -d
