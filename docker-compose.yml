@@ -18,8 +18,6 @@ services:
   bsn-api:
     container_name: bsn-api
     image: carlinbrr/bsn-api:2.0.0
-    ports:
-      - 8088:8088
     environment:
       # PostgreSQL variables
       POSTGRESQL_DB_URL: jdbc:postgresql://postgres-sql-bsn:5432/book_social_network
@@ -31,6 +29,10 @@ services:
       EMAIL_HOSTNAME: ${EMAIL_HOSTNAME}
       EMAIL_USERNAME: ${EMAIL_USERNAME}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    volumes:
+      - bsn-api:/app/uploads
+    ports:
+      - 8088:8088
     networks:
       - spring-demo
     depends_on:
@@ -52,4 +54,6 @@ networks:
 
 volumes:
   postgres:
+    driver: local
+  bsn-api:
     driver: local
