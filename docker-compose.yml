@@ -15,12 +15,38 @@ services:
       - spring-demo
     restart: unless-stopped
 
-  mail-dev:
-    container_name: mail-dev-bsn
-    image: maildev/maildev
+  bsn-api:
+    container_name: bsn-api
+    image: carlinbrr/bsn-api:2.0.0
+    environment:
+      # PostgreSQL variables
+      POSTGRESQL_DB_URL: jdbc:postgresql://postgres-sql-bsn:5432/book_social_network
+      POSTGRESQL_DB_USERNAME: username
+      POSTGRESQL_DB_PASSWORD: password
+      # Frontend host variable
+      FRONTEND_HTTP_URL: ${FRONTEND_HTTP_URL}
+      # Email variables
+      EMAIL_HOSTNAME: ${EMAIL_HOSTNAME}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    volumes:
+      - bsn-api:/app/uploads
     ports:
-      - 1080:1080
-      - 1025:1025
+      - 8088:8088
+    networks:
+      - spring-demo
+    depends_on:
+      - postgres
+
+  bsn-ui:
+    container_name: bsn-ui
+    image: carlinbrr/bsn-ui:2.0.0
+    ports:
+      - 80:80
+    networks:
+      - spring-demo
+    depends_on:
+      - bsn-api
 
 networks:
   spring-demo:
@@ -28,4 +54,6 @@ networks:
 
 volumes:
   postgres:
+    driver: local
+  bsn-api:
     driver: local
