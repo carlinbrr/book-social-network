@@ -9,8 +9,10 @@ The application is production-ready and supports Docker-based deployment, Postgr
 
 ## Technology Stack
 
-- **Backend:** Spring Boot, Spring Security, JWT, Spring Data JPA, OpenAPI, Maven  
-- **Frontend:** Angular, Bootstrap  
+- **Backend:** Spring Boot, Spring Security, JWT, Spring Data JPA, OpenAPI, Maven
+  - Docker image: `carlinbrr/bsn-api` (available on DockerHub) 
+- **Frontend:** Angular, Bootstrap
+  - Docker image: `carlinbrr/bsn-ui` (available on DockerHub)
 - **Database:** PostgreSQL  
 - **Mail Server:** Gmail SMTP  
 - **Containerization:** Docker & Docker Compose  
