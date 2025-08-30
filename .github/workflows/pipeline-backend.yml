@@ -2,12 +2,8 @@ name: BSN Backend API Pipeline
 
 on:
   push:
-    branches:
-      - feature/Github-actions-ci-cd-aws
-    paths:
-      - book-network-api/**
-      - 'docker-compose.yml'
-      - .github/workflows/pipeline-backend.yml
+    tags:
+      - 'v*.*.*'
 
 jobs:
   compile:
@@ -54,7 +50,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    name: Build backend
+    name: Build backend image
     needs:
       - compile
       - unit-tests
@@ -64,40 +60,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'corretto'
-
-      - name: Compile project
+      - name: Set tag version
         run: |
           cd book-network-api
-          chmod +x mvnw
-          ./mvnw clean package
-
-  build-image:
-    name: Build docker image
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: 'corretto'
-
-      - name: Extract project version
-        id: extract_version
-        run: |
-          cd book-network-api
-          chmod +x mvnw
-          echo "VERSION=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+          TAG_VERSION=${GITHUB_REF#refs/tags/}
+          TAG_VERSION=${TAG_VERSION#v}
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          ./mvnw versions:set -DnewVersion=$TAG_VERSION
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -112,43 +81,20 @@ jobs:
           file: book-network-api/Dockerfile
           push: true
           platforms: linux/amd64
-          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
-          build-args: |
-            APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
-            PROFILE=dev
+          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ env.TAG_VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
 
   deploy:
     name: Deploy backend
     runs-on: ubuntu-latest
-    needs: build-image
+    needs: build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Copy docker-compose.yml file
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "./docker-compose.yml"
-          target: "~/ci-cd"
-
       - name: Deploy
         uses: appleboy/ssh-action@master
-        env:
-          FRONTEND_HTTP_URL: ${{ secrets.VPS_HTTP_URL }}
-          EMAIL_HOSTNAME: ${{ secrets.EMAIL_HOSTNAME }}
-          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: FRONTEND_HTTP_URL,EMAIL_HOSTNAME,EMAIL_USERNAME,EMAIL_PASSWORD
           script: |
             cd ci-cd
-            sudo -E docker-compose pull -q
-            sudo -E docker-compose up -d
+            sudo docker-compose pull -q
+            sudo docker-compose up -d

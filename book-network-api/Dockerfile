@@ -10,15 +10,10 @@ RUN mvn clean package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine AS runtime
-ARG APP_VERSION=1.0.0
-ARG PROFILE=dev
 
 WORKDIR /app
-COPY --from=build ./build/target/book-network-api-*.jar .
+COPY --from=build ./build/target/book-network-api-*.jar ./book-network-api.jar
 
 EXPOSE 8088
 
-ENV JAR_VERSION=${APP_VERSION}
-ENV ACTIVE_PROFILE=${PROFILE}
-
-CMD java -jar -Dspring.profiles.active=${ACTIVE_PROFILE} book-network-api-${JAR_VERSION}.jar
+ENTRYPOINT ["java", "-jar", "book-network-api.jar"]
