@@ -66,6 +66,7 @@ jobs:
           TAG_VERSION=${GITHUB_REF#refs/tags/}
           TAG_VERSION=${TAG_VERSION#v}
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          chmod +x mvnw
           ./mvnw versions:set -DnewVersion=$TAG_VERSION
 
       - name: Login to DockerHub
