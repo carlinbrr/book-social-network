@@ -95,6 +95,6 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd ci-cd
+            cd app
             sudo docker-compose pull -q
             sudo docker-compose up -d
