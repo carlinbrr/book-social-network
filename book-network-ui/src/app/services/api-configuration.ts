@@ -16,7 +16,7 @@ export class ApiConfiguration {
   rootUrl: string = '';
 
   constructor(environmentService: Environment) {
-    this.rootUrl = environmentService.get('apiUrl');
+    this.rootUrl = environmentService.get('application.backend.apiUrl');
   }
 
 }

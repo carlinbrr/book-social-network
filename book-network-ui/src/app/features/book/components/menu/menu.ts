@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
-import {TokenService} from '../../../../services/token/token.service';
+import {KeycloakService} from '../../../../services/keycloak/keycloak';
 
 @Component({
   selector: 'app-menu',
@@ -13,10 +13,9 @@ import {TokenService} from '../../../../services/token/token.service';
 })
 export class Menu {
 
-  jwtService = inject(TokenService);
+  keycloakService = inject(KeycloakService);
 
-  logout() {
-    this.jwtService.removeToken();
-    window.location.reload();
+  async logout() {
+    this.keycloakService.logout();
   }
 }
