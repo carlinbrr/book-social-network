@@ -50,4 +50,8 @@ export class KeycloakService {
     });
   }
 
+  accountManagement() {
+    return this.keycloak.accountManagement();
+  }
+
 }

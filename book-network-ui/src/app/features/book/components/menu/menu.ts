@@ -15,6 +15,11 @@ export class Menu {
 
   keycloakService = inject(KeycloakService);
 
+
+  manageAccount() {
+    this.keycloakService.accountManagement();
+  }
+
   async logout() {
     this.keycloakService.logout();
   }
