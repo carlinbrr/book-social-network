@@ -25,13 +25,9 @@ import java.util.Arrays;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final JwtFilter jwtAuthFilter;
-
     private final String frontEndHost;
 
-    public SecurityConfig(JwtFilter jwtAuthFilter,
-                          @Value("${application.frontend.http.url}") String frontEndHost) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfig(@Value("${application.frontend.http.url}") String frontEndHost) {
         this.frontEndHost = frontEndHost;
     }
 
@@ -54,20 +50,12 @@ public class SecurityConfig {
                         ).permitAll()
                                 .anyRequest()
                                 .authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .oauth2ResourceServer(oauth2ResourceServer ->
+                        oauth2ResourceServer.jwt(token ->
+                                token.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())));
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
 
     @Bean
     public CorsFilter corsFilter() {

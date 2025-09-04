@@ -2,6 +2,7 @@ package com.bsn.booknetworkapi.feedback;
 
 import com.bsn.booknetworkapi.book.Book;
 import com.bsn.booknetworkapi.common.BaseEntity;
+import com.bsn.booknetworkapi.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,5 +25,9 @@ public class Feedback extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
