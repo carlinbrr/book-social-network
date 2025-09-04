@@ -18,8 +18,18 @@ export class Login implements OnInit {
 
 
   async ngOnInit() {
-    await this.keycloakService.init();
-    await this.keycloakService.login();
+    //await this.keycloakService.login();
+    const kc = this.keycloakService.keycloak;
+
+    if (kc.authenticated) {
+      console.log('✅ You are already logged in');
+      console.log('Token:', kc.token);
+
+      const profile = await kc.loadUserProfile();
+      console.log('User:', profile.username);
+    } else {
+      console.log('❌ You are not authenticated');
+    }
   }
 
 }

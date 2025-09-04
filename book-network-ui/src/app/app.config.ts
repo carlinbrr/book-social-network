@@ -17,10 +17,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAppInitializer(() => {
+    provideAppInitializer(async () => {
       const environmentService = inject(Environment);
       const keycloakService = inject(KeycloakService);
-      environmentService.loadConfig().then( () => keycloakService.init() );
+      return environmentService.loadConfig().then( () => keycloakService.init() );
       })
   ]
 };
