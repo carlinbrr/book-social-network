@@ -22,7 +22,7 @@ public class FileStorageService {
         this.fileUploadPath = fileUploadPath;
     }
 
-    public String saveFile(MultipartFile sourceFile, Integer userId) {
+    public String saveFile(MultipartFile sourceFile, String userId) {
         String fileUploadSubPath = "users" + File.separator + userId;
         return uploadFile(sourceFile, fileUploadSubPath);
     }

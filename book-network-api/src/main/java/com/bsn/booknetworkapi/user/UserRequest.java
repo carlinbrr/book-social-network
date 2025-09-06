@@ -1,4 +1,4 @@
-package com.bsn.booknetworkapi.auth;
+package com.bsn.booknetworkapi.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,16 +11,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class AuthenticationRequest {
+public class UserRequest {
+
+    @NotEmpty(message = "id is mandatory")
+    @NotBlank(message = "id is mandatory")
+    private String keycloakId;
 
     @Email(message = "email is not formatted")
     @NotEmpty(message = "email is mandatory")
     @NotBlank(message = "email is mandatory")
     private String email;
 
-    @NotEmpty(message = "password is mandatory")
-    @NotBlank(message = "password is mandatory")
-    @Size(min = 8, message = "password should be 8 characters long minimum")
-    private String password;
+    @NotEmpty(message = "firstName is mandatory")
+    @NotBlank(message = "firstName is mandatory")
+    private String firstName;
+
+    @NotEmpty(message = "lastName is mandatory")
+    @NotBlank(message = "lastName is mandatory")
+    private String lastName;
 
 }

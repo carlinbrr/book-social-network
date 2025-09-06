@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {httpTokenInterceptor} from './services/interceptor/http-token-interceptor';
 import {Environment} from './services/environment/environment';
+import {KeycloakService} from './services/keycloak/keycloak';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,9 +17,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAppInitializer(() => {
+    provideAppInitializer(async () => {
       const environmentService = inject(Environment);
-      environmentService.loadConfig();
-    }),
+      const keycloakService = inject(KeycloakService);
+      return environmentService.loadConfig().then( () => keycloakService.init() );
+      })
   ]
 };

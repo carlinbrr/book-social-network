@@ -1,0 +1,63 @@
+name: BSN Keycloak Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    name: Compile project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Compile project
+        run: |
+          cd keycloak-spi
+          chmod +x mvnw
+          ./mvnw clean compile
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build backend image
+    needs:
+      - compile
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set tag version
+        run: |
+          cd keycloak-spi
+          TAG_VERSION=${GITHUB_REF#refs/tags/}
+          TAG_VERSION=${TAG_VERSION#v}
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
+          chmod +x mvnw
+          ./mvnw versions:set -DnewVersion=$TAG_VERSION
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push to DockerHub
+        uses: docker/build-push-action@v5
+        with:
+          context: keycloak-spi
+          file: keycloak-spi/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-keycloak:${{ env.TAG_VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-keycloak:latest
