@@ -12,4 +12,4 @@ FROM quay.io/keycloak/keycloak:26.2.0 AS runtime
 
 COPY --from=build /build/target/keycloak-spi*.jar /opt/keycloak/providers/keycloak-spi.jar
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
