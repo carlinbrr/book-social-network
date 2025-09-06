@@ -15,6 +15,9 @@ export class Menu {
 
   keycloakService = inject(KeycloakService);
 
+  get userName() {
+    return this.keycloakService.profile?.firstName;
+  }
 
   manageAccount() {
     this.keycloakService.accountManagement();
