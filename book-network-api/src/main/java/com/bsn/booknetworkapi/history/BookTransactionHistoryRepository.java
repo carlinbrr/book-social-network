@@ -12,7 +12,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
-            WHERE history.user.keyCloakId = :userId
+            WHERE history.user.keycloakId = :userId
             """)
     Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, String userId);
 
@@ -20,7 +20,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
     @Query("""
             SELECT history
             FROM BookTransactionHistory history
-            WHERE history.book.owner.keyCloakId = :userId
+            WHERE history.book.owner.keycloakId = :userId
             """)
     Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, String userId);
 
@@ -28,7 +28,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
             SELECT
              (COUNT(*) > 0) AS isBorrowed
              FROM BookTransactionHistory bookTransationHistory
-             WHERE bookTransationHistory.user.keyCloakId = :userId
+             WHERE bookTransationHistory.user.keycloakId = :userId
              AND bookTransationHistory.book.id  = :bookId
              AND bookTransationHistory.returnApproved = false
             """)
@@ -37,7 +37,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
     @Query("""
             SELECT transaction
             FROM BookTransactionHistory transaction
-            WHERE transaction.user.keyCloakId = :userId
+            WHERE transaction.user.keycloakId = :userId
             AND transaction.book.id = :bookId
             AND transaction.returned = false
             AND transaction.returnApproved = false
@@ -47,7 +47,7 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
     @Query("""
             SELECT transaction
             FROM BookTransactionHistory transaction
-            WHERE transaction.book.owner.keyCloakId = :ownerId
+            WHERE transaction.book.owner.keycloakId = :ownerId
             AND transaction.book.id = :bookId
             AND transaction.returned = true
             AND transaction.returnApproved = false

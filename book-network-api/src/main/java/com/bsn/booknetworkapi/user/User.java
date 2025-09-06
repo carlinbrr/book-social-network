@@ -24,8 +24,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue
-    private String keyCloakId;
+    private String keycloakId;
 
     private String firstName;
 

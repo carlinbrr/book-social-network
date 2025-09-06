@@ -48,6 +48,7 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
       KC_DB_USERNAME: dev
       KC_DB_PASSWORD: dev
+      BSN_USERS_API_URL: http://host.docker.internal:8088/api/v1/users
     ports:
       - 9090:8080
     networks:

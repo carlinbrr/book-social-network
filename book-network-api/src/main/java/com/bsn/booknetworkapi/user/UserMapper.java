@@ -7,7 +7,7 @@ public class UserMapper {
 
     public User toUser(UserRequest userRequest ) {
         return User.builder()
-                .keyCloakId(userRequest.getKeyCloakId())
+                .keycloakId(userRequest.getKeycloakId())
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .email(userRequest.getEmail())

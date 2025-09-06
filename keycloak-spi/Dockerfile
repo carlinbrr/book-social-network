@@ -6,7 +6,6 @@ COPY pom.xml .
 RUN mvn dependency:go-offline
 
 COPY src ./src
-#We already know the app has run the tests correctly
 RUN mvn clean package -DskipTests
 
 FROM quay.io/keycloak/keycloak:26.2.0 AS runtime

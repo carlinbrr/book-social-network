@@ -7,17 +7,17 @@ import org.keycloak.models.KeycloakSessionFactory;
 
 public class KeycloakListenerProviderFactory implements EventListenerProviderFactory {
     @Override
-    public EventListenerProvider create(KeycloakSession keycloakSession) {
-        return new KeycloakEventListenerProvider();
+    public EventListenerProvider create( KeycloakSession keycloakSession ) {
+        return new KeycloakEventListenerProvider( keycloakSession );
     }
 
     @Override
-    public void init(org.keycloak.Config.Scope scope) {
+    public void init( org.keycloak.Config.Scope scope ) {
 
     }
 
     @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+    public void postInit( KeycloakSessionFactory keycloakSessionFactory ) {
 
     }
 

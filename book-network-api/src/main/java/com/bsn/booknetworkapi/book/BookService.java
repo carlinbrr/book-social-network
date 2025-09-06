@@ -45,7 +45,7 @@ public class BookService {
     }
 
     public Integer save(BookRequest request, Authentication connectedUser) {
-        User user = userRepository.findByKeyCloakId(connectedUser.getName()).orElseThrow(
+        User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
                 () -> new EntityNotFoundException("User not found with name " + connectedUser.getName())
         );
 
@@ -133,7 +133,7 @@ public class BookService {
                 () -> new EntityNotFoundException("No book found with id:" + bookId)
         );
 
-        if(!Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if(!Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot update books shareable status");
         }
         book.setShareable(!book.isShareable());
@@ -146,7 +146,7 @@ public class BookService {
                 () -> new EntityNotFoundException("No book found with id:" + bookId)
         );
 
-        if(!Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if(!Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot update books shareable status");
         }
         book.setArchived(!book.isArchived());
@@ -155,7 +155,7 @@ public class BookService {
     }
 
     public Integer borrowBook(Integer bookId, Authentication connectedUser) {
-        User user = userRepository.findByKeyCloakId(connectedUser.getName()).orElseThrow(
+        User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
                 () -> new EntityNotFoundException("User not found with name " + connectedUser.getName())
         );
 
@@ -166,7 +166,7 @@ public class BookService {
             throw new OperationNotPermittedException("The requested book cannot be borrowed since it is archived or not shareable");
         }
 
-        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot borrow your own book");
         }
 
@@ -193,7 +193,7 @@ public class BookService {
             throw new OperationNotPermittedException("The requested book cannot be borrowed since it is archived or not shareable");
         }
 
-        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot borrow or return your own book");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndUserId(bookId, connectedUser.getName())
@@ -211,7 +211,7 @@ public class BookService {
             throw new OperationNotPermittedException("The requested book cannot be borrowed since it is archived or not shareable");
         }
 
-        if (!Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if (!Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot approve the return of a book that you don't own");
         }
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndOwnerId(bookId, connectedUser.getName())

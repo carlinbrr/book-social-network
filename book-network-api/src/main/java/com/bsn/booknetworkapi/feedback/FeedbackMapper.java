@@ -22,7 +22,7 @@ public class FeedbackMapper {
         return FeedbackResponse.builder()
                 .note(feedback.getNote())
                 .comment(feedback.getComment())
-                .ownFeedback(Objects.equals(feedback.getUser().getKeyCloakId(), id))
+                .ownFeedback(Objects.equals(feedback.getUser().getKeycloakId(), id))
                 .build();
     }
 }

@@ -38,7 +38,7 @@ public class FeedBackService {
     }
 
     public Integer save(FeedbackRequest request, Authentication connectedUser) {
-        User user = userRepository.findByKeyCloakId(connectedUser.getName()).orElseThrow(
+        User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
                 () -> new EntityNotFoundException("User with id: " + connectedUser.getName() + "not found")
         );
 
@@ -50,7 +50,7 @@ public class FeedBackService {
             throw new OperationNotPermittedException("You cannot give a feedback for an archived or not shareable book");
         }
 
-        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeyCloakId())) {
+        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
             throw new OperationNotPermittedException("You cannot give a feedback your own book");
         }
 
