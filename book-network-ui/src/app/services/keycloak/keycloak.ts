@@ -45,9 +45,7 @@ export class KeycloakService {
   }
 
   logout() {
-    return this.keycloak.logout({
-      redirectUri: this.environmentService.get('logout-redirectUri')
-    });
+    return this.keycloak.logout();
   }
 
   accountManagement() {

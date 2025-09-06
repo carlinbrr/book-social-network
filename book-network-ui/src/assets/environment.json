@@ -6,8 +6,7 @@
     "keycloak": {
       "url": "http://localhost:9090",
       "realm": "book-social-network",
-      "clientId": "bsn",
-      "logout-redirectUri": "http:localhost:4200"
+      "clientId": "bsn"
     }
   }
 }
