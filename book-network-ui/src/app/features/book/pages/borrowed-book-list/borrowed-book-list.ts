@@ -68,7 +68,6 @@ export class BorrowedBookList implements OnInit {
       body: this.feedbackRequest
     }).subscribe({
       next: () => {
-        console.log("Successfully added feedback");
       }
     })
   }

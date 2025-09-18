@@ -12,7 +12,6 @@ export class Environment {
       .then(res => res.json())
       .then(json => {
         this.config = json;
-        console.log("Config read from environment.json: " + JSON.stringify(this.config));
       });
   }
 
@@ -25,7 +24,6 @@ export class Environment {
       if (value === undefined) break;
     }
 
-    console.log(`${key}: ${value}`);
     return value;
   }
 

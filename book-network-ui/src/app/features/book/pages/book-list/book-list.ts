@@ -60,7 +60,6 @@ export class BookList implements OnInit {
             this.isMessageSuccess = true;
           },
           error: err => {
-            console.log(err);
             this.isMessageSuccess = false;
             this.message.set(err.error.error);
           }
