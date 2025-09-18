@@ -1,5 +1,6 @@
 package com.bsn.booknetworkapi.feedback;
 
+import com.bsn.booknetworkapi.user.UserResponse;
 import lombok.*;
 
 @Getter
@@ -15,4 +16,7 @@ public class FeedbackResponse {
 
     private boolean ownFeedback;
 
+    private UserResponse user;
+
+    private String createdDate;
 }

@@ -13,6 +13,11 @@ export const bookRoutes: Routes = [
         canActivate: [authGuard]
       },
       {
+        path: 'details/:bookId',
+        loadComponent: () => import('./pages/book-details/book-details').then(m => m.BookDetails),
+        canActivate: [authGuard]
+      },
+      {
         path: 'my-books',
         loadComponent: () => import('./pages/my-books/my-books').then(m => m.MyBooks),
         canActivate: [authGuard]

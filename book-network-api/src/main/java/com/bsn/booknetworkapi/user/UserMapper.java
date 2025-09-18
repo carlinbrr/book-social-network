@@ -14,4 +14,14 @@ public class UserMapper {
                 .build();
     }
 
+    public UserResponse toUserResponse(User user) {
+        return UserResponse.builder()
+                .keycloakId( user.getKeycloakId() )
+                .firstName( user.getFirstName() )
+                .lastName( user.getLastName() )
+                .email( user.getEmail() )
+                .dateOfBirth( user.getDateOfBirth() )
+                .build();
+    }
+
 }

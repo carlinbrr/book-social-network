@@ -40,7 +40,7 @@ export class PaginationFooter implements OnChanges {
   }
 
   goToLastPage() {
-    this.current_page = this.totalPages();
+    this.current_page = this.totalPages() - 1;
     this.pageChanged.emit(this.current_page);
 
   }

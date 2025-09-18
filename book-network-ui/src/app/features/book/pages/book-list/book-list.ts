@@ -4,6 +4,7 @@ import {PageResponseBookResponse} from '../../../../services/models/page-respons
 import {BookCard} from '../../components/book-card/book-card';
 import {BookAction, BookActionType} from '../../models/book-card.model';
 import {PaginationFooter} from '../../components/pagination-footer/pagination-footer';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-book-list',
@@ -22,6 +23,7 @@ export class BookList implements OnInit {
   totalPages : number = 0;
 
   bookService = inject(BookService);
+  router = inject(Router);
 
   ngOnInit(): void {
       this.findAllBooks(0);
@@ -64,6 +66,9 @@ export class BookList implements OnInit {
           }
         });
         break;
+
+      case BookActionType.SHOW_DETAILS:
+        this.router.navigate(['books', 'details', book.id]);
     }
   }
 
