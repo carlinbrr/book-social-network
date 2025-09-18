@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -50,7 +52,15 @@ public class User {
     private List<BookTransactionHistory> histories;
 
     @OneToMany(mappedBy = "user")
-    private List<Feedback> feedbacks;
+    private Set<Feedback> feedbacks = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_likes_book",
+            joinColumns = @JoinColumn(name = "user_keycloakId", referencedColumnName ="keycloakId" ),
+            inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id")
+    )
+    private List<Book> likedBooks;
 
     public String getFullName() {
         return firstName + " " + lastName;

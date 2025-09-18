@@ -33,13 +33,18 @@ export const bookRoutes: Routes = [
         canActivate: [authGuard]
       },
       {
-        path: 'my-borrowed-books',
-        loadComponent: () => import('./pages/borrowed-book-list/borrowed-book-list').then(m => m.BorrowedBookList),
+        path: 'my-waiting-list',
+        loadComponent: () => import('./pages/waiting-list/waiting-list').then(m => m.WaitingList),
         canActivate: [authGuard]
       },
       {
         path: 'my-returned-books',
         loadComponent: () => import('./pages/returned-books/returned-books').then(m => m.ReturnedBooks),
+        canActivate: [authGuard]
+      },
+      {
+        path: 'my-borrowed-books',
+        loadComponent: () => import('./pages/borrowed-book-list/borrowed-book-list').then(m => m.BorrowedBookList),
         canActivate: [authGuard]
       }
     ]

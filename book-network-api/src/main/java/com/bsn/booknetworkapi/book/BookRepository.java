@@ -17,4 +17,12 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
             """)
     Page<Book> findAllDisplayableBooks(Pageable pageable, String userId);
 
+    @Query("""
+            SELECT book
+            FROM User user
+            JOIN user.likedBooks book
+            WHERE user.keycloakId = :userKeycloakId
+            """)
+    Page<Book> findLikedBooksByUser(Pageable pageable, String userKeycloakId);
+
 }

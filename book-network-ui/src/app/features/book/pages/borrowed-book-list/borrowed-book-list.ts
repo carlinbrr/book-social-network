@@ -26,7 +26,7 @@ export class BorrowedBookList implements OnInit {
   feedbackRequest: FeedbackRequest = {bookId: 0, comment: "", note: 0};
 
   bookService = inject(BookService);
-  feebackService = inject(FeedbackService);
+  feedbackService = inject(FeedbackService);
 
   ngOnInit(): void {
     this.findAllBorrowedBooks(0);
@@ -64,7 +64,7 @@ export class BorrowedBookList implements OnInit {
 
   private giveFeedback() {
     this.feedbackRequest.bookId = this.selectedBook?.id as number;
-    this.feebackService.saveFeedback({
+    this.feedbackService.saveFeedback({
       body: this.feedbackRequest
     }).subscribe({
       next: () => {

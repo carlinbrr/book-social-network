@@ -13,4 +13,5 @@ export interface BookResponse {
   shareable?: boolean;
   synopsis?: string;
   title?: string;
+  isInWaitingList?: boolean;
 }

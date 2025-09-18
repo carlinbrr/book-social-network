@@ -2,6 +2,7 @@ package com.bsn.booknetworkapi.book;
 
 import com.bsn.booknetworkapi.file.FileUtils;
 import com.bsn.booknetworkapi.history.BookTransactionHistory;
+import com.bsn.booknetworkapi.user.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +20,7 @@ public class BookMapper {
                 .build();
     }
 
-    public BookResponse toBookResponse(Book book) {
+    public BookResponse toBookResponse(Book book, User user) {
         return BookResponse.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -30,6 +31,7 @@ public class BookMapper {
                 .archived(book.isArchived())
                 .shareable(book.isShareable())
                 .owner(book.getOwner().getFullName())
+                .isInWaitingList( user.getLikedBooks().contains(book) )
                 .cover(FileUtils.readFileFromLocation(book.getBookCover()))
                 .build();
     }

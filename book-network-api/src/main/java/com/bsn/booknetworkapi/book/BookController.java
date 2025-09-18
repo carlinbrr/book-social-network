@@ -33,9 +33,10 @@ public class BookController {
     @GetMapping("/{book-id}")
     @Operation(summary = "Find a book by book-id")
     public ResponseEntity<BookResponse> findById(
-            @PathVariable("book-id") Integer bookId
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.findById(bookId));
+        return ResponseEntity.ok(bookService.findById(bookId, connectedUser));
     }
 
     @GetMapping
@@ -100,7 +101,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
     }
 
-    @PatchMapping("borrow/return/{book-id}")
+    @PatchMapping("/borrow/return/{book-id}")
     public ResponseEntity<Integer> returnBorrowedBook(
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
@@ -108,7 +109,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
     }
 
-    @PatchMapping("borrow/return/approve/{book-id}")
+    @PatchMapping("/borrow/return/approve/{book-id}")
     public ResponseEntity<Integer> approveReturnBorrowedBook(
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
@@ -125,6 +126,33 @@ public class BookController {
             ) {
         bookService.uploadBookCoverPicture(file, connectedUser, bookId);
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping("/waitingList")
+    public ResponseEntity<PageResponse<BookResponse>> getWaitingList(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            Authentication connectedUser
+    ) {
+        return ResponseEntity.ok(bookService.getWaitingList(page, size, connectedUser));
+    }
+
+    @PostMapping("/addToWaitingList/{book-id}")
+    public ResponseEntity<Integer> addToWaitingList(
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
+    ) {
+        bookService.addBookToWaitingList( bookId, connectedUser );
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/removeFromWaitingList/{book-id}")
+    public ResponseEntity<Integer> removeFromWaitingList(
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
+    ) {
+        bookService.removeBookFromWaitingList( bookId, connectedUser );
+        return ResponseEntity.ok().build();
     }
 
 }

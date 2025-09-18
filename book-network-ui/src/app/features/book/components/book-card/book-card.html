@@ -34,7 +34,11 @@
         <div class="d-flex gap-2">
           <i (click)="onShowDetails()" class="fas fa-circle-info text-primary"></i>
           <i (click)="onBorrow()" class="fas fa-list-check text-primary"></i>
-          <i (click)="onAddToWaitingList()" class="fas fa-heart text-danger"></i>
+          @if (book().isInWaitingList) {
+            <i (click)="onAddToWaitingList()" class="fas fa-heart text-danger"></i>
+          } @else {
+            <i (click)="onAddToWaitingList()" class="fas fa-heart"></i>
+          }
         </div>
       } @else {
         <div class="d-flex gap-2">

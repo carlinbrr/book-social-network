@@ -56,6 +56,9 @@ export class MyBooks implements OnInit {
         }).subscribe({
           next: () => {
             book.shareable = !book.shareable;
+            if ( book.shareable ) {
+              book.archived = false;
+            }
           }
         });
         break;
@@ -65,6 +68,9 @@ export class MyBooks implements OnInit {
         }).subscribe({
           next: () => {
             book.archived = !book.archived;
+            if ( book.archived ) {
+              book.shareable = false;
+            }
           }
         });
     }

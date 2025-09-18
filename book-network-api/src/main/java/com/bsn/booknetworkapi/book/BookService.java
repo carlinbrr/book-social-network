@@ -46,7 +46,7 @@ public class BookService {
 
     public Integer save(BookRequest request, Authentication connectedUser) {
         User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
-                () -> new EntityNotFoundException("User not found with name " + connectedUser.getName())
+                () -> new EntityNotFoundException("User not found with id " + connectedUser.getName())
         );
 
         Book book = bookMapper.toBook(request);
@@ -54,17 +54,23 @@ public class BookService {
         return bookRepository.save(book).getId();
     }
 
-    public BookResponse findById(Integer bookId) {
+    public BookResponse findById(Integer bookId, Authentication connectedUser) {
+        User user =  userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () ->  new EntityNotFoundException("User not found with id " + connectedUser.getName()));
+
         return bookRepository.findById(bookId)
-                .map(bookMapper::toBookResponse)
+                .map(book -> bookMapper.toBookResponse(book, user))
                 .orElseThrow(() -> new EntityNotFoundException("No book with the id:" + bookId));
     }
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, connectedUser.getName());
+        User user =  userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () ->  new EntityNotFoundException("User not found with id " + connectedUser.getName()));
+
         List<BookResponse> bookResponse = books.stream()
-                .map(bookMapper::toBookResponse)
+                .map( book -> bookMapper.toBookResponse( book, user ))
                 .toList();
         return new PageResponse<>(
                 bookResponse,
@@ -80,8 +86,10 @@ public class BookService {
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Book> books = bookRepository.findAll(BookSpecification.withOwnerId(connectedUser.getName()), pageable);
+        User user =  userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () ->  new EntityNotFoundException("User not found with id " + connectedUser.getName()));
         List<BookResponse> bookResponse = books.stream()
-                .map(bookMapper::toBookResponse)
+                .map(book -> bookMapper.toBookResponse( book, user) )
                 .toList();
         return new PageResponse<>(
                 bookResponse,
@@ -137,6 +145,9 @@ public class BookService {
             throw new OperationNotPermittedException("You cannot update books shareable status");
         }
         book.setShareable(!book.isShareable());
+        if ( book.isShareable() ) {
+            book.setArchived( false );
+        }
         bookRepository.save(book);
         return bookId;
     }
@@ -150,13 +161,16 @@ public class BookService {
             throw new OperationNotPermittedException("You cannot update books shareable status");
         }
         book.setArchived(!book.isArchived());
+        if ( book.isArchived() ) {
+            book.setShareable( false );
+        }
         bookRepository.save(book);
         return bookId;
     }
 
     public Integer borrowBook(Integer bookId, Authentication connectedUser) {
         User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
-                () -> new EntityNotFoundException("User not found with name " + connectedUser.getName())
+                () -> new EntityNotFoundException("User not found with id " + connectedUser.getName())
         );
 
         Book book = bookRepository.findById(bookId).orElseThrow(
@@ -229,4 +243,79 @@ public class BookService {
         book.setBookCover(bookCover);
         bookRepository.save(book);
     }
+
+    public PageResponse<BookResponse> getWaitingList(int page, int size, Authentication connectedUser) {
+        User user =  userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () ->  new EntityNotFoundException("User not found with id " + connectedUser.getName()));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Book> books = bookRepository.findLikedBooksByUser(pageable, user.getKeycloakId());
+
+        List<BookResponse> bookResponse = books.stream()
+                .map( book -> bookMapper.toBookResponse( book, user ))
+                .toList();
+        return new PageResponse<>(
+                bookResponse,
+                books.getNumber(),
+                books.getSize(),
+                books.getTotalElements(),
+                books.getTotalPages(),
+                books.isFirst(),
+                books.isLast()
+        );
+    }
+
+    public void addBookToWaitingList( Integer bookId, Authentication connectedUser ) {
+        Book book = bookRepository.findById(bookId).orElseThrow(
+                () -> new EntityNotFoundException("No book found with id:" + bookId)
+        );
+
+        User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id " + connectedUser.getName())
+        );
+
+        if (book.isArchived() || !book.isShareable()) {
+            throw new OperationNotPermittedException("The requested book cannot be added to your waiting list" +
+                    " since it is archived or not shareable");
+        }
+
+        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
+            throw new OperationNotPermittedException("You cannot add your own book to your waiting list");
+        }
+
+        if ( user.getLikedBooks().contains(book) ) {
+            throw new OperationNotPermittedException("You cannot add the same book to your waiting list");
+        }
+
+        user.getLikedBooks().add(book);
+        userRepository.save(user);
+    }
+
+
+    public void removeBookFromWaitingList( Integer bookId, Authentication connectedUser ) {
+        Book book = bookRepository.findById(bookId).orElseThrow(
+                () -> new EntityNotFoundException("No book found with id:" + bookId)
+        );
+
+        User user = userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id " + connectedUser.getName())
+        );
+
+        if (book.isArchived() || !book.isShareable()) {
+            throw new OperationNotPermittedException("The requested book cannot be added to your waiting list" +
+                    " since it is archived or not shareable");
+        }
+
+        if (Objects.equals(connectedUser.getName(), book.getOwner().getKeycloakId())) {
+            throw new OperationNotPermittedException("You cannot add your own book to your waiting list");
+        }
+
+        if ( !user.getLikedBooks().contains(book) ) {
+            throw new OperationNotPermittedException("You cannot remove a non liked book from your waiting list");
+        }
+
+        user.getLikedBooks().remove(book);
+        userRepository.save(user);
+    }
+
 }

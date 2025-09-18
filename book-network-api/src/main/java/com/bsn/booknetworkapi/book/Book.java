@@ -12,7 +12,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -46,6 +48,9 @@ public class Book extends BaseEntity {
 
     @OneToMany(mappedBy = "book")
     private List<BookTransactionHistory> histories;
+
+    @ManyToMany(mappedBy = "likedBooks")
+    private Set<User> userLikes = new HashSet<>();
 
     @Transient
     public double getRate() {

@@ -56,7 +56,7 @@ export class BookList implements OnInit {
           'book-id': book.id as number
         }).subscribe({
           next: () => {
-            this.message.set('Book successfully added to your list');
+            this.message.set('Book successfully borrowed, and added to your list');
             this.isMessageSuccess = true;
           },
           error: err => {
@@ -69,6 +69,27 @@ export class BookList implements OnInit {
 
       case BookActionType.SHOW_DETAILS:
         this.router.navigate(['books', 'details', book.id]);
+        break;
+
+      case BookActionType.ADD_TO_WAITING_LIST:
+        if ( book.isInWaitingList ) {
+          this.bookService.removeFromWaitingList({
+            'book-id': book.id as number
+          }).subscribe({
+            next: () => {
+              book.isInWaitingList = false;
+            }
+          });
+          break;
+        }
+
+        this.bookService.addToWaitingList({
+          'book-id': book.id as number
+        }).subscribe({
+          next: () => {
+            book.isInWaitingList = true;
+          }
+        });
     }
   }
 

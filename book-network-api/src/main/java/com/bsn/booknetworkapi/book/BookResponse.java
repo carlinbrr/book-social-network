@@ -1,5 +1,6 @@
 package com.bsn.booknetworkapi.book;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -29,4 +30,6 @@ public class BookResponse {
 
     private boolean shareable;
 
+    @JsonProperty(value = "isInWaitingList")
+    private boolean isInWaitingList;
 }

@@ -38,6 +38,12 @@ import { updateShareableStatus } from '../fn/book/update-shareable-status';
 import { UpdateShareableStatus$Params } from '../fn/book/update-shareable-status';
 import { uploadBookCoverPicture } from '../fn/book/upload-book-cover-picture';
 import { UploadBookCoverPicture$Params } from '../fn/book/upload-book-cover-picture';
+import {addToWaitingList, AddToWaitingList$Params} from '../fn/book/add-to-waiting-list';
+import {
+  removeFromWaitingList,
+  RemoveFromWaitingList$Params,
+} from '../fn/book/remove-from-waiting-list';
+import {getWaitingList, GetWaitingList$Params} from '../fn/book/get-waiting-list';
 
 
 /**
@@ -165,6 +171,36 @@ export class BookService extends BaseService {
    */
   borrowBook(params: BorrowBook$Params, context?: HttpContext): Observable<number> {
     return this.borrowBook$Response(params, context).pipe(
+      map((r: StrictHttpResponse<number>): number => r.body)
+    );
+  }
+
+  getWaitingList$Response(params?: GetWaitingList$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseBookResponse>> {
+    return getWaitingList(this.http, this.rootUrl, params, context);
+  }
+
+  getWaitingList(params?: GetWaitingList$Params, context?: HttpContext): Observable<PageResponseBookResponse> {
+    return this.getWaitingList$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseBookResponse>): PageResponseBookResponse => r.body)
+    );
+  }
+
+  addToWaitingList$Response(params: AddToWaitingList$Params, context?: HttpContext): Observable<StrictHttpResponse<number>> {
+    return addToWaitingList(this.http, this.rootUrl, params, context);
+  }
+
+  addToWaitingList(params: AddToWaitingList$Params, context?: HttpContext): Observable<number> {
+    return this.addToWaitingList$Response(params, context).pipe(
+      map((r: StrictHttpResponse<number>): number => r.body)
+    );
+  }
+
+  removeFromWaitingList$Response(params: RemoveFromWaitingList$Params, context?: HttpContext): Observable<StrictHttpResponse<number>> {
+    return removeFromWaitingList(this.http, this.rootUrl, params, context);
+  }
+
+  removeFromWaitingList(params: RemoveFromWaitingList$Params, context?: HttpContext): Observable<number> {
+    return this.removeFromWaitingList$Response(params, context).pipe(
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
