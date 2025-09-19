@@ -19,11 +19,8 @@ export class BookCard {
 
   bookAction= output<BookAction>();
 
-  get bookCover(): string | undefined {
-    if (this.book().cover) {
-      return 'data:image/jpg;base64,' + this.book().cover;
-    }
-    return 'https://picsum.photos/1900/800';
+  get bookCover(): string {
+    return 'data:image/jpg;base64,' + this.book().cover;
   }
 
   onShowDetails() {

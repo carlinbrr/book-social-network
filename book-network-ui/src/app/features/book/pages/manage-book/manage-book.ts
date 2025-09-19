@@ -25,6 +25,7 @@ export class ManageBook implements OnInit {
     title: ''
   };
 
+  bookId: number = 0;
   bookService = inject(BookService);
 
   router = inject(Router);
@@ -32,10 +33,10 @@ export class ManageBook implements OnInit {
   activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    const bookId = this.activatedRoute.snapshot.params['bookId'];
-    if (bookId) {
+    this.bookId = this.activatedRoute.snapshot.params['bookId'];
+    if (this.bookId) {
       this.bookService.findById({
-        'book-id': bookId
+        'book-id': this.bookId
       }).subscribe({
         next: book => {
           this.bookRequest = {

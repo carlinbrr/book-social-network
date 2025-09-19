@@ -13,21 +13,21 @@ import lombok.Setter;
 @Builder
 public class UserRequest {
 
-    @NotEmpty(message = "id is mandatory")
-    @NotBlank(message = "id is mandatory")
+    @NotEmpty(message = "Id is mandatory")
+    @NotBlank(message = "Id is mandatory")
     private String keycloakId;
 
-    @Email(message = "email is not formatted")
-    @NotEmpty(message = "email is mandatory")
-    @NotBlank(message = "email is mandatory")
+    @Email(message = "Email is not formatted")
+    @NotEmpty(message = "Email is mandatory")
+    @NotBlank(message = "Email is mandatory")
     private String email;
 
-    @NotEmpty(message = "firstName is mandatory")
-    @NotBlank(message = "firstName is mandatory")
+    @NotEmpty(message = "FirstName is mandatory")
+    @NotBlank(message = "FirstName is mandatory")
     private String firstName;
 
-    @NotEmpty(message = "lastName is mandatory")
-    @NotBlank(message = "lastName is mandatory")
+    @NotEmpty(message = "LastName is mandatory")
+    @NotBlank(message = "LastName is mandatory")
     private String lastName;
 
 }

@@ -49,6 +49,21 @@ public class BookService {
                 () -> new EntityNotFoundException("User not found with id " + connectedUser.getName())
         );
 
+        // Book already exists
+        if ( request.id() != null ) {
+            Book book = bookRepository.findById(request.id()).orElseThrow(
+                    () -> new EntityNotFoundException("Book not found with id " + request.id()));
+            book.setTitle( request.title() );
+            book.setAuthorName( request.authorName() );
+            book.setIsbn( request.isbn() );
+            book.setSynopsis( request.synopsis() );
+            book.setShareable( request.shareable() );
+            if ( book.isShareable() ) {
+                book.setArchived( false );
+            }
+            return bookRepository.save(book).getId();
+        }
+
         Book book = bookMapper.toBook(request);
         book.setOwner(user);
         return bookRepository.save(book).getId();

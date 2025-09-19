@@ -5,17 +5,17 @@ import jakarta.validation.constraints.NotNull;
 
 public record BookRequest(
     Integer id,
-    @NotNull(message = "100")
-    @NotEmpty(message = "100")
+    @NotNull(message = "Title can't be null")
+    @NotEmpty(message = "Title can't be empty")
     String title,
-    @NotNull(message = "101")
-    @NotEmpty(message = "101")
+    @NotNull(message = "Author name can't be null")
+    @NotEmpty(message = "Author name can't be empty")
     String authorName,
-    @NotNull(message = "102")
-    @NotEmpty(message = "102")
+    @NotNull(message = "Isbn can't be null")
+    @NotEmpty(message = "Isbn can't be empty")
     String isbn,
-    @NotNull(message = "103")
-    @NotEmpty(message = "103")
+    @NotNull(message = "Synopsis can't be null")
+    @NotEmpty(message = "Synopsis can't be empty")
     String synopsis,
     boolean shareable
 ){
