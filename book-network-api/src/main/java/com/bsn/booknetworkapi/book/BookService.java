@@ -63,9 +63,9 @@ public class BookService {
                 .orElseThrow(() -> new EntityNotFoundException("No book with the id:" + bookId));
     }
 
-    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
+    public PageResponse<BookResponse> findAllBooks(int page, int size, String searchTerm, Authentication connectedUser) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, connectedUser.getName());
+        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, searchTerm, connectedUser.getName());
         User user =  userRepository.findByKeycloakId(connectedUser.getName()).orElseThrow(
                 () ->  new EntityNotFoundException("User not found with id " + connectedUser.getName()));
 

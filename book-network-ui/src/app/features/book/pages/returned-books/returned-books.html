@@ -1,4 +1,4 @@
-<h2>My returned books</h2>
+<h3>My returned books</h3>
 <hr>
 @if (message()) {
   <div class="alert" [class.alert-success]="isMessageSuccess" [class.alert-danger]="!isMessageSuccess">
@@ -34,7 +34,11 @@
             } @else {
               <i class="fa-solid fa-paper-plane text-success"></i>
             }
-            <i class="cursor-pointer fa-solid fa-circle-check" (click)="approveBookReturn(returnedBook)" [class.text-success]="returnedBook.returnApproved"></i>
+            @if (returnedBook.returnApproved) {
+              <i class="fa-solid fa-circle-check" [class.text-success]="returnedBook.returnApproved"></i>
+            } @else {
+              <i class="cursor-pointer fa-solid fa-circle-check" (click)="approveBookReturn(returnedBook)" ></i>
+            }
           </div>
         </td>
       </tr>

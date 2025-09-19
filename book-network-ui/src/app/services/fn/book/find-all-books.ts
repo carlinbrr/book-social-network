@@ -13,6 +13,7 @@ import { PageResponseBookResponse } from '../../models/page-response-book-respon
 export interface FindAllBooks$Params {
   page?: number;
   size?: number;
+  searchTerm?: string;
 }
 
 export function findAllBooks(http: HttpClient, rootUrl: string, params?: FindAllBooks$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseBookResponse>> {
@@ -20,6 +21,7 @@ export function findAllBooks(http: HttpClient, rootUrl: string, params?: FindAll
   if (params) {
     rb.query('page', params.page, {});
     rb.query('size', params.size, {});
+    rb.query('searchTerm', params.searchTerm, {});
   }
 
   return http.request(

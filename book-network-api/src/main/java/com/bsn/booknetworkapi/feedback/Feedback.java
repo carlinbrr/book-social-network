@@ -20,6 +20,7 @@ public class Feedback extends BaseEntity {
 
     private Double note;
 
+    @Column(length = 1025)
     private String comment;
 
     @ManyToOne

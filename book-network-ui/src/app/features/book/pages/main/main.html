@@ -1,7 +1,15 @@
-<div class="d-flex flex-column gap-1">
+<body class="d-flex flex-column min-vh-100">
   <app-menu></app-menu>
 
-  <div class="pe-2 ps-2">
-    <router-outlet />
+  <div class="pe-2 ps-2 flex-grow-1">
+    <router-outlet></router-outlet>
   </div>
-</div>
+
+  <footer style="background-color: #323232" class="py-4 mt-5">
+    <div class="container text-light text-center">
+      <p class="mb-2" style="font-size: 28px">Book Social Network</p>
+      <small class="text-white-50">&copy;Developed by Carlos Collaguazo</small>
+    </div>
+  </footer>
+</body>
+

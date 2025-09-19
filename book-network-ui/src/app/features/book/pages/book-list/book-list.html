@@ -5,7 +5,7 @@
   </div>
 }
 <hr>
-<div class="d-flex justify-content-start gap-2 flex-wrap">
+<div class="d-flex justify-content-center gap-2 flex-wrap">
   @for (book of bookResponse().content; track book.id) {
     <app-book-card
       [book]="book"

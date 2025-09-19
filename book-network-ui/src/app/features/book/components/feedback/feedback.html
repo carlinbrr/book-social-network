@@ -1,0 +1,33 @@
+<div class="d-flex justify-content-center">
+  <div class="d-flex align-items-center flex-column w-100" style="max-width: 420px;">
+    @if (feedbacks.content?.length ?? 0 > 0) {
+      <h6>Feedback</h6>
+      @for (feedback of feedbacks.content; track $index) {
+        <div class="card mb-4" [class.border-primary]="feedback.ownFeedback">
+          <div class="card-body overflow-auto">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="mb-1">
+                <i class="fas fa-user"></i>
+                &nbsp;
+                @if (feedback.ownFeedback) {
+                  <strong>Me</strong>
+                } @else {
+                  <strong>{{ feedback.user!.firstName }}</strong>
+                }
+              </p>
+              <p class="mb-1">{{ feedback.createdDate }}</p>
+            </div>
+            <app-rating [rating]="feedback.note || 0"></app-rating>
+            <p class="mt-2 mb-0">{{ feedback.comment }}</p>
+          </div>
+        </div>
+      }
+    } @else {
+      <h6>The book hasn't any feedback yet</h6>
+    }
+    <app-pagination-footer
+      [totalPages]="totalPages"
+      (pageChanged)="onPageChanges($event)">
+    </app-pagination-footer>
+  </div>
+</div>

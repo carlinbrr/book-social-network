@@ -14,8 +14,9 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
             WHERE book.archived = false
             AND book.shareable = true
             AND book.owner.keycloakId != :userId
+            AND lower(book.title) LIKE lower(concat('%', :searchTerm, '%'))
             """)
-    Page<Book> findAllDisplayableBooks(Pageable pageable, String userId);
+    Page<Book> findAllDisplayableBooks(Pageable pageable, String searchTerm, String userId);
 
     @Query("""
             SELECT book

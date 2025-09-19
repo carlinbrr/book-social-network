@@ -4,7 +4,7 @@ import {PageResponseBookResponse} from '../../../../services/models/page-respons
 import {BookCard} from '../../components/book-card/book-card';
 import {BookAction, BookActionType} from '../../models/book-card.model';
 import {PaginationFooter} from '../../components/pagination-footer/pagination-footer';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-book-list',
@@ -21,18 +21,28 @@ export class BookList implements OnInit {
   message = signal<string>('');
   isMessageSuccess : boolean = true;
   totalPages : number = 0;
+  searchTerm: string = '';
 
   bookService = inject(BookService);
   router = inject(Router);
+  activatedRoute = inject(ActivatedRoute)
 
   ngOnInit(): void {
-      this.findAllBooks(0);
+    this.activatedRoute.queryParams.subscribe(
+      params => {
+        this.searchTerm =  params['name'] || '';
+        console.log(this.searchTerm);
+        this.findAllBooks(0);
+      }
+    );
+    this.findAllBooks(0);
   }
 
   private findAllBooks(page: number) {
     this.bookService.findAllBooks({
       page: page,
-      size: 5
+      size: 5,
+      searchTerm: this.searchTerm
     }).subscribe({
       next: result => {
         this.bookResponse.set(result);
