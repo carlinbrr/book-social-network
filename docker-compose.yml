@@ -40,7 +40,9 @@ services:
 
   keycloak:
     container_name: keycloak-bsn
-    image: bsn/keycloak
+    build:
+      context: ./keycloak-spi
+      dockerfile: Dockerfile
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: dev
       KC_BOOTSTRAP_ADMIN_PASSWORD: dev
@@ -48,7 +50,7 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
       KC_DB_USERNAME: dev
       KC_DB_PASSWORD: dev
-      BSN_USERS_API_URL: http://host.docker.internal:8088/api/v1/users
+      BSN_USERS_API_URL: http://host.docker.internal:8080/api/v1/users
     command:
       - "start-dev"
     ports:

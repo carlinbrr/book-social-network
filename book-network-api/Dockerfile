@@ -14,6 +14,6 @@ FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 COPY --from=build ./build/target/book-network-api-*.jar ./book-network-api.jar
 
-EXPOSE 8088
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "book-network-api.jar"]

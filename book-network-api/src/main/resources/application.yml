@@ -1,7 +1,7 @@
 # Local application.yml file
 
 server:
-  port: 8088
+  port: 8080
   servlet:
     context-path: /api/v1/
 
