@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     private final String frontEndHost;
 
-    public SecurityConfig(@Value("${application.frontend.http.url}") String frontEndHost) {
+    public SecurityConfig(@Value("${application.frontend.host}") String frontEndHost) {
         this.frontEndHost = frontEndHost;
     }
 

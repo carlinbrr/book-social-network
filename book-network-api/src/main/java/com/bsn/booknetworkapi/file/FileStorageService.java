@@ -18,7 +18,7 @@ public class FileStorageService {
 
     private final String fileUploadPath;
 
-    public FileStorageService(@Value("${application.file.upload.photos-output-path}") String fileUploadPath) {
+    public FileStorageService(@Value("${application.images.path}") String fileUploadPath) {
         this.fileUploadPath = fileUploadPath;
     }
 
