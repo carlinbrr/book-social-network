@@ -8,6 +8,8 @@ import software.amazon.awscdk.StackProps;
 public class InfrastructureApp {
 
     public static void main(String[] args) {
+        System.out.println("Initializing Infrastructure...");
+
         App app = new App(AppProps.builder().outdir("./cdk.out").build());
 
         // Add BootstraplessSynthesizer since we don't need to upload any assets
@@ -17,9 +19,12 @@ public class InfrastructureApp {
                 .build();
 
         NetworkStack networkStack = new NetworkStack(app, "NetworkStack", props);
+        BackendStack backendStack = new BackendStack(app, "BackendStack", props,
+                networkStack.getVpc(), networkStack.getAlbSG(), networkStack.getEcsSG(),
+                networkStack.getRdsSG(), networkStack.getEfsSG());
 
         app.synth();
-        System.out.println("Stack created!");
+        System.out.println("Infrastructure created!");
     }
 
 }

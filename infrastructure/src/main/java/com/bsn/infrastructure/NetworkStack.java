@@ -9,23 +9,49 @@ import java.util.List;
 
 public class NetworkStack extends Stack {
 
-    private final Vpc vpc;
+    private Vpc vpc;
 
-    private final SecurityGroup albSG;
+    private SecurityGroup albSG;
 
-    private final SecurityGroup ecsSG;
+    private SecurityGroup ecsSG;
 
-    private final SecurityGroup rdsSG;
+    private SecurityGroup rdsSG;
 
-    private final SecurityGroup efsSG;
+    private SecurityGroup efsSG;
 
 
     public NetworkStack(Construct scope, String id, StackProps props) {
         super(scope, id, props);
+        init();
+    }
 
+
+    public Vpc getVpc() {
+        return vpc;
+    }
+
+    public SecurityGroup getAlbSG() {
+        return albSG;
+    }
+
+    public SecurityGroup getEcsSG() {
+        return ecsSG;
+    }
+
+    public SecurityGroup getRdsSG() {
+        return rdsSG;
+    }
+
+    public SecurityGroup getEfsSG() {
+        return efsSG;
+    }
+
+
+    private void init() {
         // Create VPC and subnets
         vpc = Vpc.Builder
                 .create(this, "bsn-vpc")
+                .vpcName("bsn-vpc")
                 .maxAzs(2)
                 .natGateways(1)
                 .subnetConfiguration(List.of(
@@ -45,6 +71,7 @@ public class NetworkStack extends Stack {
         // Create Security Groups and inbound/outbound rules for ALB, ECS, RDS AND EFS
         albSG = SecurityGroup.Builder.create(this, "bsn-alb-sg")
                 .vpc(vpc)
+                .securityGroupName("bsn-alb-sg")
                 .allowAllOutbound(false)
                 .description("Security group for ALB")
                 .build();
@@ -53,6 +80,7 @@ public class NetworkStack extends Stack {
 
         ecsSG = SecurityGroup.Builder.create(this, "bsn-ecs-sg")
                 .vpc(vpc)
+                .securityGroupName("bsn-ecs-sg")
                 .allowAllOutbound(true)
                 .description("Security group for ECS")
                 .build();
@@ -64,6 +92,7 @@ public class NetworkStack extends Stack {
 
         rdsSG = SecurityGroup.Builder.create(this, "bsn-rds-sg")
                 .vpc(vpc)
+                .securityGroupName("bsn-rds-sg")
                 .allowAllOutbound(true)
                 .description("Security group for RDS")
                 .build();
@@ -71,6 +100,7 @@ public class NetworkStack extends Stack {
 
         efsSG = SecurityGroup.Builder.create(this, "bsn-efs-sg")
                 .vpc(vpc)
+                .securityGroupName("bsn-efs-sg")
                 .allowAllOutbound(true)
                 .description("Security group for EFS")
                 .build();
