@@ -3,9 +3,7 @@ package com.bsn.booknetworkapi.history;
 import com.bsn.booknetworkapi.book.Book;
 import com.bsn.booknetworkapi.common.BaseEntity;
 import com.bsn.booknetworkapi.user.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +17,14 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 public class BookTransactionHistory extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_transaction_history_seq")
+    @SequenceGenerator(
+            name = "book_transaction_history_seq",
+            sequenceName = "book_transaction_history_seq",
+            allocationSize = 25
+    )
 
     @ManyToOne
     @JoinColumn(name = "user_id")

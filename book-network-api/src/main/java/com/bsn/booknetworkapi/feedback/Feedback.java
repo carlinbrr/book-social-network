@@ -18,6 +18,13 @@ import lombok.experimental.SuperBuilder;
 @Entity
 public class Feedback extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "feedback_seq")
+    @SequenceGenerator(
+            name = "feedback_seq",
+            sequenceName = "feedback_seq",
+            allocationSize = 25
+    )
     private Double note;
 
     @Column(length = 1025)

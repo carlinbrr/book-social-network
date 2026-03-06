@@ -25,6 +25,15 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 public class Book extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq")
+    @SequenceGenerator(
+            name = "book_seq",
+            sequenceName = "book_seq",
+            allocationSize = 25
+    )
+    private Integer id;
+
     private String title;
 
     private String authorName;

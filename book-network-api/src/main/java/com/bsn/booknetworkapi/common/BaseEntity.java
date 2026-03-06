@@ -23,10 +23,6 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-    @Id
-    @GeneratedValue
-    private Integer id;
-
     //JpaAuditing annotation in the Main Class only works for these two
     @CreatedDate
     @Column(updatable = false, nullable = false)
