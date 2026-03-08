@@ -25,6 +25,7 @@ public class BookTransactionHistory extends BaseEntity {
             sequenceName = "book_transaction_history_seq",
             allocationSize = 25
     )
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

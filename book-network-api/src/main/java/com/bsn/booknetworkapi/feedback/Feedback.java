@@ -25,6 +25,8 @@ public class Feedback extends BaseEntity {
             sequenceName = "feedback_seq",
             allocationSize = 25
     )
+    private Integer id;
+
     private Double note;
 
     @Column(length = 1025)
