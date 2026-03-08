@@ -14,6 +14,7 @@ import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.elasticloadbalancingv2.IpAddressType;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.rds.*;
+import software.amazon.awscdk.services.secretsmanager.SecretTargetAttachment;
 import software.constructs.Construct;
 
 import java.util.List;
@@ -21,24 +22,33 @@ import java.util.Map;
 
 public class BackendStack extends Stack {
 
+    private static final String API_DATABASE_NAME = "book_social_network";
+
+    private static final String POSTGRES_DATABASE_NAME = "postgres";
+
+
     public BackendStack(Construct scope, String id, StackProps props, Vpc vpc, SecurityGroup albSG,
                         SecurityGroup ecsSG, SecurityGroup rdsSG, SecurityGroup efsSG) {
         super(scope, id, props);
 
         // ECS Cluster
-        Cluster cluster = Cluster.Builder.create(this, "bsn-cluster")
+        Cluster ecsCluster = Cluster.Builder.create(this, "bsn-cluster")
+                .clusterName("bsn")
                 .vpc(vpc)
                 .containerInsightsV2(ContainerInsights.ENHANCED)
                 .build();
 
         // PostgreSQL RDS
-        DatabaseInstance database = DatabaseInstance.Builder.create(this, "bsn-rds")
+        DatabaseInstance rds = DatabaseInstance.Builder.create(this, "bsn-rds")
                 .engine(DatabaseInstanceEngine.postgres(
                         PostgresInstanceEngineProps.builder()
                                 .version(PostgresEngineVersion.VER_18)
                                 .build()
                 ))
-                .credentials(Credentials.fromGeneratedSecret(System.getenv("DB_USER")))
+                .credentials(Credentials.fromGeneratedSecret(System.getenv("ROOT_DB_USER"),
+                        CredentialsBaseOptions.builder()
+                                .secretName("bsn-rds")
+                                .build()))
                 .instanceType(InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO))
                 .allocatedStorage(30)
                 .multiAz(false)
@@ -54,13 +64,79 @@ public class BackendStack extends Stack {
                 .databaseInsightsMode(DatabaseInsightsMode.STANDARD)
                 .enablePerformanceInsights(true)
                 .performanceInsightRetention(PerformanceInsightRetention.DEFAULT)
-                .databaseName("book_social_network")
+                .databaseName(POSTGRES_DATABASE_NAME)
                 .backupRetention(Duration.days(1))
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
 
+        // Secrets Database API DDL, API DML amd Mail
+        DatabaseSecret apiDdlSecret = DatabaseSecret.Builder.create(this, "bsn-api-ddl-secret")
+                .username(System.getenv("API_DDL_USER"))
+                .secretName("bsn-api-ddl")
+                .dbname(API_DATABASE_NAME)
+                .build();
+
+        SecretTargetAttachment.Builder.create(this, "bsn-api-ddl-secret-attachment")
+                .secret(apiDdlSecret)
+                .target(rds)
+                .build();
+
+        DatabaseSecret apiDmlSecret = DatabaseSecret.Builder.create(this, "bsn-api-dml-secret")
+                .username(System.getenv("API_DML_USER"))
+                .secretName("bsn-api-dml")
+                .dbname(API_DATABASE_NAME)
+                .build();
+
+        SecretTargetAttachment.Builder.create(this, "bsn-api-dml-secret-attachment")
+                .secret(apiDmlSecret)
+                .target(rds)
+                .build();
+
+        software.amazon.awscdk.services.secretsmanager.Secret mailSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-mail-secret")
+                .secretName("bsn-mail")
+                .secretObjectValue(Map.of(
+                        "username", SecretValue.Builder.create(System.getenv("MAIL_USER")).build(),
+                        "password", SecretValue.Builder.create(System.getenv("MAIL_PASSWORD")).build()
+                        ))
+                .removalPolicy(RemovalPolicy.DESTROY)
+                .build();
+
+        // Migrator Task Definition
+        FargateTaskDefinition migratorTask = FargateTaskDefinition.Builder.create(this, "bsn-migrator-task")
+                .family("bsn-migrator")
+                .cpu(1024)
+                .memoryLimitMiB(3072)
+                .build();
+
+        // Migrator Container
+        migratorTask.addContainer("bsn-migrator-container", ContainerDefinitionOptions.builder()
+                .containerName("bsn-migrator")
+                .essential(true)
+                .image(ContainerImage.fromRegistry("carlinbrr/bsn-migrator:latest"))
+                .environment(
+                        Map.of(
+                                "HOST", rds.getDbInstanceEndpointAddress()
+                        )
+                )
+                .secrets(
+                        Map.of(
+                                "ROOT_DB_USER", Secret.fromSecretsManager(rds.getSecret(), "username"),
+                                "ROOT_DB_PASSWORD", Secret.fromSecretsManager(rds.getSecret(), "password"),
+                                "API_DML_USER", Secret.fromSecretsManager(apiDmlSecret, "username"),
+                                "API_DML_PASSWORD", Secret.fromSecretsManager(apiDmlSecret, "password"),
+                                "API_DDL_USER", Secret.fromSecretsManager(apiDdlSecret, "username"),
+                                "API_DDL_PASSWORD", Secret.fromSecretsManager(apiDdlSecret, "password")
+                        )
+                )
+                .logging(LogDriver.awsLogs(AwsLogDriverProps.builder()
+                        .streamPrefix("migrator")
+                        .logRetention(RetentionDays.ONE_WEEK)
+                        .build()))
+                .build());
+
         // EFS
-        FileSystem fileSystem = FileSystem.Builder.create(this, "bsn-efs")
+        FileSystem efs = FileSystem.Builder.create(this, "bsn-efs")
+                .fileSystemName("bsn")
                 .oneZone(false)
                 .enableAutomaticBackups(true)
                 .throughputMode(ThroughputMode.ELASTIC)
@@ -73,27 +149,18 @@ public class BackendStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
 
-        // Mail Secret
-        software.amazon.awscdk.services.secretsmanager.Secret mailSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-mail-secret")
-                .secretName("bsn-mail-secret")
-                .secretObjectValue(Map.of(
-                        "username", SecretValue.Builder.create(System.getenv("MAIL_USER")).build(),
-                        "password", SecretValue.Builder.create(System.getenv("MAIL_PASSWORD")).build()
-                        ))
-                .removalPolicy(RemovalPolicy.DESTROY)
-                .build();
-
         // API Volume
         Volume bsnVolume = Volume.builder()
-                .name("bsn-api-volume")
+                .name("bsn-api")
                 .efsVolumeConfiguration(EfsVolumeConfiguration.builder()
-                        .fileSystemId(fileSystem.getFileSystemId())
+                        .fileSystemId(efs.getFileSystemId())
                         .rootDirectory("/")
                         .build())
                 .build();
 
         // API Task Definition
         FargateTaskDefinition apiTask = FargateTaskDefinition.Builder.create(this, "bsn-api-task")
+                .family("bsn-api")
                 .cpu(1024)
                 .memoryLimitMiB(3072)
                 .volumes(List.of(bsnVolume))
@@ -101,6 +168,7 @@ public class BackendStack extends Stack {
 
         // API Container
         ContainerDefinition apiContainer = apiTask.addContainer("bsn-api-container", ContainerDefinitionOptions.builder()
+                .containerName("bsn-api")
                 .essential(true)
                 .image(ContainerImage.fromRegistry("carlinbrr/bsn-api:latest"))
                 .portMappings(List.of(
@@ -112,17 +180,18 @@ public class BackendStack extends Stack {
                 ))
                 .environment(
                         Map.of(
-                                "DB_URL", getDatabaseJDBCUrl(database.getDbInstanceEndpointAddress()),
+                                "DB_URL", getDatabaseJDBCUrl(rds.getDbInstanceEndpointAddress(), API_DATABASE_NAME),
                                 "MAIL_HOST", System.getenv("MAIL_HOST"),
                                 "MAIL_PORT", System.getenv("MAIL_PORT"),
                                 "JWT_ISSUER_URI", System.getenv("JWT_ISSUER_URI"),
-                                "APP_FRONTEND_HOST", System.getenv("APP_FRONTEND_HOST")
+                                "APP_FRONTEND_HOST", System.getenv("APP_FRONTEND_HOST"),
+                                "JPA_DDL_AUTO", "validate"
                         )
                 )
                 .secrets(
                         Map.of(
-                                "DB_USER", Secret.fromSecretsManager(database.getSecret(), "username"),
-                                "DB_PASSWORD", Secret.fromSecretsManager(database.getSecret(), "password"),
+                                "DB_USER", Secret.fromSecretsManager(apiDmlSecret, "username"),
+                                "DB_PASSWORD", Secret.fromSecretsManager(apiDmlSecret, "password"),
                                 "MAIL_USER", Secret.fromSecretsManager(mailSecret, "username"),
                                 "MAIL_PASSWORD", Secret.fromSecretsManager(mailSecret, "password")
                         )
@@ -139,12 +208,13 @@ public class BackendStack extends Stack {
                 .readOnly(false)
                 .build());
 
-        // API ECS
+        // API ECS - No task needs to run initially
         FargateService apiService = FargateService.Builder.create(this, "bsn-api-ecs")
-                .cluster(cluster)
+                .serviceName("bsn-api")
+                .cluster(ecsCluster)
                 .taskDefinition(apiTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
-                .desiredCount(1)
+                .desiredCount(0)
                 .availabilityZoneRebalancing(AvailabilityZoneRebalancing.ENABLED)
                 .healthCheckGracePeriod(Duration.seconds(0))
                 .deploymentStrategy(DeploymentStrategy.ROLLING)
@@ -161,6 +231,7 @@ public class BackendStack extends Stack {
 
         // ALB
         ApplicationLoadBalancer alb = ApplicationLoadBalancer.Builder.create(this, "bsn-alb")
+                .loadBalancerName("bsn")
                 .internetFacing(true)
                 .ipAddressType(IpAddressType.IPV4)
                 .vpc(vpc)
@@ -171,6 +242,7 @@ public class BackendStack extends Stack {
                 .build();
 
         ApplicationTargetGroup apiTG = ApplicationTargetGroup.Builder.create(this, "bsn-api-tg")
+                .targetGroupName("bsn-api")
                 .targetType(TargetType.IP)
                 .protocol(ApplicationProtocol.HTTP)
                 .port(8080)
@@ -200,8 +272,8 @@ public class BackendStack extends Stack {
                         .build());
     }
 
-    private String getDatabaseJDBCUrl(String databaseEndpointAddress) {
-        return "jdbc:postgresql://" + databaseEndpointAddress + ":5432/book_social_network";
+    private String getDatabaseJDBCUrl(String databaseEndpointAddress, String databaseName) {
+        return "jdbc:postgresql://" + databaseEndpointAddress + ":5432/" + databaseName;
     }
 
 }
