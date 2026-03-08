@@ -18,9 +18,20 @@ else
     -v API_DDL_USER="$API_DDL_USER" \
     -v API_DDL_PASSWORD="$API_DDL_PASSWORD" \
     -v API_DML_USER="$API_DML_USER" \
-    -v API_DML_PASSWORD="$API_DML_PASSWORD" -f /bootstrap.sql
+    -v API_DML_PASSWORD="$API_DML_PASSWORD" -f /init/bootstrap.sql
   echo "bootstrap completed!"
 fi
+
+unset PGPASSWORD
+
+export PGPASSWORD="$API_DDL_PASSWORD"
+
+echo "Initializing privileges for book_social_network..."
+psql -h "$HOST" -U "$API_DDL_USER" -d book_social_network \
+  -v API_DDL_USER="$API_DDL_USER" \
+  -v API_DML_USER="$API_DML_USER" \
+  -f /init/privileges.sql
+echo "Privileges initialized for book_social_network!"
 
 unset PGPASSWORD
 
