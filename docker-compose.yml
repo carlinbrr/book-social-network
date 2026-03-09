@@ -3,30 +3,34 @@
 services:
   postgres-bsn:
     container_name: postgres-bsn
-    image: postgres
+    image: postgres:18
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-      PGDATA: /data/postgres
       POSTGRES_DB: book_social_network
     volumes:
-      - postgres-bsn:/data/postgres
+      - bsn-data:/var/lib/postgresql/18/docker
     ports:
       - 5432:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+    networks:
+      - bsn-dev
     restart: unless-stopped
 
   postgres-keycloak:
     container_name: postgres-keycloak
-    image: postgres
+    image: postgres:18
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-      PGDATA: /data/postgres
       POSTGRES_DB: keycloak
     volumes:
-      - postgres-keycloak:/data/postgres
+      - keycloak-data:/var/lib/postgresql/18/docker
     ports:
       - 5433:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
     networks:
       - bsn-dev
     restart: unless-stopped
@@ -37,6 +41,9 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+    networks:
+      - bsn-dev
+    restart: unless-stopped
 
   keycloak:
     container_name: keycloak-bsn
@@ -57,13 +64,14 @@ services:
       - 9090:8080
     networks:
       - bsn-dev
+    restart: unless-stopped
     depends_on:
       - postgres-keycloak
 
 volumes:
-  postgres-bsn:
+  bsn-data:
     driver: local
-  postgres-keycloak:
+  keycloak-data:
     driver: local
 
 networks:
