@@ -1,52 +1,52 @@
 # Local docker-compose.yml file
 
 services:
-  postgres-bsn:
-    container_name: postgres-bsn
-    image: postgres:18
+  bsn-api-db:
+    container_name: bsn-api-db
+    image: postgres:18.0
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: book_social_network
     volumes:
-      - bsn-data:/var/lib/postgresql/18/docker
+      - bsn-api-data:/var/lib/postgresql/18/docker
     ports:
       - 5432:5432
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: [ "CMD", "pg_isready" ]
     networks:
-      - bsn-dev
+      - bsn-network
     restart: unless-stopped
 
-  postgres-keycloak:
-    container_name: postgres-keycloak
-    image: postgres:18
+  bsn-keycloak-db:
+    container_name: bsn-keycloak-db
+    image: postgres:18.0
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: keycloak
     volumes:
-      - keycloak-data:/var/lib/postgresql/18/docker
+      - bsn-keycloak-data:/var/lib/postgresql/18/docker
     ports:
       - 5433:5432
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: [ "CMD", "pg_isready" ]
     networks:
-      - bsn-dev
+      - bsn-network
     restart: unless-stopped
 
-  mail-dev:
-    container_name: mail-dev-bsn
+  bsn-mail:
+    container_name: bsn-mail
     image: maildev/maildev
     ports:
       - 1080:1080
       - 1025:1025
     networks:
-      - bsn-dev
+      - bsn-network
     restart: unless-stopped
 
-  keycloak:
-    container_name: keycloak-bsn
+  bsn-keycloak:
+    container_name: bsn-keycloak
     build:
       context: ./keycloak-spi
       dockerfile: Dockerfile
@@ -54,26 +54,28 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: dev
       KC_BOOTSTRAP_ADMIN_PASSWORD: dev
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_URL: jdbc:postgresql://bsn-keycloak-db:5432/keycloak
       KC_DB_USERNAME: dev
       KC_DB_PASSWORD: dev
       BSN_USERS_API_URL: http://host.docker.internal:8080/api/v1/users
     command:
       - "start-dev"
+      - "--import-realm"
     ports:
       - 9090:8080
     networks:
-      - bsn-dev
+      - bsn-network
     restart: unless-stopped
     depends_on:
-      - postgres-keycloak
+      bsn-keycloak-db:
+        condition: service_healthy
 
 volumes:
-  bsn-data:
+  bsn-api-data:
     driver: local
-  keycloak-data:
+  bsn-keycloak-data:
     driver: local
 
 networks:
-  bsn-dev:
+  bsn-network:
     driver: bridge
