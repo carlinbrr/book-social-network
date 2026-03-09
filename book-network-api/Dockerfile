@@ -5,8 +5,8 @@ WORKDIR /build
 COPY pom.xml .
 RUN mvn dependency:go-offline
 COPY src ./src
-#We already know the app has run the tests correctly
-RUN mvn clean package -DskipTests
+# We already know the app has run the tests correctly
+RUN mvn clean package -DskipTests -Pcloud
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine AS runtime
@@ -16,4 +16,4 @@ COPY --from=build ./build/target/book-network-api-*.jar ./book-network-api.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "book-network-api.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=cloud", "book-network-api.jar"]
