@@ -1,0 +1,43 @@
+# application.yml file
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1/
+
+springdoc:
+  default-produces-media-type: application/json
+
+spring:
+  application:
+    name: book-social-network-api
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:100MB}
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/book_social_network}
+    username: ${DB_USER:dev}
+    password: ${DB_PASSWORD:dev}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: ${JPA_FORMAT_SQL:true}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI:http://localhost:9090/realms/book-social-network}
+
+application:
+  images:
+    path: ${APP_IMAGES_PATH:./images}
+  frontend:
+    host: ${APP_FRONTEND_HOST:http://localhost:4200}
+
+logging:
+  level:
+    root: ${LOG_LEVEL:info}
