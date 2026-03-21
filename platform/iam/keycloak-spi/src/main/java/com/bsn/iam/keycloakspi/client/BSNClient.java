@@ -1,6 +1,6 @@
-package com.bsn.keycloak.client;
+package com.bsn.iam.keycloakspi.client;
 
-import com.bsn.keycloak.model.UserRequest;
+import com.bsn.iam.keycloakspi.model.UserRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.keycloak.models.UserModel;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.bsn.keycloak.model;
+package com.bsn.iam.keycloakspi.model;
 
 public class UserRequest {
 

@@ -1,6 +1,6 @@
-package com.bsn.keycloak.spi;
+package com.bsn.iam.keycloakspi;
 
-import com.bsn.keycloak.client.BSNClient;
+import com.bsn.iam.keycloakspi.client.BSNClient;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventType;

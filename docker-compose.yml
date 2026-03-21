@@ -48,7 +48,7 @@ services:
   bsn-keycloak:
     container_name: bsn-keycloak
     build:
-      context: ./keycloak-spi
+      context: ./platform/iam
       dockerfile: Dockerfile
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: dev

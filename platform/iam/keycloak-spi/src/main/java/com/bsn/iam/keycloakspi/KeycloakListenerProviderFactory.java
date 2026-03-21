@@ -1,4 +1,4 @@
-package com.bsn.keycloak.spi;
+package com.bsn.iam.keycloakspi;
 
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventListenerProviderFactory;
