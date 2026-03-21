@@ -5,7 +5,7 @@ import software.amazon.awscdk.AppProps;
 import software.amazon.awscdk.BootstraplessSynthesizer;
 import software.amazon.awscdk.StackProps;
 
-public class InfrastructureApp {
+public class CdkApp {
 
     public static void main(String[] args) {
         System.out.println("Initializing Infrastructure...");
