@@ -1,7 +1,7 @@
 #!/bin/bash
 # Entrypoint script to initialize the database and run migrations
 
-# Script exists if any command fails or any variable is not set
+# Script exits if any command fails or any variable is not set
 set -eu
 
 # Run bootstrap.sh, if needed
