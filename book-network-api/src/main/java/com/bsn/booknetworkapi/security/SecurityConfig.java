@@ -27,7 +27,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -43,7 +43,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/ping").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().hasAuthority(Role.USER_ROLE))
                 .oauth2ResourceServer(oauth2ResourceServer ->
                         oauth2ResourceServer.jwt(token ->
                                 token.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())));
