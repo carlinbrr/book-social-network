@@ -11,5 +11,6 @@ RUN mvn clean package -DskipTests
 FROM quay.io/keycloak/keycloak:26.2.0 AS runtime
 
 COPY --from=build /build/target/keycloak-spi*.jar /opt/keycloak/providers/keycloak-spi.jar
+COPY realms /opt/keycloak/data/import/
 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

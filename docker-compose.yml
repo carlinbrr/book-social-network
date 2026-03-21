@@ -58,6 +58,7 @@ services:
       KC_DB_USERNAME: dev
       KC_DB_PASSWORD: dev
       BSN_USERS_API_URL: http://host.docker.internal:8080/api/v1/users
+      FRONTEND_URL: http://localhost:4200
     command:
       - "start-dev"
       - "--import-realm"
