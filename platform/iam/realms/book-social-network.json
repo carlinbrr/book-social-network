@@ -727,7 +727,7 @@
     {
       "id": "0c290a8c-fcbc-485f-8e7a-7da17d358168",
       "clientId": "bsn",
-      "name": "Book Social Network Application",
+      "name": "Book Social Network",
       "description": "Main client for book-social-network realm",
       "rootUrl": "${FRONTEND_URL}",
       "adminUrl": "${FRONTEND_URL}",
