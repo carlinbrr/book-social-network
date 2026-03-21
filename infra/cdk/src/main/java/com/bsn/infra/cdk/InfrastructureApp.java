@@ -1,4 +1,4 @@
-package com.bsn.infrastructure;
+package com.bsn.infra.cdk;
 
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.AppProps;
