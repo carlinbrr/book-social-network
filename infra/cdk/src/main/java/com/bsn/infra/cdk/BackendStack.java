@@ -24,6 +24,8 @@ public class BackendStack extends Stack {
 
     private static final String API_DATABASE_NAME = "book_social_network";
 
+    private static final String KEYCLOAK_DATABASE_NAME = "keycloak";
+
     private static final String POSTGRES_DATABASE_NAME = "postgres";
 
 
@@ -69,7 +71,7 @@ public class BackendStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
 
-        // Secrets Database API DDL, API DML amd Mail
+        // Secrets Database API DDL, API DML, Keycloak amd Mail
         DatabaseSecret apiDdlSecret = DatabaseSecret.Builder.create(this, "bsn-api-ddl-secret")
                 .username(System.getenv("API_DDL_USER"))
                 .secretName("bsn-api-ddl")
@@ -89,6 +91,17 @@ public class BackendStack extends Stack {
 
         SecretTargetAttachment.Builder.create(this, "bsn-api-dml-secret-attachment")
                 .secret(apiDmlSecret)
+                .target(rds)
+                .build();
+
+        DatabaseSecret keycloakSecret = DatabaseSecret.Builder.create(this, "bsn-keycloak-secret")
+                .username(System.getenv("KEYCLOAK_USER"))
+                .secretName("bsn-keycloak")
+                .dbname(KEYCLOAK_DATABASE_NAME)
+                .build();
+
+        SecretTargetAttachment.Builder.create(this, "bsn-keycloak-secret-attachment")
+                .secret(keycloakSecret)
                 .target(rds)
                 .build();
 
@@ -125,7 +138,9 @@ public class BackendStack extends Stack {
                                 "API_DML_USER", Secret.fromSecretsManager(apiDmlSecret, "username"),
                                 "API_DML_PASSWORD", Secret.fromSecretsManager(apiDmlSecret, "password"),
                                 "API_DDL_USER", Secret.fromSecretsManager(apiDdlSecret, "username"),
-                                "API_DDL_PASSWORD", Secret.fromSecretsManager(apiDdlSecret, "password")
+                                "API_DDL_PASSWORD", Secret.fromSecretsManager(apiDdlSecret, "password"),
+                                "KEYCLOAK_USER", Secret.fromSecretsManager(keycloakSecret, "username"),
+                                "KEYCLOAK_PASSWORD", Secret.fromSecretsManager(keycloakSecret, "password")
                         )
                 )
                 .logging(LogDriver.awsLogs(AwsLogDriverProps.builder()
