@@ -4,9 +4,6 @@
 \set ON_ERROR_STOP on
 
 
--- Migration role can create objects
-SELECT format('GRANT USAGE, CREATE ON SCHEMA public TO %I', :'API_DDL_USER')\gexec
-
 -- Application role can use the schema but cannot create objects
 SELECT format('GRANT USAGE ON SCHEMA public TO %I', :'API_DML_USER')\gexec
 SELECT format('REVOKE CREATE ON SCHEMA public FROM %I', :'API_DML_USER')\gexec
