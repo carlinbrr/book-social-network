@@ -1634,7 +1634,7 @@
     "from": "contact@bsn.com",
     "fromDisplayName": "BSN Support",
     "authType": "basic",
-    "user": "${MAIL_USERNAME}"
+    "user": "${MAIL_USER}"
   },
   "loginTheme": "keycloak.v2",
   "accountTheme": "keycloak.v3",
