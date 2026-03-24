@@ -34,9 +34,9 @@ spring:
 
 application:
   images:
-    path: ${APP_IMAGES_PATH:./images}
+    path: ${IMAGES_PATH:./images}
   frontend:
-    host: ${APP_FRONTEND_HOST:http://localhost:4200}
+    url: ${FRONTEND_URL:http://localhost:4200}
 
 logging:
   level:
