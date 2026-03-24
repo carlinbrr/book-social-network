@@ -31,8 +31,8 @@ if [ "$DB_EXISTS" = "1" ]; then
 else
   echo "Database keycloak doesn't exist. Running bootstrap..."
   psql -h "$HOST" -U "$ROOT_DB_USER" -d postgres \
-    -v KEYCLOAK_USER="$KEYCLOAK_USER" \
-    -v KEYCLOAK_PASSWORD="$KEYCLOAK_PASSWORD" \
+    -v KEYCLOAK_DB_USER="$KEYCLOAK_DB_USER" \
+    -v KEYCLOAK_DB_PASSWORD="$KEYCLOAK_DB_PASSWORD" \
     -f /init/keycloak/bootstrap.sql
   echo "bootstrap completed!"
 fi
