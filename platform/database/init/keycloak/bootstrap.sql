@@ -13,7 +13,7 @@ SELECT 'CREATE DATABASE keycloak'
 
 -- Create keycloak role
 SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'KEYCLOAK_DB_USER', :'KEYCLOAK_DB_PASSWORD')
-    WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'API_DDL_USER')
+    WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'KEYCLOAK_DB_USER')
 \gexec
 
 
