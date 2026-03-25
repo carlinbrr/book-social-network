@@ -20,8 +20,8 @@ public class CdkApp {
 
         NetworkStack networkStack = new NetworkStack(app, "NetworkStack", props);
         BackendStack backendStack = new BackendStack(app, "BackendStack", props,
-                networkStack.getVpc(), networkStack.getAlbSG(), networkStack.getEcsSG(),
-                networkStack.getRdsSG(), networkStack.getEfsSG());
+                networkStack.getVpc(), networkStack.getAlbSg(), networkStack.getEcsSg(),
+                networkStack.getRdsSg(), networkStack.getEfsSg());
 
         app.synth();
         System.out.println("Infrastructure created!");

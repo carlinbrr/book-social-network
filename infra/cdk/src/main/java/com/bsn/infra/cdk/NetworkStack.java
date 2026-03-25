@@ -11,13 +11,13 @@ public class NetworkStack extends Stack {
 
     private Vpc vpc;
 
-    private SecurityGroup albSG;
+    private SecurityGroup albSg;
 
-    private SecurityGroup ecsSG;
+    private SecurityGroup ecsSg;
 
-    private SecurityGroup rdsSG;
+    private SecurityGroup rdsSg;
 
-    private SecurityGroup efsSG;
+    private SecurityGroup efsSg;
 
 
     public NetworkStack(Construct scope, String id, StackProps props) {
@@ -30,20 +30,20 @@ public class NetworkStack extends Stack {
         return vpc;
     }
 
-    public SecurityGroup getAlbSG() {
-        return albSG;
+    public SecurityGroup getAlbSg() {
+        return albSg;
     }
 
-    public SecurityGroup getEcsSG() {
-        return ecsSG;
+    public SecurityGroup getEcsSg() {
+        return ecsSg;
     }
 
-    public SecurityGroup getRdsSG() {
-        return rdsSG;
+    public SecurityGroup getRdsSg() {
+        return rdsSg;
     }
 
-    public SecurityGroup getEfsSG() {
-        return efsSG;
+    public SecurityGroup getEfsSg() {
+        return efsSg;
     }
 
 
@@ -69,42 +69,42 @@ public class NetworkStack extends Stack {
                 .build();
 
         // Create Security Groups and inbound/outbound rules for ALB, ECS, RDS AND EFS
-        albSG = SecurityGroup.Builder.create(this, "bsn-alb-sg")
+        albSg = SecurityGroup.Builder.create(this, "bsn-alb-sg")
                 .vpc(vpc)
                 .securityGroupName("bsn-alb-sg")
                 .allowAllOutbound(false)
                 .description("Security group for ALB")
                 .build();
-        albSG.addIngressRule(Peer.anyIpv4(), Port.tcp(443), "Allow HTTPS from everywhere");
-        albSG.addIngressRule(Peer.anyIpv4(), Port.tcp(80), "Allow HTTP from everywhere");
+        albSg.addIngressRule(Peer.anyIpv4(), Port.tcp(443), "Allow HTTPS from everywhere");
+        albSg.addIngressRule(Peer.anyIpv4(), Port.tcp(80), "Allow HTTP from everywhere");
 
-        ecsSG = SecurityGroup.Builder.create(this, "bsn-ecs-sg")
+        ecsSg = SecurityGroup.Builder.create(this, "bsn-ecs-sg")
                 .vpc(vpc)
                 .securityGroupName("bsn-ecs-sg")
                 .allowAllOutbound(true)
                 .description("Security group for ECS")
                 .build();
-        ecsSG.addIngressRule(albSG, Port.tcp(8080), "Allow TCP 8080 from ALB");
-        ecsSG.addIngressRule(albSG, Port.tcp(9000), "Allow TCP 9000 from ALB");
+        ecsSg.addIngressRule(albSg, Port.tcp(8080), "Allow TCP 8080 from ALB");
+        ecsSg.addIngressRule(albSg, Port.tcp(9000), "Allow TCP 9000 from ALB");
 
-        albSG.addEgressRule(ecsSG,  Port.tcp(8080), "Allow TCP 8080 to ECS");
-        albSG.addEgressRule(ecsSG,  Port.tcp(9000), "Allow TCP 9000 to ECS");
+        albSg.addEgressRule(ecsSg,  Port.tcp(8080), "Allow TCP 8080 to ECS");
+        albSg.addEgressRule(ecsSg,  Port.tcp(9000), "Allow TCP 9000 to ECS");
 
-        rdsSG = SecurityGroup.Builder.create(this, "bsn-rds-sg")
+        rdsSg = SecurityGroup.Builder.create(this, "bsn-rds-sg")
                 .vpc(vpc)
                 .securityGroupName("bsn-rds-sg")
                 .allowAllOutbound(true)
                 .description("Security group for RDS")
                 .build();
-        rdsSG.addIngressRule(ecsSG, Port.tcp(5432), "Allow TCP 5432 from ECS");
+        rdsSg.addIngressRule(ecsSg, Port.tcp(5432), "Allow TCP 5432 from ECS");
 
-        efsSG = SecurityGroup.Builder.create(this, "bsn-efs-sg")
+        efsSg = SecurityGroup.Builder.create(this, "bsn-efs-sg")
                 .vpc(vpc)
                 .securityGroupName("bsn-efs-sg")
                 .allowAllOutbound(true)
                 .description("Security group for EFS")
                 .build();
-        efsSG.addIngressRule(ecsSG, Port.tcp(2049), "Allow TCP 2049 from ECS");
+        efsSg.addIngressRule(ecsSg, Port.tcp(2049), "Allow TCP 2049 from ECS");
     }
 
 }
