@@ -1,4 +1,4 @@
-package com.bsn.infra.cdk;
+package com.bsn.infra.cdk.stack;
 
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -48,7 +48,7 @@ public class NetworkStack extends Stack {
 
 
     private void init() {
-        // Create VPC and subnets
+        // VPC and subnets
         vpc = Vpc.Builder
                 .create(this, "bsn-vpc")
                 .vpcName("bsn-vpc")
@@ -68,7 +68,7 @@ public class NetworkStack extends Stack {
                 ))
                 .build();
 
-        // Create Security Groups and inbound/outbound rules for ALB, ECS, RDS AND EFS
+        // Security Groups and inbound/outbound rules for ALB, ECS, RDS AND EFS
         albSg = SecurityGroup.Builder.create(this, "bsn-alb-sg")
                 .vpc(vpc)
                 .securityGroupName("bsn-alb-sg")
