@@ -24,7 +24,7 @@ public class CdkApp {
         StorageStack storageStack = new StorageStack(app, "StorageStack", props,
                 networkStack.getVpc(), networkStack.getRdsSg(), networkStack.getEfsSg());
 
-        MigrationStack migrationStack = new MigrationStack(app, "MigrationStack", props,
+        new MigrationStack(app, "MigrationStack", props,
                 storageStack.getRds(), storageStack.getApiDdlSecret(), storageStack.getApiDmlSecret(),
                 storageStack.getKeycloakDbSecret());
 
@@ -32,8 +32,10 @@ public class CdkApp {
                 networkStack.getVpc(), networkStack.getEcsSg(), networkStack.getAlbSg(), storageStack.getEfs(),
                 storageStack.getRds(), storageStack.getApiDmlSecret(), storageStack.getKeycloakDbSecret());
 
-        DnsStack dnsStack = new DnsStack(app, "DnsStack", props,
-                servicesStack.getAlb());
+        FrontendStack frontendStack = new FrontendStack(app, "FrontendStack", props);
+
+        new DnsStack(app, "DnsStack", props,
+                servicesStack.getAlb(), frontendStack.getMainCfDistribution(), frontendStack.getRedirectCfDistribution());
 
         app.synth();
         System.out.println("Infrastructure created!");

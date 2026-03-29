@@ -10,6 +10,7 @@ public class EnvironmentConfig {
 
     // Certificates
     public static final String ALB_CERTIFICATE_ARN = System.getenv("ALB_CERTIFICATE_ARN");
+    public static final String CLOUDFRONT_CERTIFICATE_ARN = System.getenv("CLOUDFRONT_CERTIFICATE_ARN");
 
     // Hosted Zone & Domain
     public static final String HOSTED_ZONE_ID = System.getenv("HOSTED_ZONE_ID");
