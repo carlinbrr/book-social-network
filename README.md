@@ -158,12 +158,21 @@ CHANGELOG.md
 
 ```
 book-social-network/
-├── .github/              # GitHub workflows and CI/CD configuration
-├── book-network-api/     # Spring Boot backend service
-├── book-network-ui/      # Angular frontend application
-├── keycloak-spi/         # Custom Keycloak extension
-├── docs/                 # Architecture, deployment, ADRs, setup guides
-└── docker-compose.yml    # Local infrastructure services
+├── .github/                      # GitHub workflows and CI/CD configuration
+├── apps/                         # Product applications
+│     ├── api/                    # Spring Boot backend service
+│     └── web/                    # Angular frontend application
+├── docs/                         # Architecture, deployment, ADRs, setup guides
+├── infra/                        # Infrastucture as Code (IaC)
+│     └── cdk/                    # Java AWS CDK Project
+├── platform/                     # Platform components
+│     ├── database/               # Database configuration
+│     │     ├── init/             # Initialization SQL scripts
+│     │     └── migrations/       # Migration SQL scripts
+│     └── iam/                    # Identity and Access Management (IAM)
+│           ├── keycloak-spi/     # Custom Keycloak extension
+│           └── realms/           # Base Keycloak realm configuration
+└── docker-compose.yml            # Local infrastructure services
 ```
 
 ---
