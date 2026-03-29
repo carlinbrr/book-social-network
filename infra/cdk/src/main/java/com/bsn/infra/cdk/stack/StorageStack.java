@@ -15,6 +15,8 @@ import software.constructs.Construct;
 
 import java.util.List;
 
+import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
+
 public class StorageStack extends Stack {
 
     public static final String API_DATABASE_NAME = "book_social_network";
@@ -69,7 +71,7 @@ public class StorageStack extends Stack {
                                 .version(PostgresEngineVersion.VER_18)
                                 .build()
                 ))
-                .credentials(Credentials.fromGeneratedSecret(System.getenv("ROOT_DB_USER"),
+                .credentials(Credentials.fromGeneratedSecret(ROOT_DB_USER,
                         CredentialsBaseOptions.builder()
                                 .secretName("bsn-rds")
                                 .build()))
@@ -95,19 +97,19 @@ public class StorageStack extends Stack {
 
         // Database Secrets
         apiDdlSecret = DatabaseSecret.Builder.create(this, "bsn-api-ddl-secret")
-                .username(System.getenv("API_DDL_USER"))
+                .username(API_DDL_USER)
                 .secretName("bsn-api-ddl")
                 .dbname(API_DATABASE_NAME)
                 .build();
 
         apiDmlSecret = DatabaseSecret.Builder.create(this, "bsn-api-dml-secret")
-                .username(System.getenv("API_DML_USER"))
+                .username(API_DML_USER)
                 .secretName("bsn-api-dml")
                 .dbname(API_DATABASE_NAME)
                 .build();
 
         keycloakDbSecret = DatabaseSecret.Builder.create(this, "bsn-keycloak-db-secret")
-                .username(System.getenv("KEYCLOAK_DB_USER"))
+                .username(KEYCLOAK_DB_USER)
                 .secretName("bsn-keycloak-db")
                 .dbname(KEYCLOAK_DATABASE_NAME)
                 .build();

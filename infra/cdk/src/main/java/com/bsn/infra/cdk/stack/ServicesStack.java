@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
+
 public class ServicesStack extends Stack {
 
     private static final String API_SUBDOMAIN = "api";
@@ -46,7 +48,7 @@ public class ServicesStack extends Stack {
     private void init(Vpc vpc, SecurityGroup ecsSg, SecurityGroup albSg, FileSystem efs, DatabaseInstance rds,
                       ISecret apiDmlSecret, ISecret keycloakDbSecret) {
         // ALB Certificate
-        IListenerCertificate albCertificate = ListenerCertificate.fromArn(System.getenv("ALB_CERTIFICATE_ARN"));
+        IListenerCertificate albCertificate = ListenerCertificate.fromArn(ALB_CERTIFICATE_ARN);
 
         // ALB
         alb = ApplicationLoadBalancer.Builder.create(this, "bsn-alb")
@@ -115,7 +117,7 @@ public class ServicesStack extends Stack {
         // API Rule
         albHttpsListener.addTargetGroups("bsn-alb-api-rule", AddApplicationTargetGroupsProps.builder()
                 .priority(1)
-                .conditions(List.of(ListenerCondition.hostHeaders(List.of(API_SUBDOMAIN + "." + System.getenv("BSN_DOMAIN")))))
+                .conditions(List.of(ListenerCondition.hostHeaders(List.of(API_SUBDOMAIN + "." + BSN_DOMAIN))))
                 .targetGroups(List.of(apiTg))
                 .build());
 
@@ -143,7 +145,7 @@ public class ServicesStack extends Stack {
         // Keycloak Rule
         albHttpsListener.addTargetGroups("bsn-alb-keycloak-rule", AddApplicationTargetGroupsProps.builder()
                 .priority(2)
-                .conditions(List.of(ListenerCondition.hostHeaders(List.of(KEYCLOAK_SUBDOMAIN + "." + System.getenv("BSN_DOMAIN")))))
+                .conditions(List.of(ListenerCondition.hostHeaders(List.of(KEYCLOAK_SUBDOMAIN + "." + BSN_DOMAIN))))
                 .targetGroups(List.of(keycloakTg))
                 .build());
 
@@ -158,8 +160,8 @@ public class ServicesStack extends Stack {
         ISecret mailSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-mail-secret")
                 .secretName("bsn-mail")
                 .secretObjectValue(Map.of(
-                        "username", SecretValue.Builder.create(System.getenv("MAIL_USER")).build(),
-                        "password", SecretValue.Builder.create(System.getenv("MAIL_PASSWORD")).build()
+                        "username", SecretValue.Builder.create(MAIL_USER).build(),
+                        "password", SecretValue.Builder.create(MAIL_PASSWORD).build()
                 ))
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
@@ -167,8 +169,8 @@ public class ServicesStack extends Stack {
         ISecret keycloakSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-keycloak-secret")
                 .secretName("bsn-keycloak")
                 .secretObjectValue(Map.of(
-                        "username", SecretValue.Builder.create(System.getenv("KEYCLOAK_ADMIN_USER")).build(),
-                        "password", SecretValue.Builder.create(System.getenv("KEYCLOAK_ADMIN_PASSWORD")).build()
+                        "username", SecretValue.Builder.create(KEYCLOAK_ADMIN_USER).build(),
+                        "password", SecretValue.Builder.create(KEYCLOAK_ADMIN_PASSWORD).build()
                 ))
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
@@ -205,10 +207,10 @@ public class ServicesStack extends Stack {
                 .environment(
                         Map.of(
                                 "DB_URL", getDatabaseJDBCUrl(rds.getDbInstanceEndpointAddress(), API_DATABASE_NAME),
-                                "MAIL_HOST", System.getenv("MAIL_HOST"),
-                                "MAIL_PORT", System.getenv("MAIL_PORT"),
-                                "JWT_ISSUER_URI", System.getenv("JWT_ISSUER_URI"),
-                                "FRONTEND_URL", System.getenv("FRONTEND_URL"),
+                                "MAIL_HOST", MAIL_HOST,
+                                "MAIL_PORT", MAIL_PORT,
+                                "JWT_ISSUER_URI", JWT_ISSUER_URI,
+                                "FRONTEND_URL", FRONTEND_URL,
                                 "JPA_DDL_AUTO", "validate"
                         )
                 )
@@ -265,14 +267,14 @@ public class ServicesStack extends Stack {
         Map<String, String> keycloakEnvironment = new HashMap<>();
         keycloakEnvironment.put("KC_DB", "postgres");
         keycloakEnvironment.put("KC_DB_URL", getDatabaseJDBCUrl(rds.getDbInstanceEndpointAddress(), KEYCLOAK_DATABASE_NAME));
-        keycloakEnvironment.put("KC_HOSTNAME", System.getenv("KEYCLOAK_HOST"));
+        keycloakEnvironment.put("KC_HOSTNAME", KEYCLOAK_HOST);
         keycloakEnvironment.put("KC_HTTP_ENABLED", "true");
         keycloakEnvironment.put("KC_PROXY_HEADERS", "xforwarded");
         keycloakEnvironment.put("KC_HEALTH_ENABLED", "true");
-        keycloakEnvironment.put("BSN_USERS_API_URL", System.getenv("BSN_USERS_API_URL"));
-        keycloakEnvironment.put("FRONTEND_URL", System.getenv("FRONTEND_URL"));
-        keycloakEnvironment.put("MAIL_HOST", System.getenv("MAIL_HOST"));
-        keycloakEnvironment.put("MAIL_PORT", System.getenv("MAIL_PORT"));
+        keycloakEnvironment.put("BSN_USERS_API_URL", BSN_USERS_API_URL);
+        keycloakEnvironment.put("FRONTEND_URL", FRONTEND_URL);
+        keycloakEnvironment.put("MAIL_HOST", MAIL_HOST);
+        keycloakEnvironment.put("MAIL_PORT", MAIL_PORT);
         keycloakEnvironment.put("MAIL_SSL", "true");
         keycloakEnvironment.put("MAIL_START_TLS", "true");
         keycloakEnvironment.put("MAIL_AUTH", "true");

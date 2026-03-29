@@ -7,6 +7,8 @@ import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.LoadBalancerTarget;
 import software.constructs.Construct;
 
+import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
+
 public class DnsStack extends Stack {
 
     private static final String API_RECORD_NAME = "api";
@@ -24,8 +26,8 @@ public class DnsStack extends Stack {
         // Hosted zone
         IHostedZone hostedZone = HostedZone.fromHostedZoneAttributes(this, "bsn-hosted-zone",
                 HostedZoneAttributes.builder()
-                        .hostedZoneId(System.getenv("HOSTED_ZONE_ID"))
-                        .zoneName(System.getenv("BSN_DOMAIN"))
+                        .hostedZoneId(HOSTED_ZONE_ID)
+                        .zoneName(BSN_DOMAIN)
                         .build());
 
         // API record
