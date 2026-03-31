@@ -48,6 +48,7 @@ jobs:
           KEYCLOAK_ADMIN_USER: ${{ vars.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
         run: |
+          cd infra/cdk
           java -jar target/cdk-1.0-SNAPSHOT.jar
 
       - name: Configure AWS CLI
@@ -59,6 +60,7 @@ jobs:
 
       - name: Deploy Cloud Formation Stacks
         run: |
+          cd infra/cdk
           aws cloudformation deploy --stack-name NetworkStack --template-file cdk.out/NetworkStack.template.json
           aws cloudformation deploy --stack-name StorageStack --template-file cdk.out/StorageStack.template.json
           aws cloudformation deploy --stack-name ServicesStack --template-file cdk.out/ServicesStack.template.json --capabilities CAPABILITY_IAM
