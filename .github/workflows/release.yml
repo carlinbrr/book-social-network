@@ -48,7 +48,7 @@ jobs:
           KEYCLOAK_ADMIN_USER: ${{ vars.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
         run: |
-          java -jar target/cdk*.jar
+          java -jar target/cdk-1.0-SNAPSHOT.jar
 
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v6.0.0
