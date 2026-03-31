@@ -1,0 +1,65 @@
+name: BSN Release Pipeline
+
+on:
+  push:
+    branches:
+      - feature/Pipeline-aws-enhancement
+
+jobs:
+  deploy-infra:
+    runs-on: ubuntu-latest
+    name: Deploy Infra
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Build CDK Jar
+        run: |
+          cd infra/cdk
+          chmod +x mvnw
+          ./mvnw clean package
+
+      - name: Run CDK Jar
+        env:
+          ROOT_DB_USER: ${{ vars.ROOT_DB_USER }}
+          API_DDL_USER: ${{ vars.API_DDL_USER }}
+          API_DML_USER: ${{ vars.API_DML_USER }}
+          KEYCLOAK_DB_USER: ${{ vars.KEYCLOAK_DB_USER }}
+          ALB_CERTIFICATE_ARN: ${{ vars.ALB_CERTIFICATE_ARN }}
+          CLOUDFRONT_CERTIFICATE_ARN: ${{ vars.CLOUDFRONT_CERTIFICATE_ARN }}
+          HOSTED_ZONE_ID: ${{ vars.HOSTED_ZONE_ID }}
+          BSN_DOMAIN: ${{ vars.BSN_DOMAIN }}
+          MAIL_HOST: ${{ vars.MAIL_HOST }}
+          MAIL_PORT: ${{ vars.MAIL_PORT }}
+          MAIL_USER: ${{ vars.MAIL_USER }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+          BSN_USERS_API_URL: ${{ vars.BSN_USERS_API_URL }}
+          JWT_ISSUER_URI: ${{ vars.JWT_ISSUER_URI }}
+          KEYCLOAK_HOST: ${{ vars.KEYCLOAK_HOST }}
+          KEYCLOAK_ADMIN_USER: ${{ vars.KEYCLOAK_ADMIN_USER }}
+          KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+        run: |
+          java -jar target/cdk*.jar
+
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+        run: |
+          aws cloudformation deploy --stack-name NetworkStack --template-file cdk.out/NetworkStack.template.json
+          aws cloudformation deploy --stack-name StorageStack --template-file cdk.out/StorageStack.template.json
+          aws cloudformation deploy --stack-name ServicesStack --template-file cdk.out/ServicesStack.template.json --capabilities CAPABILITY_IAM
+          aws cloudformation deploy --stack-name FrontendStack --template-file cdk.out/FrontendStack.template.json
+          aws cloudformation deploy --stack-name DnsStack --template-file cdk.out/DnsStack.template.json
+          aws cloudformation deploy --stack-name MigrationStack --template-file cdk.out/MigrationStack.template.json --capabilities CAPABILITY_IAM
