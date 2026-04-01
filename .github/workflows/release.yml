@@ -9,6 +9,7 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
     name: Deploy Infra
+    environment: Cloud
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
