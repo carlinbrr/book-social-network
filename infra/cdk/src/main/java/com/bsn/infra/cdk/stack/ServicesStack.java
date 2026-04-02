@@ -35,9 +35,10 @@ public class ServicesStack extends Stack {
 
     public ServicesStack(Construct scope, String id, StackProps props,
                         Vpc vpc, SecurityGroup ecsSg, SecurityGroup albSg, FileSystem efs,
-                         DatabaseInstance rds, ISecret apiDmlSecret, ISecret keycloakDbSecret) {
+                         DatabaseInstance rds, Cluster cluster, ISecret apiDmlSecret,
+                         ISecret keycloakDbSecret) {
         super(scope, id, props);
-        init(vpc, ecsSg, albSg, efs, rds, apiDmlSecret, keycloakDbSecret);
+        init(vpc, ecsSg, albSg, efs, rds, cluster, apiDmlSecret, keycloakDbSecret);
     }
 
 
@@ -46,7 +47,7 @@ public class ServicesStack extends Stack {
     }
 
     private void init(Vpc vpc, SecurityGroup ecsSg, SecurityGroup albSg, FileSystem efs, DatabaseInstance rds,
-                      ISecret apiDmlSecret, ISecret keycloakDbSecret) {
+                      Cluster cluster, ISecret apiDmlSecret, ISecret keycloakDbSecret) {
         // ALB Certificate
         IListenerCertificate albCertificate = ListenerCertificate.fromArn(ALB_CERTIFICATE_ARN);
 
@@ -149,13 +150,6 @@ public class ServicesStack extends Stack {
                 .targetGroups(List.of(keycloakTg))
                 .build());
 
-        // ECS Cluster
-        Cluster ecsCluster = Cluster.Builder.create(this, "bsn-cluster")
-                .clusterName("bsn")
-                .vpc(vpc)
-                .containerInsightsV2(ContainerInsights.ENHANCED)
-                .build();
-
         // Mail and Keycloak secret
         ISecret mailSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-mail-secret")
                 .secretName("bsn-mail")
@@ -237,7 +231,7 @@ public class ServicesStack extends Stack {
         // API ECS
         FargateService apiService = FargateService.Builder.create(this, "bsn-api-ecs")
                 .serviceName("bsn-api")
-                .cluster(ecsCluster)
+                .cluster(cluster)
                 .taskDefinition(apiTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
                 .desiredCount(1)
@@ -317,7 +311,7 @@ public class ServicesStack extends Stack {
         // Keycloak ECS
         FargateService keycloakService = FargateService.Builder.create(this, "bsn-keycloak-ecs")
                 .serviceName("bsn-keycloak")
-                .cluster(ecsCluster)
+                .cluster(cluster)
                 .taskDefinition(keycloakTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
                 .desiredCount(1)

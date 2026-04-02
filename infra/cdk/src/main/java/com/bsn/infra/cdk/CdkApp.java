@@ -19,22 +19,26 @@ public class CdkApp {
                 .synthesizer(new BootstraplessSynthesizer())
                 .build();
 
-        NetworkStack networkStack = new NetworkStack(app, "NetworkStack", props);
+        NetworkStack networkStack = new NetworkStack(app, "Network", props);
 
-        StorageStack storageStack = new StorageStack(app, "StorageStack", props,
+        StorageStack storageStack = new StorageStack(app, "Storage", props,
                 networkStack.getVpc(), networkStack.getRdsSg(), networkStack.getEfsSg());
 
-        new MigrationStack(app, "MigrationStack", props,
+        ComputeStack computeStack = new ComputeStack(app, "Compute", props,
+                networkStack.getVpc());
+
+        new MigrationStack(app, "Migration", props,
                 storageStack.getRds(), storageStack.getApiDdlSecret(), storageStack.getApiDmlSecret(),
                 storageStack.getKeycloakDbSecret());
 
-        ServicesStack servicesStack = new ServicesStack(app, "ServicesStack", props,
+        ServicesStack servicesStack = new ServicesStack(app, "Services", props,
                 networkStack.getVpc(), networkStack.getEcsSg(), networkStack.getAlbSg(), storageStack.getEfs(),
-                storageStack.getRds(), storageStack.getApiDmlSecret(), storageStack.getKeycloakDbSecret());
+                storageStack.getRds(), computeStack.getCluster(), storageStack.getApiDmlSecret(),
+                storageStack.getKeycloakDbSecret());
 
-        FrontendStack frontendStack = new FrontendStack(app, "FrontendStack", props);
+        FrontendStack frontendStack = new FrontendStack(app, "Frontend", props);
 
-        new DnsStack(app, "DnsStack", props,
+        new DnsStack(app, "DNS", props,
                 servicesStack.getAlb(), frontendStack.getMainCfDistribution(), frontendStack.getRedirectCfDistribution());
 
         app.synth();

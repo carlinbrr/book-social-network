@@ -92,29 +92,29 @@ jobs:
         run: |
           cd infra/cdk
 
-          echo "Deploying NetworkStack..."
+          echo "Deploying Network..."
           aws cloudformation deploy \
-            --stack-name NetworkStack \
-            --template-file cdk.out/NetworkStack.template.json
+            --stack-name Network \
+            --template-file cdk.out/Network.template.json
 
-      - name: Read & Save Outputs
+      - name: Read & Save Stack Outputs
         id: resource-outputs
         run: |
           set -eu
-          echo "Reading NetworkStack outputs..."
+          echo "Reading Network outputs..."
 
           VPC_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks \
-            --stack-name NetworkStack \
+            --stack-name Network \
             --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate1Id'].OutputValue" \
             --output text)
 
           VPC_PRIVATE_SUBNET_2=$(aws cloudformation describe-stacks \
-            --stack-name NetworkStack \
+            --stack-name Network \
             --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate2Id'].OutputValue" \
             --output text)
 
           ECS_SG=$(aws cloudformation describe-stacks \
-            --stack-name NetworkStack \
+            --stack-name Network \
             --query "Stacks[0].Outputs[?OutputKey=='bsnEcsSgId'].OutputValue" \
             --output text)
 
@@ -122,7 +122,7 @@ jobs:
           test -n "$VPC_PRIVATE_SUBNET_2"
           test -n "$ECS_SG"
 
-          echo "Resolved NetworkStack outputs successfully"
+          echo "Resolved Network Stack outputs successfully"
           echo "VPC Private subnet 1: $VPC_PRIVATE_SUBNET_1"
           echo "VPC Private subnet 2: $VPC_PRIVATE_SUBNET_2"
           echo "ECS security group: $ECS_SG"
@@ -153,15 +153,42 @@ jobs:
         run: |
           cd infra/cdk
 
-          echo "Deploying StorageStack..."
+          echo "Deploying Storage..."
           aws cloudformation deploy \
-            --stack-name StorageStack \
-            --template-file cdk.out/StorageStack.template.json
+            --stack-name Storage \
+            --template-file cdk.out/Storage.template.json
+
+  deploy-compute:
+    name: Deploy Compute
+    runs-on: ubuntu-latest
+    needs: deploy-network
+    steps:
+      - name: Download CloudFormation Stacks
+        uses: actions/download-artifact@v8
+        with:
+          name: cdk-out
+          path: infra/cdk/cdk.out
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy Stack
+        run: |
+          cd infra/cdk
+
+          echo "Deploying Compute..."
+          aws cloudformation deploy \
+            --stack-name Compute \
+            --template-file cdk.out/Compute.template.json
 
   deploy-migrations:
     name: Deploy Migrations
     runs-on: ubuntu-latest
-    needs: [deploy-network, deploy-storage]
+    needs: [deploy-network, deploy-storage, deploy-compute]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -198,10 +225,10 @@ jobs:
         run: |
           cd infra/cdk
 
-          echo "Deploying MigrationStack..."
+          echo "Deploying Migration..."
           aws cloudformation deploy \
-            --stack-name MigrationStack \
-            --template-file cdk.out/MigrationStack.template.json \
+            --stack-name Migration \
+            --template-file cdk.out/Migration.template.json \
             --capabilities CAPABILITY_IAM
 
       - name: Run Task
@@ -303,10 +330,10 @@ jobs:
         run: |
           cd infra/cdk
 
-          echo "Deploying ServicesStack..."
+          echo "Deploying Services..."
           aws cloudformation deploy \
-            --stack-name ServicesStack \
-            --template-file cdk.out/ServicesStack.template.json \
+            --stack-name Services \
+            --template-file cdk.out/Services.template.json \
             --capabilities CAPABILITY_IAM
 
   deploy-frontend:
@@ -367,10 +394,10 @@ jobs:
         run: |
           cd infra/cdk
 
-          echo "Deploying FrontendStack..."
+          echo "Deploying Frontend..."
           aws cloudformation deploy \
-            --stack-name FrontendStack \
-            --template-file cdk.out/FrontendStack.template.json
+            --stack-name Frontend \
+            --template-file cdk.out/Frontend.template.json
 
       - name: Upload Assets to S3
         run: |
@@ -401,8 +428,8 @@ jobs:
         - name: Deploy Stack
           run: |
             cd infra/cdk
-            
-            echo "Deploying DnsStack..."
+
+            echo "Deploying DNS..."
             aws cloudformation deploy \
-              --stack-name DnsStack \
-              --template-file cdk.out/DnsStack.template.json
+              --stack-name DNS \
+              --template-file cdk.out/DNS.template.json
