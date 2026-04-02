@@ -8,7 +8,7 @@ on:
 jobs:
   generate-infra:
     name: Generate Infra
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: Cloud
     steps:
       - name: Checkout code
@@ -68,7 +68,7 @@ jobs:
 
   deploy-network:
     name: Deploy Network
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: generate-infra
     outputs:
       vpc_private_subnet_1: ${{ steps.resource-outputs.outputs.vpc_private_subnet_1 }}
@@ -90,12 +90,14 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Network..."
           aws cloudformation deploy \
             --stack-name Network \
             --template-file cdk.out/Network.template.json
+          echo "Network deployed successfully"
 
       - name: Read & Save Stack Outputs
         id: resource-outputs
@@ -129,7 +131,7 @@ jobs:
 
   deploy-storage:
     name: Deploy Storage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-network
     steps:
       - name: Download CloudFormation Stacks
@@ -147,16 +149,18 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Storage..."
           aws cloudformation deploy \
             --stack-name Storage \
             --template-file cdk.out/Storage.template.json
+          echo "Storage deployed successfully"
 
   deploy-compute:
     name: Deploy Compute
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-network
     steps:
       - name: Download CloudFormation Stacks
@@ -174,16 +178,18 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Compute..."
           aws cloudformation deploy \
             --stack-name Compute \
             --template-file cdk.out/Compute.template.json
+          echo "Compute deployed successfully"
 
   deploy-migrations:
     name: Deploy Migrations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [deploy-network, deploy-storage, deploy-compute]
     steps:
       - name: Checkout code
@@ -195,7 +201,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push to DockerHub
+      - name: Build & Push Migration Image to DockerHub
         uses: docker/build-push-action@v7
         with:
           context: platform/database
@@ -219,6 +225,7 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Migration..."
@@ -226,6 +233,7 @@ jobs:
             --stack-name Migration \
             --template-file cdk.out/Migration.template.json \
             --capabilities CAPABILITY_IAM
+          echo "Migration deployed successfully"
 
       - name: Run Task
         env:
@@ -279,7 +287,7 @@ jobs:
 
   deploy-services:
     name: Deploy Services
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-migrations
     steps:
       - name: Checkout code
@@ -291,7 +299,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push API to DockerHub
+      - name: Build & Push API Image to DockerHub
         uses: docker/build-push-action@v7
         with:
           context: apps/api
@@ -300,7 +308,7 @@ jobs:
           platforms: linux/amd64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
 
-      - name: Build & Push Keycloak to DockerHub
+      - name: Build & Push Keycloak Image to DockerHub
         uses: docker/build-push-action@v7
         with:
           context: platform/iam
@@ -324,6 +332,7 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Services..."
@@ -331,10 +340,11 @@ jobs:
             --stack-name Services \
             --template-file cdk.out/Services.template.json \
             --capabilities CAPABILITY_IAM
+          echo "Services deployed successfully"
 
   deploy-frontend:
     name: Deploy Frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: Cloud
     needs: generate-infra
     steps:
@@ -369,9 +379,12 @@ jobs:
         run: |
           set -eu
           cd apps/web
+          echo "Generating frontend runtime configuration..."
           envsubst < config/environment-cloud.json > src/assets/environment.json
           echo "Generated cloud environment.json"
+          echo "Building frontend application..."
           npm run build
+          echo "Frontend application built successfully"
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
@@ -388,12 +401,14 @@ jobs:
 
       - name: Deploy Stack
         run: |
+          set -eu
           cd infra/cdk
 
           echo "Deploying Frontend..."
           aws cloudformation deploy \
             --stack-name Frontend \
             --template-file cdk.out/Frontend.template.json
+          echo "Frontend deployed successfully"
 
       - name: Read & Save Stack Outputs
         id: resource-outputs
@@ -406,10 +421,10 @@ jobs:
             --query "Stacks[0].Outputs[?OutputKey=='bsnMainCfDistributionId'].OutputValue" \
             --output text)
 
-          echo "Resolved Frontend Stack outputs successfully"
+          echo "Resolved Frontend stack outputs successfully"
           echo "Main CloudFront distribution id: $MAIN_CF_DISTRIBUTION"
 
-          echo "main_cf_distribution=$MAIN_CF_DISTRIBUTION" >> $GITHUB_OUTPUT
+          echo "main_cf_distribution=$MAIN_CF_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Upload Assets to S3
         run: |
@@ -425,35 +440,37 @@ jobs:
         run: |
           set -eu
 
-          echo "Invalidating CloudFront distribution..."
+          echo "Invalidating CloudFront distribution $MAIN_CF_DISTRIBUTION..."
           aws cloudfront create-invalidation \
             --distribution-id $MAIN_CF_DISTRIBUTION \
             --paths "/*"
           echo "CloudFront invalidation created successfully"
 
   deploy-dns:
-      name: Deploy DNS
-      runs-on: ubuntu-latest
-      needs: [deploy-services, deploy-frontend]
-      steps:
-        - name: Download CloudFormation Stacks
-          uses: actions/download-artifact@v8
-          with:
-            name: cdk-out
-            path: infra/cdk/cdk.out
+    name: Deploy DNS
+    runs-on: ubuntu-24.04
+    needs: [deploy-services, deploy-frontend]
+    steps:
+      - name: Download CloudFormation Stacks
+        uses: actions/download-artifact@v8
+        with:
+          name: cdk-out
+          path: infra/cdk/cdk.out
 
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v6.0.0
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-            aws-region: ${{ vars.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-        - name: Deploy Stack
-          run: |
-            cd infra/cdk
+      - name: Deploy Stack
+        run: |
+          set -eu
+          cd infra/cdk
 
-            echo "Deploying DNS..."
-            aws cloudformation deploy \
-              --stack-name DNS \
-              --template-file cdk.out/DNS.template.json
+          echo "Deploying DNS..."
+          aws cloudformation deploy \
+            --stack-name DNS \
+            --template-file cdk.out/DNS.template.json
+          echo "DNS deployed successfully"
