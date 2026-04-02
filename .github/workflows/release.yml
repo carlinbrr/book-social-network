@@ -7,9 +7,13 @@ on:
 
 jobs:
   deploy-infra:
-    runs-on: ubuntu-latest
     name: Deploy Infra
+    runs-on: ubuntu-latest
     environment: Cloud
+    outputs:
+      vpc_private_subnet_1: ${{ steps.network_outputs.outputs.vpc_private_subnet_1}}
+      vpc_private_subnet_2: ${{ steps.network_outputs.outputs.vpc_private_subnet_2}}
+      ecs_sg: ${{ steps.network_outputs.outputs.ecs_sg}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -69,3 +73,40 @@ jobs:
           aws cloudformation deploy --stack-name FrontendStack --template-file cdk.out/FrontendStack.template.json
           aws cloudformation deploy --stack-name DnsStack --template-file cdk.out/DnsStack.template.json
           aws cloudformation deploy --stack-name MigrationStack --template-file cdk.out/MigrationStack.template.json --capabilities CAPABILITY_IAM
+
+      - name: Read and Save NetworkStack Outputs
+        id: network_outputs
+        run: |
+          VPC_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks \
+            --stack-name NetworkStack \
+            --query "Stacks[0].Outputs[?OutputKey=='bsn-subnet-private-1-id'].OutputValue" \
+            --output text)
+          
+          VPC_PRIVATE_SUBNET_2=$(aws cloudformation describe-stacks \
+            --stack-name NetworkStack \
+            --query "Stacks[0].Outputs[?OutputKey=='bsn-subnet-private-2-id'].OutputValue" \
+            --output text)
+          
+          ECS_SG=$(aws cloudformation describe-stacks \
+            --stack-name NetworkStack \
+            --query "Stacks[0].Outputs[?OutputKey=='bsn-ecs-sg-id'].OutputValue" \
+            --output text)
+          
+          echo "vpc_private_subnet_1=VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"
+          echo "vpc_private_subnet_2=VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
+          echo "ecs_sg=$ECS_SG" >> "$GITHUB_OUTPUT"
+
+  deploy-mitigations:
+    name: Deploy Mitigations
+    runs-on: ubuntu-latest
+    needs: deploy-infra
+    steps:
+      - name: Read deploy-infra Outputs
+        env:
+          VPC_PRIVATE_SUBNET_1: ${{ needs.deploy-infra.outputs.vpc_private_subnet_1 }}
+          VPC_PRIVATE_SUBNET_2: ${{ needs.deploy-infra.outputs.vpc_private_subnet_2 }}
+          ECS_SG: ${{ needs.deploy-infra.outputs.ecs_sg }}
+        run: |
+          echo "VPC Private Subnet 1: $VPC_PRIVATE_SUBNET_1"
+          echo "VPC Private Subnet 2: $VPC_PRIVATE_SUBNET_2"
+          echo "ECS Security Group: $ECS_SG"

@@ -108,15 +108,18 @@ public class NetworkStack extends Stack {
         efsSg.addIngressRule(ecsSg, Port.tcp(2049), "Allow TCP 2049 from ECS");
 
         // Outputs
-        CfnOutput.Builder.create(this, "bsn-subnet-private-1-id")
+        CfnOutput.Builder.create(this, "bsn-subnet-private-1-id-output")
+                .key("bsn-subnet-private-1-id")
                 .value(vpc.getPrivateSubnets().get(0).getSubnetId())
                 .build();
 
-        CfnOutput.Builder.create(this, "bsn-subnet-private-2-id")
+        CfnOutput.Builder.create(this, "bsn-subnet-private-2-id-output")
+                .key("bsn-subnet-private-2-id")
                 .value(vpc.getPrivateSubnets().get(1).getSubnetId())
                 .build();
 
-        CfnOutput.Builder.create(this, "bsn-ecs-sg-id")
+        CfnOutput.Builder.create(this, "bsn-ecs-sg-id-output")
+                .key("bsn-ecs-sg-id")
                 .value(ecsSg.getSecurityGroupId())
                 .build();
     }
