@@ -79,17 +79,17 @@ jobs:
         run: |
           VPC_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
-            --query "Stacks[0].Outputs[?OutputKey=='bsn-subnet-private-1-id'].OutputValue" \
+            --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate1Id'].OutputValue" \
             --output text)
           
           VPC_PRIVATE_SUBNET_2=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
-            --query "Stacks[0].Outputs[?OutputKey=='bsn-subnet-private-2-id'].OutputValue" \
+            --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate2Id'].OutputValue" \
             --output text)
           
           ECS_SG=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
-            --query "Stacks[0].Outputs[?OutputKey=='bsn-ecs-sg-id'].OutputValue" \
+            --query "Stacks[0].Outputs[?OutputKey=='bsnEcsSgId'].OutputValue" \
             --output text)
           
           echo "vpc_private_subnet_1=VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"

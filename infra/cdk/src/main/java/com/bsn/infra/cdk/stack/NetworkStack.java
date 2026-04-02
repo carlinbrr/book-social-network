@@ -109,17 +109,17 @@ public class NetworkStack extends Stack {
 
         // Outputs
         CfnOutput.Builder.create(this, "bsn-subnet-private-1-id-output")
-                .key("bsn-subnet-private-1-id")
+                .key("bsnSubnetPrivate1Id")
                 .value(vpc.getPrivateSubnets().get(0).getSubnetId())
                 .build();
 
         CfnOutput.Builder.create(this, "bsn-subnet-private-2-id-output")
-                .key("bsn-subnet-private-2-id")
+                .key("bsnSubnetPrivate2Id")
                 .value(vpc.getPrivateSubnets().get(1).getSubnetId())
                 .build();
 
         CfnOutput.Builder.create(this, "bsn-ecs-sg-id-output")
-                .key("bsn-ecs-sg-id")
+                .key("bsnEcsSgId")
                 .value(ecsSg.getSecurityGroupId())
                 .build();
     }
