@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Cloud
     outputs:
-      vpc_private_subnet_1: ${{ steps.network-outputs.outputs.vpc_private_subnet_1}}
-      vpc_private_subnet_2: ${{ steps.network-outputs.outputs.vpc_private_subnet_2}}
-      ecs_sg: ${{ steps.network-outputs.outputs.ecs_sg}}
+      vpc_private_subnet_1: ${{ steps.network-outputs.outputs.vpc_private_subnet_1 }}
+      vpc_private_subnet_2: ${{ steps.network-outputs.outputs.vpc_private_subnet_2 }}
+      ecs_sg: ${{ steps.network-outputs.outputs.ecs_sg }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -21,16 +21,19 @@ jobs:
           fetch-depth: 0
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
-          java-version: 21
           distribution: 'corretto'
+          java-version: '21'
 
       - name: Build CDK Jar
         run: |
+          set -eu
+          echo "Building CDK jar..."
           cd infra/cdk
           chmod +x mvnw
           ./mvnw clean package
+          echo "CDK jar built successfully"
 
       - name: Run CDK Jar
         env:
@@ -55,8 +58,11 @@ jobs:
           REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
           TAG_VERSION: ${{ vars.TAG_VERSION }}
         run: |
+          set -eu
+          echo "Synthesizing CloudFormation templates with CDK jar..."
           cd infra/cdk
           java -jar target/cdk-1.0-SNAPSHOT.jar
+          echo "CDK synthesis completed"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.0.0
@@ -65,34 +71,75 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Deploy Cloud Formation Stacks
+      - name: Deploy CloudFormation Stacks
         run: |
+          set -eu
           cd infra/cdk
-          aws cloudformation deploy --stack-name NetworkStack --template-file cdk.out/NetworkStack.template.json
-          aws cloudformation deploy --stack-name StorageStack --template-file cdk.out/StorageStack.template.json
-          aws cloudformation deploy --stack-name ServicesStack --template-file cdk.out/ServicesStack.template.json --capabilities CAPABILITY_IAM
-          aws cloudformation deploy --stack-name FrontendStack --template-file cdk.out/FrontendStack.template.json
-          aws cloudformation deploy --stack-name DnsStack --template-file cdk.out/DnsStack.template.json
-          aws cloudformation deploy --stack-name MigrationStack --template-file cdk.out/MigrationStack.template.json --capabilities CAPABILITY_IAM
+
+          echo "Deploying NetworkStack..."
+          aws cloudformation deploy \
+            --stack-name NetworkStack \
+            --template-file cdk.out/NetworkStack.template.json
+
+          echo "Deploying StorageStack..."
+          aws cloudformation deploy \
+            --stack-name StorageStack \
+            --template-file cdk.out/StorageStack.template.json
+
+          echo "Deploying ServicesStack..."
+          aws cloudformation deploy \
+            --stack-name ServicesStack \
+            --template-file cdk.out/ServicesStack.template.json \
+            --capabilities CAPABILITY_IAM
+
+          echo "Deploying FrontendStack..."
+          aws cloudformation deploy \
+            --stack-name FrontendStack \
+            --template-file cdk.out/FrontendStack.template.json
+
+          echo "Deploying DnsStack..."
+          aws cloudformation deploy \
+            --stack-name DnsStack \
+            --template-file cdk.out/DnsStack.template.json
+
+          echo "Deploying MigrationStack..."
+          aws cloudformation deploy \
+            --stack-name MigrationStack \
+            --template-file cdk.out/MigrationStack.template.json \
+            --capabilities CAPABILITY_IAM
+
+          echo "All CloudFormation stacks deployed successfully"
 
       - name: Read & Save NetworkStack Outputs
         id: network-outputs
         run: |
+          set -eu
+          echo "Reading NetworkStack outputs..."
+
           VPC_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
             --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate1Id'].OutputValue" \
             --output text)
-          
+
           VPC_PRIVATE_SUBNET_2=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
             --query "Stacks[0].Outputs[?OutputKey=='bsnSubnetPrivate2Id'].OutputValue" \
             --output text)
-          
+
           ECS_SG=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
             --query "Stacks[0].Outputs[?OutputKey=='bsnEcsSgId'].OutputValue" \
             --output text)
-          
+
+          test -n "$VPC_PRIVATE_SUBNET_1"
+          test -n "$VPC_PRIVATE_SUBNET_2"
+          test -n "$ECS_SG"
+
+          echo "Resolved NetworkStack outputs successfully"
+          echo "VPC Private subnet 1: $VPC_PRIVATE_SUBNET_1"
+          echo "VPC Private subnet 2: $VPC_PRIVATE_SUBNET_2"
+          echo "ECS security group: $ECS_SG"
+
           echo "vpc_private_subnet_1=$VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"
           echo "vpc_private_subnet_2=$VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
           echo "ecs_sg=$ECS_SG" >> "$GITHUB_OUTPUT"
@@ -131,9 +178,15 @@ jobs:
 
       - name: Download Current Task Definition
         run: |
+          set -eu
+          echo "Downloading current ECS task definition for family 'bsn-migration'..."
+
           aws ecs describe-task-definition \
-          --task-definition bsn-migration \
-          --query taskDefinition > task-definition.json
+            --task-definition bsn-migration \
+            --query taskDefinition > task-definition.json
+
+          test -s task-definition.json
+          echo "Current task definition downloaded successfully"
 
       - name: Render Task Definition
         id: render-container
@@ -144,40 +197,71 @@ jobs:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:latest
 
       - name: Register Task Definition
+        id: register-task-def
         env:
           TASK_DEFINITION_FILE: ${{ steps.render-container.outputs.task-definition }}
         run: |
-          aws ecs register-task-definition \
-            --cli-input-json file://$TASK_DEFINITION_FILE
+          set -eu
+          echo "Registering new ECS task definition revision..."
+
+          REVISION=$(aws ecs register-task-definition \
+            --cli-input-json file://$TASK_DEFINITION_FILE \
+            --query 'taskDefinition.revision' \
+            --output text)
+
+          test -n "$REVISION"
+
+          echo "Registered bsn-migration revision: $REVISION"
+          echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
 
       - name: Run Task
         env:
           VPC_PRIVATE_SUBNET_1: ${{ needs.deploy-infra.outputs.vpc_private_subnet_1 }}
           VPC_PRIVATE_SUBNET_2: ${{ needs.deploy-infra.outputs.vpc_private_subnet_2 }}
           ECS_SG: ${{ needs.deploy-infra.outputs.ecs_sg }}
+          REVISION: ${{ steps.register-task-def.outputs.revision }}
         run: |
+          set -eu
+          echo "Running ECS migration task..."
+          echo "Task definition: bsn-migration:$REVISION"
+          echo "Subnets: $VPC_PRIVATE_SUBNET_1, $VPC_PRIVATE_SUBNET_2"
+          echo "Security group: $ECS_SG"
+
           TASK_ARN=$(aws ecs run-task \
             --cluster bsn \
             --launch-type FARGATE \
-            --task-definition bsn-migration \
+            --task-definition bsn-migration:$REVISION \
             --network-configuration "awsvpcConfiguration={subnets=[$VPC_PRIVATE_SUBNET_1,$VPC_PRIVATE_SUBNET_2],securityGroups=[$ECS_SG],assignPublicIp=DISABLED}" \
             --query 'tasks[0].taskArn' \
             --output text)
-          
-          echo "Task ARN: $TASK_ARN"
-          
+
+          test -n "$TASK_ARN"
+          echo "Started ECS task: $TASK_ARN"
+          echo "Waiting for ECS task to stop..."
+
           aws ecs wait tasks-stopped \
             --cluster bsn \
             --tasks "$TASK_ARN"
-          
+
           EXIT_CODE=$(aws ecs describe-tasks \
             --cluster bsn \
             --tasks "$TASK_ARN" \
             --query 'tasks[0].containers[0].exitCode' \
             --output text)
-          
+
+          STOPPED_REASON=$(aws ecs describe-tasks \
+            --cluster bsn \
+            --tasks "$TASK_ARN" \
+            --query 'tasks[0].stoppedReason' \
+            --output text)
+
+          echo "ECS task stopped"
+          echo "Stopped reason: $STOPPED_REASON"
           echo "Exit code: $EXIT_CODE"
 
           if [ "$EXIT_CODE" != "0" ]; then
+            echo "Migration task failed"
             exit 1
           fi
+
+          echo "Migration task completed successfully"
