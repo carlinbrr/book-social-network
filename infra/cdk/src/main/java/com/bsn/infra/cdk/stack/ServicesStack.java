@@ -35,9 +35,10 @@ public class ServicesStack extends Stack {
 
     public ServicesStack(Construct scope, String id, StackProps props,
                         Vpc vpc, SecurityGroup ecsSg, SecurityGroup albSg, FileSystem efs,
-                         DatabaseInstance rds, ISecret apiDmlSecret, ISecret keycloakDbSecret) {
+                         DatabaseInstance rds, Cluster cluster, ISecret apiDmlSecret,
+                         ISecret keycloakDbSecret) {
         super(scope, id, props);
-        init(vpc, ecsSg, albSg, efs, rds, apiDmlSecret, keycloakDbSecret);
+        init(vpc, ecsSg, albSg, efs, rds, cluster, apiDmlSecret, keycloakDbSecret);
     }
 
 
@@ -46,7 +47,7 @@ public class ServicesStack extends Stack {
     }
 
     private void init(Vpc vpc, SecurityGroup ecsSg, SecurityGroup albSg, FileSystem efs, DatabaseInstance rds,
-                      ISecret apiDmlSecret, ISecret keycloakDbSecret) {
+                      Cluster cluster, ISecret apiDmlSecret, ISecret keycloakDbSecret) {
         // ALB Certificate
         IListenerCertificate albCertificate = ListenerCertificate.fromArn(ALB_CERTIFICATE_ARN);
 
@@ -149,13 +150,6 @@ public class ServicesStack extends Stack {
                 .targetGroups(List.of(keycloakTg))
                 .build());
 
-        // ECS Cluster
-        Cluster ecsCluster = Cluster.Builder.create(this, "bsn-cluster")
-                .clusterName("bsn")
-                .vpc(vpc)
-                .containerInsightsV2(ContainerInsights.ENHANCED)
-                .build();
-
         // Mail and Keycloak secret
         ISecret mailSecret = software.amazon.awscdk.services.secretsmanager.Secret.Builder.create(this, "bsn-mail-secret")
                 .secretName("bsn-mail")
@@ -196,7 +190,7 @@ public class ServicesStack extends Stack {
         ContainerDefinition apiContainer = apiTask.addContainer("bsn-api-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-api")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-api:latest"))
+                .image(ContainerImage.fromRegistry(REPOSITORY_NAME + "/bsn-api:" + TAG_VERSION))
                 .portMappings(List.of(
                         PortMapping.builder()
                                 .containerPort(8080)
@@ -234,13 +228,13 @@ public class ServicesStack extends Stack {
                 .readOnly(false)
                 .build());
 
-        // API ECS - No task needs to run initially
+        // API ECS
         FargateService apiService = FargateService.Builder.create(this, "bsn-api-ecs")
                 .serviceName("bsn-api")
-                .cluster(ecsCluster)
+                .cluster(cluster)
                 .taskDefinition(apiTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
-                .desiredCount(0)
+                .desiredCount(1)
                 .availabilityZoneRebalancing(AvailabilityZoneRebalancing.ENABLED)
                 .healthCheckGracePeriod(Duration.seconds(0))
                 .deploymentStrategy(DeploymentStrategy.ROLLING)
@@ -283,7 +277,7 @@ public class ServicesStack extends Stack {
         keycloakTask.addContainer("bsn-keycloak-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-keycloak")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-keycloak:latest"))
+                .image(ContainerImage.fromRegistry(REPOSITORY_NAME + "/bsn-keycloak:" + TAG_VERSION))
                 .portMappings(List.of(
                         PortMapping.builder()
                                 .containerPort(8080)
@@ -314,13 +308,13 @@ public class ServicesStack extends Stack {
                 .command(List.of("start", "--import-realm"))
                 .build());
 
-        // Keycloak ECS - No task needs to run initially
+        // Keycloak ECS
         FargateService keycloakService = FargateService.Builder.create(this, "bsn-keycloak-ecs")
                 .serviceName("bsn-keycloak")
-                .cluster(ecsCluster)
+                .cluster(cluster)
                 .taskDefinition(keycloakTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
-                .desiredCount(0)
+                .desiredCount(1)
                 .availabilityZoneRebalancing(AvailabilityZoneRebalancing.ENABLED)
                 .healthCheckGracePeriod(Duration.seconds(0))
                 .deploymentStrategy(DeploymentStrategy.ROLLING)
