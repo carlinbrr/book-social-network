@@ -324,6 +324,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: apps/web/package-lock.json
 
+      - name: Install envsubst
+        run: |
+          set -eu
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+
       - name: Install dependencies
         run: |
           set -eu
@@ -331,9 +337,16 @@ jobs:
           npm ci
 
       - name: Build Application
+        env:
+          API_URL: ${{ vars.API_URL }}
+          KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+          KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
+          KEYCLOAK_CLIENT: ${{ vars.KEYCLOAK_CLIENT }}
         run: |
           set -eu
           cd apps/web
+          envsubst < config/environment-cloud.json > src/assets/environment.json
+          echo "Generated cloud environment.json"
           npm run build
 
       - name: Download CloudFormation Stacks
