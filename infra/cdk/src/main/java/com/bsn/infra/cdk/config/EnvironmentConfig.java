@@ -32,7 +32,8 @@ public class EnvironmentConfig {
     public static final String KEYCLOAK_ADMIN_USER = System.getenv("KEYCLOAK_ADMIN_USER");
     public static final String KEYCLOAK_ADMIN_PASSWORD = System.getenv("KEYCLOAK_ADMIN_PASSWORD");
 
-    // Tag Version
-    public static final String TAG_VERSION =  System.getenv("TAG_VERSION");
+    // Docker Image
+    public static final String REPOSITORY_NAME = System.getenv("REPOSITORY_NAME");
+    public static final String TAG_VERSION = System.getenv("TAG_VERSION");
 
 }

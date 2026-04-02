@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Cloud
     outputs:
-      vpc_private_subnet_1: ${{ steps.network_outputs.outputs.vpc_private_subnet_1}}
-      vpc_private_subnet_2: ${{ steps.network_outputs.outputs.vpc_private_subnet_2}}
-      ecs_sg: ${{ steps.network_outputs.outputs.ecs_sg}}
+      vpc_private_subnet_1: ${{ steps.network-outputs.outputs.vpc_private_subnet_1}}
+      vpc_private_subnet_2: ${{ steps.network-outputs.outputs.vpc_private_subnet_2}}
+      ecs_sg: ${{ steps.network-outputs.outputs.ecs_sg}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -34,24 +34,25 @@ jobs:
 
       - name: Run CDK Jar
         env:
-          ROOT_DB_USER: ${{ vars.ROOT_DB_USER }}
-          API_DDL_USER: ${{ vars.API_DDL_USER }}
-          API_DML_USER: ${{ vars.API_DML_USER }}
-          KEYCLOAK_DB_USER: ${{ vars.KEYCLOAK_DB_USER }}
+          ROOT_DB_USER: ${{ secrets.ROOT_DB_USER }}
+          API_DDL_USER: ${{ secrets.API_DDL_USER }}
+          API_DML_USER: ${{ secrets.API_DML_USER }}
+          KEYCLOAK_DB_USER: ${{ secrets.KEYCLOAK_DB_USER }}
           ALB_CERTIFICATE_ARN: ${{ vars.ALB_CERTIFICATE_ARN }}
           CLOUDFRONT_CERTIFICATE_ARN: ${{ vars.CLOUDFRONT_CERTIFICATE_ARN }}
           HOSTED_ZONE_ID: ${{ vars.HOSTED_ZONE_ID }}
           BSN_DOMAIN: ${{ vars.BSN_DOMAIN }}
           MAIL_HOST: ${{ vars.MAIL_HOST }}
           MAIL_PORT: ${{ vars.MAIL_PORT }}
-          MAIL_USER: ${{ vars.MAIL_USER }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           FRONTEND_URL: ${{ vars.FRONTEND_URL }}
           BSN_USERS_API_URL: ${{ vars.BSN_USERS_API_URL }}
           JWT_ISSUER_URI: ${{ vars.JWT_ISSUER_URI }}
           KEYCLOAK_HOST: ${{ vars.KEYCLOAK_HOST }}
-          KEYCLOAK_ADMIN_USER: ${{ vars.KEYCLOAK_ADMIN_USER }}
+          KEYCLOAK_ADMIN_USER: ${{ secrets.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
           TAG_VERSION: ${{ vars.TAG_VERSION }}
         run: |
           cd infra/cdk
@@ -74,8 +75,8 @@ jobs:
           aws cloudformation deploy --stack-name DnsStack --template-file cdk.out/DnsStack.template.json
           aws cloudformation deploy --stack-name MigrationStack --template-file cdk.out/MigrationStack.template.json --capabilities CAPABILITY_IAM
 
-      - name: Read and Save NetworkStack Outputs
-        id: network_outputs
+      - name: Read & Save NetworkStack Outputs
+        id: network-outputs
         run: |
           VPC_PRIVATE_SUBNET_1=$(aws cloudformation describe-stacks \
             --stack-name NetworkStack \
@@ -96,17 +97,81 @@ jobs:
           echo "vpc_private_subnet_2=$VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
           echo "ecs_sg=$ECS_SG" >> "$GITHUB_OUTPUT"
 
-  deploy-mitigations:
-    name: Deploy Mitigations
+  deploy-migrations:
+    name: Deploy Migrations
     runs-on: ubuntu-latest
     needs: deploy-infra
     steps:
-      - name: Read deploy-infra Outputs
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push to DockerHub
+        uses: docker/build-push-action@v7
+        with:
+          context: platform/database
+          file: platform/database/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:latest
+
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Render Task definition
+        id: render-container
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition-family: bsn-migration
+          container-name: bsn-migration
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:latest
+
+      - name: Register Task Definition
+        env:
+          TASK_DEFINITION_FILE: ${{ steps.render-container.outputs.task-definition }}
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://$TASK_DEFINITION_FILE
+
+      - name: Run Task
         env:
           VPC_PRIVATE_SUBNET_1: ${{ needs.deploy-infra.outputs.vpc_private_subnet_1 }}
           VPC_PRIVATE_SUBNET_2: ${{ needs.deploy-infra.outputs.vpc_private_subnet_2 }}
           ECS_SG: ${{ needs.deploy-infra.outputs.ecs_sg }}
         run: |
-          echo "VPC Private Subnet 1: $VPC_PRIVATE_SUBNET_1"
-          echo "VPC Private Subnet 2: $VPC_PRIVATE_SUBNET_2"
-          echo "ECS Security Group: $ECS_SG"
+          TASK_ARN=$(aws ecs run-task \
+            --cluster bsn \
+            --launch-type FARGATE \
+            --task-definition bsn-migration \
+            --network-configuration "awsvpcConfiguration={subnets=[$VPC_PRIVATE_SUBNET_1,$VPC_PRIVATE_SUBNET_2],securityGroups=[$ECS_SG],assignPublicIp=DISABLED}" \
+            --query 'tasks[0].taskArn' \
+            --output text)
+          
+          echo "Task ARN: $TASK_ARN"
+          
+          aws ecs wait tasks-stopped \
+            --cluster bsn \
+            --tasks "$TASK_ARN"
+          
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster bsn \
+            --tasks "$TASK_ARN" \
+            --query 'tasks[0].containers[0].exitCode' \
+            --output text)
+          
+          echo "Exit code: $EXIT_CODE"
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            exit 1
+          fi

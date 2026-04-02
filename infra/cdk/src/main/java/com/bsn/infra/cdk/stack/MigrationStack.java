@@ -34,7 +34,7 @@ public class MigrationStack extends Stack {
         migrationTask.addContainer("bsn-migration-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-migration")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-migration:" + TAG_VERSION))
+                .image(ContainerImage.fromRegistry(REPOSITORY_NAME + "/bsn-migration:" + TAG_VERSION))
                 .environment(
                         Map.of(
                                 "HOST", rds.getDbInstanceEndpointAddress()
