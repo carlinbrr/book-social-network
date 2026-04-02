@@ -321,12 +321,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
 
       - name: Install dependencies
         run: |
           set -eu
           cd apps/web
-          npm install
+          npm ci
 
       - name: Build Application
         run: |
