@@ -92,8 +92,8 @@ jobs:
             --query "Stacks[0].Outputs[?OutputKey=='bsnEcsSgId'].OutputValue" \
             --output text)
           
-          echo "vpc_private_subnet_1=VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"
-          echo "vpc_private_subnet_2=VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
+          echo "vpc_private_subnet_1=$VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"
+          echo "vpc_private_subnet_2=$VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
           echo "ecs_sg=$ECS_SG" >> "$GITHUB_OUTPUT"
 
   deploy-mitigations:
