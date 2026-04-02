@@ -1,20 +1,26 @@
-name: BSN Release Pipeline
+name: BSN Release CD Pipeline
 
 on:
   push:
-    branches:
-      - feature/Pipeline-aws-enhancement
+    tags:
+      - '*'
 
 jobs:
   generate-infra:
     name: Generate Infra
     runs-on: ubuntu-24.04
     environment: Cloud
+    outputs:
+      tag_version: ${{ steps.tag-version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+
+      - name: Extract Tag Version
+        id: tag-version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Setup JDK
         uses: actions/setup-java@v5
@@ -52,7 +58,7 @@ jobs:
           KEYCLOAK_ADMIN_USER: ${{ secrets.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
           REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TAG_VERSION: latest
+          TAG_VERSION: ${{ steps.tag-version.outputs.version }}
         run: |
           set -eu
           echo "Synthesizing CloudFormation templates with CDK jar..."
@@ -190,7 +196,7 @@ jobs:
   deploy-migrations:
     name: Deploy Migrations
     runs-on: ubuntu-24.04
-    needs: [deploy-network, deploy-storage, deploy-compute]
+    needs: [generate-infra, deploy-network, deploy-storage, deploy-compute]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -203,12 +209,15 @@ jobs:
 
       - name: Build & Push Migration Image to DockerHub
         uses: docker/build-push-action@v7
+        env:
+          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: platform/database
           file: platform/database/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:latest
+          tags: $REPOSITORY_NAME/bsn-migration:$TAG_VERSION, $REPOSITORY_NAME/bsn-migration:latest
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
@@ -288,7 +297,7 @@ jobs:
   deploy-services:
     name: Deploy Services
     runs-on: ubuntu-24.04
-    needs: deploy-migrations
+    needs: [generate-infra, deploy-migrations]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -301,21 +310,27 @@ jobs:
 
       - name: Build & Push API Image to DockerHub
         uses: docker/build-push-action@v7
+        env:
+          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: apps/api
           file: apps/api/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
+          tags: $REPOSITORY_NAME/bsn-api:$TAG_VERSION, $REPOSITORY_NAME/bsn-api:latest
 
       - name: Build & Push Keycloak Image to DockerHub
         uses: docker/build-push-action@v7
+        env:
+          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: platform/iam
           file: platform/iam/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-keycloak:latest
+          tags: $REPOSITORY_NAME/bsn-keycloak:$TAG_VERSION, $REPOSITORY_NAME/bsn-keycloak:latest
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
@@ -361,16 +376,22 @@ jobs:
       - name: Install envsubst
         run: |
           set -eu
+
+          echo "Installing envsubst..."
           sudo apt-get update
           sudo apt-get install -y gettext-base
+          echo "envsubst installed successfully"
 
-      - name: Install dependencies
+      - name: Install Web Dependencies
         run: |
           set -eu
           cd apps/web
-          npm ci
 
-      - name: Build Application
+          echo "Installing web dependencies..."
+          npm ci
+          echo "Dependencies installed successfully"
+
+      - name: Build Web Application
         env:
           API_URL: ${{ vars.API_URL }}
           KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
@@ -379,12 +400,14 @@ jobs:
         run: |
           set -eu
           cd apps/web
-          echo "Generating frontend runtime configuration..."
+
+          echo "Generating web runtime configuration..."
           envsubst < config/environment-cloud.json > src/assets/environment.json
           echo "Generated cloud environment.json"
-          echo "Building frontend application..."
+
+          echo "Building web application..."
           npm run build
-          echo "Frontend application built successfully"
+          echo "Web application built successfully"
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
