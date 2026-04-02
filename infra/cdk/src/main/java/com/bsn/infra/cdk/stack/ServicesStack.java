@@ -234,13 +234,13 @@ public class ServicesStack extends Stack {
                 .readOnly(false)
                 .build());
 
-        // API ECS - No task needs to run initially
+        // API ECS
         FargateService apiService = FargateService.Builder.create(this, "bsn-api-ecs")
                 .serviceName("bsn-api")
                 .cluster(ecsCluster)
                 .taskDefinition(apiTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
-                .desiredCount(0)
+                .desiredCount(1)
                 .availabilityZoneRebalancing(AvailabilityZoneRebalancing.ENABLED)
                 .healthCheckGracePeriod(Duration.seconds(0))
                 .deploymentStrategy(DeploymentStrategy.ROLLING)
@@ -314,13 +314,13 @@ public class ServicesStack extends Stack {
                 .command(List.of("start", "--import-realm"))
                 .build());
 
-        // Keycloak ECS - No task needs to run initially
+        // Keycloak ECS
         FargateService keycloakService = FargateService.Builder.create(this, "bsn-keycloak-ecs")
                 .serviceName("bsn-keycloak")
                 .cluster(ecsCluster)
                 .taskDefinition(keycloakTask)
                 .taskDefinitionRevision(TaskDefinitionRevision.LATEST)
-                .desiredCount(0)
+                .desiredCount(1)
                 .availabilityZoneRebalancing(AvailabilityZoneRebalancing.ENABLED)
                 .healthCheckGracePeriod(Duration.seconds(0))
                 .deploymentStrategy(DeploymentStrategy.ROLLING)
