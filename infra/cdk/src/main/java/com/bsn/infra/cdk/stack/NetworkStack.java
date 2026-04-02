@@ -1,5 +1,6 @@
 package com.bsn.infra.cdk.stack;
 
+import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.*;
@@ -51,17 +52,17 @@ public class NetworkStack extends Stack {
         // VPC and subnets
         vpc = Vpc.Builder
                 .create(this, "bsn-vpc")
-                .vpcName("bsn-vpc")
+                .vpcName("bsn")
                 .maxAzs(2)
                 .natGateways(1)
                 .subnetConfiguration(List.of(
                         SubnetConfiguration.builder()
-                                .name("bsn-public-subnet")
+                                .name("bsn-public")
                                 .subnetType(SubnetType.PUBLIC)
                                 .cidrMask(24)
                                 .build(),
                         SubnetConfiguration.builder()
-                                .name("bsn-private-subnet")
+                                .name("bsn-private")
                                 .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
                                 .cidrMask(24)
                                 .build()
@@ -71,7 +72,7 @@ public class NetworkStack extends Stack {
         // Security Groups and inbound/outbound rules for ALB, ECS, RDS AND EFS
         albSg = SecurityGroup.Builder.create(this, "bsn-alb-sg")
                 .vpc(vpc)
-                .securityGroupName("bsn-alb-sg")
+                .securityGroupName("bsn-alb")
                 .allowAllOutbound(false)
                 .description("Security group for ALB")
                 .build();
@@ -80,7 +81,7 @@ public class NetworkStack extends Stack {
 
         ecsSg = SecurityGroup.Builder.create(this, "bsn-ecs-sg")
                 .vpc(vpc)
-                .securityGroupName("bsn-ecs-sg")
+                .securityGroupName("bsn-ecs")
                 .allowAllOutbound(true)
                 .description("Security group for ECS")
                 .build();
@@ -92,7 +93,7 @@ public class NetworkStack extends Stack {
 
         rdsSg = SecurityGroup.Builder.create(this, "bsn-rds-sg")
                 .vpc(vpc)
-                .securityGroupName("bsn-rds-sg")
+                .securityGroupName("bsn-rds")
                 .allowAllOutbound(true)
                 .description("Security group for RDS")
                 .build();
@@ -100,11 +101,24 @@ public class NetworkStack extends Stack {
 
         efsSg = SecurityGroup.Builder.create(this, "bsn-efs-sg")
                 .vpc(vpc)
-                .securityGroupName("bsn-efs-sg")
+                .securityGroupName("bsn-efs")
                 .allowAllOutbound(true)
                 .description("Security group for EFS")
                 .build();
         efsSg.addIngressRule(ecsSg, Port.tcp(2049), "Allow TCP 2049 from ECS");
+
+        // Outputs
+        CfnOutput.Builder.create(this, "bsn-subnet-private-1-id")
+                .value(vpc.getPrivateSubnets().get(0).getSubnetId())
+                .build();
+
+        CfnOutput.Builder.create(this, "bsn-subnet-private-2-id")
+                .value(vpc.getPrivateSubnets().get(1).getSubnetId())
+                .build();
+
+        CfnOutput.Builder.create(this, "bsn-ecs-sg-id")
+                .value(ecsSg.getSecurityGroupId())
+                .build();
     }
 
 }

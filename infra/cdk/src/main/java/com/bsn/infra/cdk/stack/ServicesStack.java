@@ -196,7 +196,7 @@ public class ServicesStack extends Stack {
         ContainerDefinition apiContainer = apiTask.addContainer("bsn-api-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-api")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-api:latest"))
+                .image(ContainerImage.fromRegistry("carlinbrr/bsn-api:" + TAG_VERSION))
                 .portMappings(List.of(
                         PortMapping.builder()
                                 .containerPort(8080)
@@ -283,7 +283,7 @@ public class ServicesStack extends Stack {
         keycloakTask.addContainer("bsn-keycloak-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-keycloak")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-keycloak:latest"))
+                .image(ContainerImage.fromRegistry("carlinbrr/bsn-keycloak:" + TAG_VERSION))
                 .portMappings(List.of(
                         PortMapping.builder()
                                 .containerPort(8080)

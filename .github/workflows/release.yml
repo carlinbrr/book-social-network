@@ -12,7 +12,7 @@ jobs:
     environment: Cloud
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -48,6 +48,7 @@ jobs:
           KEYCLOAK_HOST: ${{ vars.KEYCLOAK_HOST }}
           KEYCLOAK_ADMIN_USER: ${{ vars.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          TAG_VERSION: ${{ vars.TAG_VERSION }}
         run: |
           cd infra/cdk
           java -jar target/cdk-1.0-SNAPSHOT.jar

@@ -10,6 +10,8 @@ import software.constructs.Construct;
 
 import java.util.Map;
 
+import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
+
 public class MigrationStack extends Stack {
 
     public MigrationStack(Construct scope, String id, StackProps props,
@@ -32,7 +34,7 @@ public class MigrationStack extends Stack {
         migrationTask.addContainer("bsn-migration-container", ContainerDefinitionOptions.builder()
                 .containerName("bsn-migration")
                 .essential(true)
-                .image(ContainerImage.fromRegistry("carlinbrr/bsn-migration:latest"))
+                .image(ContainerImage.fromRegistry("carlinbrr/bsn-migration:" + TAG_VERSION))
                 .environment(
                         Map.of(
                                 "HOST", rds.getDbInstanceEndpointAddress()
