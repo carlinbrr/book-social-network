@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate-infra:
-    name: Deploy Infra
+    name: Generate Infra
     runs-on: ubuntu-latest
     environment: Cloud
     steps:
@@ -52,7 +52,7 @@ jobs:
           KEYCLOAK_ADMIN_USER: ${{ secrets.KEYCLOAK_ADMIN_USER }}
           KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
           REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TAG_VERSION: ${{ vars.TAG_VERSION }}
+          TAG_VERSION: latest
         run: |
           set -eu
           echo "Synthesizing CloudFormation templates with CDK jar..."
@@ -322,7 +322,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
         run: |
