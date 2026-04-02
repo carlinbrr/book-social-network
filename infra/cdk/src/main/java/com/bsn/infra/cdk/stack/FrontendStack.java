@@ -1,5 +1,6 @@
 package com.bsn.infra.cdk.stack;
 
+import software.amazon.awscdk.CfnOutput;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -92,6 +93,12 @@ public class FrontendStack extends Stack {
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
                         .build())
                 .certificate(cloudfrontCertificate)
+                .build();
+
+        // Outputs
+        CfnOutput.Builder.create(this, "bsn-main-cf-distribution-id-output")
+                .key("bsnMainCfDistributionId")
+                .value(mainCfDistribution.getDistributionId())
                 .build();
     }
 

@@ -118,14 +118,10 @@ jobs:
             --query "Stacks[0].Outputs[?OutputKey=='bsnEcsSgId'].OutputValue" \
             --output text)
 
-          test -n "$VPC_PRIVATE_SUBNET_1"
-          test -n "$VPC_PRIVATE_SUBNET_2"
-          test -n "$ECS_SG"
-
           echo "Resolved Network Stack outputs successfully"
-          echo "VPC Private subnet 1: $VPC_PRIVATE_SUBNET_1"
-          echo "VPC Private subnet 2: $VPC_PRIVATE_SUBNET_2"
-          echo "ECS security group: $ECS_SG"
+          echo "VPC private subnet 1 id: $VPC_PRIVATE_SUBNET_1"
+          echo "VPC private subnet 2 id: $VPC_PRIVATE_SUBNET_2"
+          echo "ECS security group id: $ECS_SG"
 
           echo "vpc_private_subnet_1=$VPC_PRIVATE_SUBNET_1" >> "$GITHUB_OUTPUT"
           echo "vpc_private_subnet_2=$VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
@@ -399,6 +395,22 @@ jobs:
             --stack-name Frontend \
             --template-file cdk.out/Frontend.template.json
 
+      - name: Read & Save Stack Outputs
+        id: resource-outputs
+        run: |
+          set -eu
+          echo "Reading Frontend outputs..."
+
+          MAIN_CF_DISTRIBUTION=$(aws cloudformation describe-stacks \
+            --stack-name Frontend \
+            --query "Stacks[0].Outputs[?OutputKey=='bsnMainCfDistributionId'].OutputValue" \
+            --output text)
+
+          echo "Resolved Frontend Stack outputs successfully"
+          echo "Main CloudFront distribution id: $MAIN_CF_DISTRIBUTION"
+
+          echo "main_cf_distribution=$MAIN_CF_DISTRIBUTION" >> $GITHUB_OUTPUT
+
       - name: Upload Assets to S3
         run: |
           set -eu
@@ -406,6 +418,18 @@ jobs:
           echo "Uploading frontend assets to S3..."
           aws s3 sync apps/web/dist/web/browser s3://bsn-main --delete
           echo "Frontend assets uploaded successfully"
+
+      - name: Invalidate CloudFront Distribution
+        env:
+          MAIN_CF_DISTRIBUTION: ${{ steps.resource-outputs.outputs.main_cf_distribution }}
+        run: |
+          set -eu
+
+          echo "Invalidating CloudFront distribution..."
+          aws cloudfront create-invalidation \
+            --distribution-id $MAIN_CF_DISTRIBUTION \
+            --paths "/*"
+          echo "CloudFront invalidation created successfully"
 
   deploy-dns:
       name: Deploy DNS
