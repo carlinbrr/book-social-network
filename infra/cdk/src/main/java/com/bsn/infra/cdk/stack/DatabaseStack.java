@@ -6,9 +6,6 @@ import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ec2.InstanceType;
-import software.amazon.awscdk.services.efs.FileSystem;
-import software.amazon.awscdk.services.efs.PerformanceMode;
-import software.amazon.awscdk.services.efs.ThroughputMode;
 import software.amazon.awscdk.services.rds.*;
 import software.amazon.awscdk.services.secretsmanager.ISecret;
 import software.constructs.Construct;
@@ -16,8 +13,9 @@ import software.constructs.Construct;
 import java.util.List;
 
 import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
+import static com.bsn.infra.cdk.config.EnvironmentConfig.KEYCLOAK_DB_USER;
 
-public class StorageStack extends Stack {
+public class DatabaseStack extends Stack {
 
     public static final String API_DATABASE_NAME = "book_social_network";
 
@@ -33,13 +31,11 @@ public class StorageStack extends Stack {
 
     private ISecret keycloakDbSecret;
 
-    private FileSystem efs;
 
-
-    public StorageStack(Construct scope, String id, StackProps props,
-                        Vpc vpc, SecurityGroup rdsSg, SecurityGroup efsSg) {
+    public DatabaseStack(Construct scope, String id, StackProps props,
+                        Vpc vpc, SecurityGroup rdsSg) {
         super(scope, id, props);
-        init(vpc, rdsSg, efsSg);
+        init(vpc, rdsSg);
     }
 
 
@@ -59,11 +55,7 @@ public class StorageStack extends Stack {
         return keycloakDbSecret;
     }
 
-    public FileSystem getEfs() {
-        return efs;
-    }
-
-    private void init(Vpc vpc, SecurityGroup rdsSg, SecurityGroup efsSg) {
+    private void init(Vpc vpc, SecurityGroup rdsSg) {
         // RDS
         rds = DatabaseInstance.Builder.create(this, "bsn-rds")
                 .engine(DatabaseInstanceEngine.postgres(
@@ -112,21 +104,6 @@ public class StorageStack extends Stack {
                 .username(KEYCLOAK_DB_USER)
                 .secretName("bsn-keycloak-db")
                 .dbname(KEYCLOAK_DATABASE_NAME)
-                .build();
-
-        // EFS
-        efs = FileSystem.Builder.create(this, "bsn-efs")
-                .fileSystemName("bsn")
-                .oneZone(false)
-                .enableAutomaticBackups(true)
-                .throughputMode(ThroughputMode.ELASTIC)
-                .performanceMode(PerformanceMode.GENERAL_PURPOSE)
-                .vpc(vpc)
-                .vpcSubnets(SubnetSelection.builder()
-                        .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
-                        .build())
-                .securityGroup(efsSg)
-                .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
     }
 

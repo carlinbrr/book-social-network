@@ -4,7 +4,7 @@
 # Script exits if any command fails or any variable is not set
 set -eu
 
-# Run bootstrap.sh for book_social_network and keycloak, if needed
+# Run bootstrap.sql and privileges.sql for book_social_network, if needed
 export PGPASSWORD="$ROOT_DB_PASSWORD"
 
 DB_EXISTS=$(psql -h "$HOST" -U "$ROOT_DB_USER" -d postgres \
@@ -20,8 +20,20 @@ else
     -v API_DML_USER="$API_DML_USER" \
     -v API_DML_PASSWORD="$API_DML_PASSWORD" \
     -f /init/book_social_network/bootstrap.sql
-  echo "bootstrap completed!"
+  echo "book_social_network bootstrap completed!"
+
+  export PGPASSWORD="$API_DDL_PASSWORD"
+
+  echo "Initializing privileges for book_social_network..."
+  psql -h "$HOST" -U "$API_DDL_USER" -d book_social_network \
+    -v API_DDL_USER="$API_DDL_USER" \
+    -v API_DML_USER="$API_DML_USER" \
+    -f /init/book_social_network/privileges.sql
+  echo "Privileges initialized for book_social_network!"
 fi
+
+# Run bootstrap.sql for keycloak, if needed
+export PGPASSWORD="$ROOT_DB_PASSWORD"
 
 DB_EXISTS=$(psql -h "$HOST" -U "$ROOT_DB_USER" -d postgres \
   -tAc "SELECT 1 FROM pg_database WHERE datname='keycloak'")
@@ -34,17 +46,8 @@ else
     -v KEYCLOAK_DB_USER="$KEYCLOAK_DB_USER" \
     -v KEYCLOAK_DB_PASSWORD="$KEYCLOAK_DB_PASSWORD" \
     -f /init/keycloak/bootstrap.sql
-  echo "bootstrap completed!"
+  echo "keycloak bootstrap completed!"
 fi
-
-export PGPASSWORD="$API_DDL_PASSWORD"
-
-echo "Initializing privileges for book_social_network..."
-psql -h "$HOST" -U "$API_DDL_USER" -d book_social_network \
-  -v API_DDL_USER="$API_DDL_USER" \
-  -v API_DML_USER="$API_DML_USER" \
-  -f /init/book_social_network/privileges.sql
-echo "Privileges initialized for book_social_network!"
 
 unset PGPASSWORD
 

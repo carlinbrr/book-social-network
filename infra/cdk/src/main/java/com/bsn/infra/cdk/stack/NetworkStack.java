@@ -47,7 +47,6 @@ public class NetworkStack extends Stack {
         return efsSg;
     }
 
-
     private void init() {
         // VPC and subnets
         vpc = Vpc.Builder

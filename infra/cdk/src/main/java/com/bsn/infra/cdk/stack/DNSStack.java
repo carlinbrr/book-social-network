@@ -11,7 +11,7 @@ import software.constructs.Construct;
 
 import static com.bsn.infra.cdk.config.EnvironmentConfig.*;
 
-public class DnsStack extends Stack {
+public class DNSStack extends Stack {
 
     private static final String API_RECORD_NAME = "api";
 
@@ -22,7 +22,7 @@ public class DnsStack extends Stack {
     private static final String EMPTY_RECORD_NAME = "";
 
 
-    public DnsStack(Construct scope, String id, StackProps props, ApplicationLoadBalancer alb,
+    public DNSStack(Construct scope, String id, StackProps props, ApplicationLoadBalancer alb,
                     Distribution mainCfDistribution, Distribution redirectCfDistribution) {
         super(scope, id, props);
         init(alb, mainCfDistribution, redirectCfDistribution);

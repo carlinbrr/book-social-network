@@ -21,24 +21,27 @@ public class CdkApp {
 
         NetworkStack networkStack = new NetworkStack(app, "Network", props);
 
-        StorageStack storageStack = new StorageStack(app, "Storage", props,
-                networkStack.getVpc(), networkStack.getRdsSg(), networkStack.getEfsSg());
+        DatabaseStack databaseStack = new DatabaseStack(app, "Database", props,
+                networkStack.getVpc(), networkStack.getRdsSg());
+
+        FileSystemStack fileSystemStack = new FileSystemStack(app, "FileSystem", props,
+                networkStack.getVpc(), networkStack.getEfsSg());
 
         ComputeStack computeStack = new ComputeStack(app, "Compute", props,
                 networkStack.getVpc());
 
         new MigrationStack(app, "Migration", props,
-                storageStack.getRds(), storageStack.getApiDdlSecret(), storageStack.getApiDmlSecret(),
-                storageStack.getKeycloakDbSecret());
+                databaseStack.getRds(), databaseStack.getApiDdlSecret(), databaseStack.getApiDmlSecret(),
+                databaseStack.getKeycloakDbSecret());
 
         ServicesStack servicesStack = new ServicesStack(app, "Services", props,
-                networkStack.getVpc(), networkStack.getEcsSg(), networkStack.getAlbSg(), storageStack.getEfs(),
-                storageStack.getRds(), computeStack.getCluster(), storageStack.getApiDmlSecret(),
-                storageStack.getKeycloakDbSecret());
+                networkStack.getVpc(), networkStack.getEcsSg(), networkStack.getAlbSg(), fileSystemStack.getEfs(),
+                databaseStack.getRds(), computeStack.getCluster(), databaseStack.getApiDmlSecret(),
+                databaseStack.getKeycloakDbSecret());
 
         FrontendStack frontendStack = new FrontendStack(app, "Frontend", props);
 
-        new DnsStack(app, "DNS", props,
+        new DNSStack(app, "DNS", props,
                 servicesStack.getAlb(), frontendStack.getMainCfDistribution(), frontendStack.getRedirectCfDistribution());
 
         app.synth();

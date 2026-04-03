@@ -135,8 +135,8 @@ jobs:
           echo "vpc_private_subnet_2=$VPC_PRIVATE_SUBNET_2" >> "$GITHUB_OUTPUT"
           echo "ecs_sg=$ECS_SG" >> "$GITHUB_OUTPUT"
 
-  deploy-storage:
-    name: Deploy Storage
+  deploy-database:
+    name: Deploy Database
     runs-on: ubuntu-24.04
     needs: deploy-network
     steps:
@@ -158,11 +158,40 @@ jobs:
           set -eu
           cd infra/cdk
 
-          echo "Deploying Storage..."
+          echo "Deploying Database..."
           aws cloudformation deploy \
-            --stack-name Storage \
-            --template-file cdk.out/Storage.template.json
-          echo "Storage deployed successfully"
+            --stack-name Database \
+            --template-file cdk.out/Database.template.json
+          echo "Database deployed successfully"
+
+  deploy-file-system:
+    name: Deploy File System
+    runs-on: ubuntu-24.04
+    needs: deploy-network
+    steps:
+      - name: Download CloudFormation Stacks
+        uses: actions/download-artifact@v8
+        with:
+          name: cdk-out
+          path: infra/cdk/cdk.out
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy Stack
+        run: |
+          set -eu
+          cd infra/cdk
+
+          echo "Deploying FileSystem..."
+          aws cloudformation deploy \
+            --stack-name FileSystem \
+            --template-file cdk.out/FileSystem.template.json
+          echo "FileSystem deployed successfully"
 
   deploy-compute:
     name: Deploy Compute
@@ -196,7 +225,7 @@ jobs:
   deploy-migrations:
     name: Deploy Migrations
     runs-on: ubuntu-24.04
-    needs: [generate-infra, deploy-network, deploy-storage, deploy-compute]
+    needs: [generate-infra, deploy-network, deploy-database, deploy-compute]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -294,7 +323,7 @@ jobs:
   deploy-services:
     name: Deploy Services
     runs-on: ubuntu-24.04
-    needs: [generate-infra, deploy-migrations]
+    needs: [generate-infra, deploy-migrations, deploy-file-system]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
