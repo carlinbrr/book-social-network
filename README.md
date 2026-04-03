@@ -1,8 +1,21 @@
 # 📚 Book Social Network (BSN)
 
-A fullstack platform simulating a social network for book sharing, designed to demonstrate modern software engineering practices including identity management, scalable services, containerized infrastructure, and automated deployment workflows.
+A cloud platform simulating a social network for book sharing, built to demonstrate **modern software engineering practices** including scalable architecture, identity management, infrastructure as code, and CI/CD pipelines.
 
-This project emphasizes **engineering quality over feature quantity**, showing how systems can be structured, developed, secured, and deployed professionally.
+> The application idea and functional features were inspired by a public course.
+> **System architecture, infrastructure, deployment strategy, and engineering practices have been designed and implemented specifically for this project.**
+
+---
+
+## ⚡ Key Highlights
+
+- Fullstack architecture with clear separation of concerns
+- Infrastructure as Code (IaC) using AWS
+- Automated CI/CD pipelines with GitHub Actions
+- Environment portability (development → production)
+- Externalized Identity and Access Management (IAM) with Keycloak
+- Versioned database migrations
+- Production-oriented deployment workflow
 
 ---
 
@@ -12,14 +25,14 @@ The application simulates a social platform centered around book sharing and com
 
 Users can:
 
+- Authenticate securely via an external identity provider
 - Create and manage books
 - Borrow books from other users
 - Leave reviews
 - Mark books as favorites and rate them
 - Manage personal profiles
-- Authenticate securely via an external identity provider
 
-Functional features are intentionally minimal. The focus is on **core interactions** and **clean development practices**.
+Note: Functional features are minimal. Emphasis has been placed on **core interactions** and **clean development practices**.
 
 ---
 
@@ -29,110 +42,52 @@ Book Social Network follows a modular fullstack architecture composed of indepen
 
 ### System Components
 
-- **Frontend** — Angular application handling user interaction.
-- **Backend** — Spring Boot REST API handling business logic and persistence.
-- **Identity Provider** — Keycloak-based identity and access management.
-- **Databases** — PostgreSQL instances for application and identity data.
-- **Custom Identity Extension** — Keycloak SPI for user synchronization.
+- **Frontend** — Angular application handling user interaction
+- **Backend** — Spring Boot REST API handling business logic
+- **IAM** — Keycloak-based IAM
+- **Database** — PostgreSQL instance for application and identity data
+- **Infrastructure** — AWS CDK building Stack templates
 
-### Architectural Principles
-
-- Separation of concerns
-- Domain-Driven Design (DDD) in backend services
-- Externalized identity management
-- OAuth2-based security model
-- Container-first infrastructure
-- Environment portability (development → production)
-- Secure service-to-service communication
-
-Full details on architecture, authentication flows, and deployment diagrams are available in:
-
-```
-docs/architecture.md
-```
+👉 Full details: `docs/architecture.md`
 
 ---
 
-## ⚙️ Technology Stack
+## 🔄 CI/CD
 
-### Backend
+The project uses GitHub Actions to automate validation and delivery workflows:
 
-- Java 21
-- Spring Boot 3
-- Spring Security (OAuth2 Resource Server)
-- JPA / Hibernate
-- Domain-Driven Design (DDD)
-- OpenAPI documentation
-- PostgreSQL
+**Continuous Integration**
+- Triggered on every push and pull request to `main`
+- Builds and validates every developed module independently
+- Ensures code quality and consistency before integration
 
-The backend exposes a REST API responsible for business logic and database interaction, acting as an OAuth2 Resource Server validating JWT tokens issued by Keycloak.
-
-### Frontend
-
-- Angular 20 (Standalone Components)
-- Bootstrap 5
-- Reactive architecture
-- Modern Angular best practices
-- Keycloak JS adapter for authentication integration
-
-The frontend communicates with backend services while delegating authentication to Keycloak.
-
-### Identity & Security
-
-- Keycloak 26 (Identity and Access Management)
-- OAuth2 / OpenID Connect
-- JWT-based authentication
-- Externalized authentication and authorization
-- Custom Keycloak Service Provider Interface (SPI) developed with Java 21
-
-The custom SPI ensures users in Keycloak remain synchronized with the backend domain model.
-
----
-
-## 🚀 Development & Environment Strategy
-
-The system can be run consistently across environments using Docker containers. Infrastructure services such as databases and Keycloak are provided via Docker Compose, making setup **reproducible for local development and future testing**.
-
-For detailed setup instructions, see:
-
-```
-docs/local-development.md
-```
-
----
-
-## 🔄 CI/CD Pipeline
-
-The project uses **GitHub Actions** to automate build, test, and deployment workflows.
-
-- Each **GitHub release/tag triggers the CI/CD pipeline**.
-- Pipeline tasks include:
-    - Building backend and frontend services
-    - Running automated tests (Yet to be included)
-    - Building and publishing Docker images
-    - Deploying services to AWS infrastructure
-    - Managing environment configuration securely via GitHub Secrets
-
-This guarantees reproducible builds, consistent deployments, and a reliable delivery workflow.
+**Continuous Delivery**
+- Triggered on release/tag events
+- Infrastructure is provisioned and updated via IaC
+- Each module is built, versioned and deployed towards designed infrastructure
 
 ---
 
 ## 🚀 Deployment
 
-All services — backend, frontend, Keycloak, databases, and supporting infrastructure — run on a single **AWS EC2 instance** with Docker Compose.
+The system is deployed on AWS following a secure and production-like architecture.
 
-Deployment characteristics:
+- Backend and Keycloak services run as containers behind load balancing
+- Static frontend assets are distributed through a Content Delivery Network (CDN)
+- Persistent data and file storage are managed independently from the application
+- Configuration and secrets are managed securely
+- Custom domain used, with TLS certificates ensuring secure communication
 
-- Container-based service execution
-- Environment portability and isolated configuration
-- Secure integration of all components
-- Adaptable to other infrastructures (e.g., ECS, RDS, S3) for future releases
+👉 See `docs/deployment.md`
 
-For detailed deployment instructions, see:
+---
 
-```
-docs/deployment.md
-```
+## 💻 Local Development
+
+The system can be run easily along its dependent services, such as databases and Keycloak which are provided via Docker Compose, making setup **reproducible for local development and future testing**.
+
+
+👉 See `docs/local-development.md`
 
 ---
 
@@ -140,17 +95,15 @@ docs/deployment.md
 
 The project has evolved through multiple architectural stages:
 
-- **v0.0.1-SNAPSHOT** — Initial local backend with JWT authentication
-- **v2.0** — Containerized infrastructure using Docker and CI/CD workflows
-- **v3.0** — Development and production-ready environment configuration
-- **v4.0** — Migration to external identity management with Keycloak
-- **v5.0** — Minimum Product Value (MVP) functionalities completed
+- **v0.0.1-SNAPSHOT** - Local Foundations
+- **v2.0.0** - Containerized Deployment
+- **v3.0.0** - Environment Portability
+- **v4.0.0** - Keycloak Migration
+- **v5.0.0** - MVP Complete
 
 For a complete release history, see:
 
-```
-CHANGELOG.md
-```
+👉 See `CHANGELOG.md`
 
 ---
 
@@ -163,13 +116,13 @@ book-social-network/
 │     ├── api/                    # Spring Boot backend service
 │     └── web/                    # Angular frontend application
 ├── docs/                         # Architecture, deployment, ADRs, setup guides
-├── infra/                        # Infrastucture as Code (IaC)
+├── infra/                        # IaC
 │     └── cdk/                    # Java AWS CDK Project
 ├── platform/                     # Platform components
 │     ├── database/               # Database configuration
 │     │     ├── init/             # Initialization SQL scripts
 │     │     └── migrations/       # Migration SQL scripts
-│     └── iam/                    # Identity and Access Management (IAM)
+│     └── iam/                    # IAM
 │           ├── keycloak-spi/     # Custom Keycloak extension
 │           └── realms/           # Base Keycloak realm configuration
 └── docker-compose.yml            # Local infrastructure services
@@ -177,23 +130,8 @@ book-social-network/
 
 ---
 
-## 📖 Documentation
-
-Additional documentation is available under `docs/`:
-
-- System architecture (`architecture.md`)
-- Architecture decisions and rationale (`decisions.md`)
-- Deployment and production strategy (`deployment.md`)
-- Local development setup (`local-development.md`)
-
-For detailed information on releases:
-
-- Project evolution and releases (`CHANGELOG.md`)
-
----
-
 ## 🎯 Project Purpose & Personal Approach
 
 This is a personal project that allows me to **apply my professional experience and knowledge** in software development, architecture, and DevOps practices.
 
-The project emphasizes **high-quality architecture, secure integration, and reliable infrastructure**, while maintaining minimal functional features. It is designed to **evolve over time**, serving as a platform to experiment, learn, and integrate new technologies and best practices as I continue to grow as a Software Engineer.
+The project is designed to **evolve over time**, serving as a platform to experiment and integrate new technologies and practices as I continue to grow as a Software Engineer.
