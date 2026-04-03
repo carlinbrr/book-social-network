@@ -209,15 +209,12 @@ jobs:
 
       - name: Build & Push Migration Image to DockerHub
         uses: docker/build-push-action@v7
-        env:
-          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: platform/database
           file: platform/database/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: $REPOSITORY_NAME/bsn-migration:$TAG_VERSION, $REPOSITORY_NAME/bsn-migration:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:${{ needs.generate-infra.outputs.tag_version }}, ${{ secrets.DOCKERHUB_USERNAME }}/bsn-migration:latest
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
@@ -310,27 +307,21 @@ jobs:
 
       - name: Build & Push API Image to DockerHub
         uses: docker/build-push-action@v7
-        env:
-          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: apps/api
           file: apps/api/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: $REPOSITORY_NAME/bsn-api:$TAG_VERSION, $REPOSITORY_NAME/bsn-api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ needs.generate-infra.outputs.tag_version }}, ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
 
       - name: Build & Push Keycloak Image to DockerHub
         uses: docker/build-push-action@v7
-        env:
-          REPOSITORY_NAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TAG_VERSION: ${{ needs.generate-infra.outputs.tag_version }}
         with:
           context: platform/iam
           file: platform/iam/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: $REPOSITORY_NAME/bsn-keycloak:$TAG_VERSION, $REPOSITORY_NAME/bsn-keycloak:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-keycloak:${{ needs.generate-infra.outputs.tag_version }}, ${{ secrets.DOCKERHUB_USERNAME }}/bsn-keycloak:latest
 
       - name: Download CloudFormation Stacks
         uses: actions/download-artifact@v8
