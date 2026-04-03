@@ -71,30 +71,6 @@ jobs:
             --stack-name Migration
           echo "Migration deleted successfully"
 
-  destroy-database:
-    name: Destroy Database
-    runs-on: ubuntu-24.04
-    needs: validate-input
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Delete Stack
-        run: |
-          set -eu
-
-          echo "Deleting Database..."
-          aws cloudformation delete-stack \
-            --stack-name Database
-          echo "Waiting for Database deletion..."
-          aws cloudformation wait stack-delete-complete \
-            --stack-name Database
-          echo "Database deleted successfully"
-
   destroy-frontend:
     name: Destroy Frontend
     runs-on: ubuntu-24.04
@@ -150,6 +126,30 @@ jobs:
           aws cloudformation wait stack-delete-complete \
             --stack-name Services
           echo "Services deleted successfully"
+
+  destroy-database:
+    name: Destroy Database
+    runs-on: ubuntu-24.04
+    needs: destroy-services
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Delete Stack
+        run: |
+          set -eu
+
+          echo "Deleting Database..."
+          aws cloudformation delete-stack \
+            --stack-name Database
+          echo "Waiting for Database deletion..."
+          aws cloudformation wait stack-delete-complete \
+            --stack-name Database
+          echo "Database deleted successfully"
 
   destroy-file-system:
     name: Destroy File System
