@@ -1,4 +1,4 @@
-# Book Social Network (BSN)
+# Book Social Network
 
 A cloud platform simulating a social network for book sharing, built to demonstrate **modern software engineering practices** including scalable architecture, identity management, infrastructure as code, and CI/CD pipelines.
 
