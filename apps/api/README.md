@@ -1,6 +1,6 @@
 # API
 
-Book Social Network Backend service, responsible for business logic, data access, and secure request processing within the platform.
+Book Social Network backend service, responsible for business logic, data access, and secure request processing within the platform.
 
 ---
 
