@@ -128,7 +128,7 @@ book-social-network/
 
 ---
 
-## 9. Project Purpose
+## 9. Purpose
 
 This is a personal project that allows me to **apply my professional experience and knowledge** in software development, architecture, and DevOps practices.
 
