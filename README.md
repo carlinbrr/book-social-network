@@ -38,14 +38,14 @@ Functional features are minimal. Emphasis has been placed on **core interactions
 
 ## 3. Architecture Overview
 
-Book Social Network follows a modular fullstack architecture composed of independent services with clearly separated responsibilities.
+Book Social Network follows a modular fullstack architecture composed of loosely coupled services with clearly separated responsibilities and well-defined runtime dependencies.
 
 ### 3.1 Basic Components
 
 - **Frontend** — Angular application handling user interaction
 - **Backend** — Spring Boot REST API handling business logic
 - **IAM** — Keycloak-based IAM
-- **Database** — PostgreSQL instance for application and identity data
+- **Database** — PostgresSQL instance for application and identity data
 - **Infrastructure** — AWS CDK building Stack templates
 
 Full details on architecture, components and diagrams are available in: [architecture.md](docs/architecture.md)

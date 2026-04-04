@@ -1,8 +1,8 @@
 # Architecture
 
-Book Social Network is structured as a modular system with clear boundaries between application, identity, data and infrastructure layers.
+Book Social Network is structured as a modular system with clear boundaries between application, identity, data, and infrastructure layers.
 
-The design emphasizes loose coupling and well-defined responsibilities, enabling evolution of components without compromising overall system integrity.
+The architecture promotes loose coupling and well-defined responsibilities, while operating as a cohesive platform where components interact through explicit runtime dependencies.
 
 ---
 
@@ -14,7 +14,7 @@ The system follows a layered approach:
 - **Platform layer** provides shared capabilities such as identity and persistence
 - **Infrastructure layer** defines how the system is provisioned, configured, and executed
 
-This separation ensures that core application logic remains independent from infrastructure and external services, while allowing individual components to scale and evolve without impacting the rest of the system.
+This separation allows application logic, platform capabilities, and infrastructure concerns to evolve independently within their respective boundaries.
 
 ---
 
@@ -39,8 +39,6 @@ The backend encapsulates the domain logic of the system.
 - Integrates with identity, acting as OAuth2 Resource Server, and persistence layer
 - Remains stateless, delegating all state management externally
 
-This stateless design enables horizontal scalability and avoids coupling application instances to data or runtime state.
-
 ---
 
 ### 2.3 IAM Layer
@@ -50,8 +48,6 @@ Authentication is externalized to a dedicated identity component.
 - Handles authentication and token issuance
 - Provides identity context to the backend
 - Includes a custom Service Provider Interface (SPI) to align identity data with the application domain
-
-Treating identity as a separate component simplifies backend responsibilities and allows authentication mechanisms to evolve independently.
 
 ---
 
@@ -63,8 +59,6 @@ Persistent data is managed through a relational database with a migration-based 
 - Data structure is controlled and reproducible
 - Changes are treated as part of the system lifecycle
 
-This approach reduces operational risk and ensures consistency across environments.
-
 ---
 
 ### 2.5 File Handling
@@ -73,8 +67,6 @@ User-generated content is treated as a separate concern from application logic.
 
 - Files are not stored within application runtime
 - Storage is handled independently from application services
-
-This prevents application instances from owning state and supports scaling without data coupling.
 
 ---
 
@@ -87,9 +79,7 @@ The system follows a clear interaction model:
 3. The frontend communicates with backend APIs using authenticated context
 4. The backend processes requests and interacts with persistent data
 
-Components interact through well-defined boundaries, ensuring low coupling and predictable system behavior.
-
-### 3.1. High-level System Diagram
+### 3.1 High-level System Diagram
 
 ```
                    +-->  [IAM]  <--+
@@ -108,6 +98,6 @@ The system consistently follows these principles:
 
 - **Separation of concerns** — each component has a clear responsibility
 - **Modularity** — components evolve independently
-- **Externalized identity** — authentication is handled outside the backend
-- **Stateless services** — application logic does not own persistent state
-- **Versioned data evolution** — schema changes are reproducible and controlled
+- **Externalized identity** — removes authentication complexity from business logic
+- **Stateless services** — enables horizontal scalability and simpler deployments
+- **Controlled data evolution** — ensures consistency across environments through versioned changes
