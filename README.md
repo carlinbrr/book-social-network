@@ -1,4 +1,4 @@
-# 📚 Book Social Network (BSN)
+# Book Social Network (BSN)
 
 A cloud platform simulating a social network for book sharing, built to demonstrate **modern software engineering practices** including scalable architecture, identity management, infrastructure as code, and CI/CD pipelines.
 
@@ -7,7 +7,7 @@ A cloud platform simulating a social network for book sharing, built to demonstr
 
 ---
 
-## ⚡ Key Highlights
+## 1. Key Highlights
 
 - Fullstack architecture with clear separation of concerns
 - Infrastructure as Code (IaC) using AWS
@@ -19,28 +19,28 @@ A cloud platform simulating a social network for book sharing, built to demonstr
 
 ---
 
-## ⭐ Application Features
+## 2. Application Features
 
 The application simulates a social platform centered around book sharing and community interaction.
 
 Users can:
 
-- Authenticate securely via an external identity provider
+- Register and authenticate securely via an external identity provider
+- Manage personal profiles
 - Create and manage books
 - Borrow books from other users
 - Leave reviews
 - Mark books as favorites and rate them
-- Manage personal profiles
 
-Note: Functional features are minimal. Emphasis has been placed on **core interactions** and **clean development practices**.
+Functional features are minimal. Emphasis has been placed on **core interactions** and **clean development practices**.
 
 ---
 
-## 🏗️ Architecture Overview
+## 3. Architecture Overview
 
 Book Social Network follows a modular fullstack architecture composed of independent services with clearly separated responsibilities.
 
-### System Components
+### 3.1 Basic Components
 
 - **Frontend** — Angular application handling user interaction
 - **Backend** — Spring Boot REST API handling business logic
@@ -48,11 +48,11 @@ Book Social Network follows a modular fullstack architecture composed of indepen
 - **Database** — PostgreSQL instance for application and identity data
 - **Infrastructure** — AWS CDK building Stack templates
 
-👉 Full details: `docs/architecture.md`
+Full details on architecture, components and diagrams are available in: [architecture.md](docs/architecture.md)
 
 ---
 
-## 🔄 CI/CD
+## 4. CI/CD
 
 The project uses GitHub Actions to automate validation and delivery workflows:
 
@@ -68,7 +68,7 @@ The project uses GitHub Actions to automate validation and delivery workflows:
 
 ---
 
-## 🚀 Deployment
+## 5. Deployment
 
 The system is deployed on AWS following a secure and production-like architecture.
 
@@ -78,22 +78,22 @@ The system is deployed on AWS following a secure and production-like architectur
 - Configuration and secrets are managed securely
 - Custom domain used, with TLS certificates ensuring secure communication
 
-👉 See `docs/deployment.md`
+For detailed deployment strategy, see: [deployment.md](docs/deployment.md)
 
 ---
 
-## 💻 Local Development
+## 6. Local Development
 
 The system can be run easily along its dependent services, such as databases and Keycloak which are provided via Docker Compose, making setup **reproducible for local development and future testing**.
 
 
-👉 See `docs/local-development.md`
+For detailed setup instructions, see: [local-development.md](docs/local-development.md)
 
 ---
 
-## 📦 Releases & Project Evolution
+## 7. Project Evolution
 
-The project has evolved through multiple architectural stages:
+The project has evolved through multiple functional and architectural stages:
 
 - **v0.0.1-SNAPSHOT** - Local Foundations
 - **v2.0.0** - Containerized Deployment
@@ -101,13 +101,11 @@ The project has evolved through multiple architectural stages:
 - **v4.0.0** - Keycloak Migration
 - **v5.0.0** - MVP Complete
 
-For a complete release history, see:
-
-👉 See `CHANGELOG.md`
+For a complete release history, see: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-## 📂 Project Structure
+## 8. Project Structure
 
 ```
 book-social-network/
@@ -130,7 +128,7 @@ book-social-network/
 
 ---
 
-## 🎯 Project Purpose & Personal Approach
+## 9. Project Purpose
 
 This is a personal project that allows me to **apply my professional experience and knowledge** in software development, architecture, and DevOps practices.
 
