@@ -39,6 +39,7 @@ Frontend application responsible for user interaction and presentation, consumin
 ### 3.3 Runtime & Configuration
 - Uses environment-based configuration to adapt to different deployments
 - Can be containerized using the provided Dockerfile and NGINX configuration
+- In cloud environments, distributed as static assets via content delivery
 
 ## 4. Local Development
 
