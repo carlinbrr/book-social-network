@@ -1,59 +1,48 @@
-# BookSocialNetworkWeb
+# Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.6.
+Frontend application responsible for user interaction and presentation, consuming backend APIs and handling authentication flows.
 
-## Development server
+---
 
-To start a local development server, run:
+## 1. Responsibilities
 
-```bash
-ng serve
-```
+- Provide user interface for core features (books, users, feedback)
+- Interact with backend APIs for data and operations
+- Manage client-side state and user interactions
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 2. Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Angular 20
+- TypeScript
+- HTML / SCSS
+- Bootstrap 5
+- OpenAPI Generator
+- Keycloak JS
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 3. System Overview
 
-```bash
-ng generate --help
-```
+### 3.1 Design
+- Built using standalone Angular components, following a component-based architecture
+- Uses Angular Router for structured navigation and route management
+- Protects routes using guards integrated with the authentication flow
+- Delegates authentication flows to external IAM (Keycloak)
 
-## Building
+### 3.2 Implementation Notes
+- Uses OpenAPI Generator to produce API services and models
+- Authentication flow handled through Keycloak JS
+- Adds JWT tokens to outgoing requests via HTTP interceptor
 
-To build the project run:
+### 3.3 Runtime & Configuration
+- Uses environment-based configuration to adapt to different deployments
+- Can be containerized using the provided Dockerfile and NGINX configuration
 
-```bash
-ng build
-```
+## 4. Local Development
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The application depends on external services such as the backend API and IAM system to operate correctly.
+It is not intended to run in isolation.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+For detailed information, see [local-development.md](../../docs/local-development.md)
