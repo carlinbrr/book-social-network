@@ -31,12 +31,14 @@ Book Social Network backend service, responsible for business logic, data access
 - Operates as an OAuth2 Resource Server, enforcing authentication and role-based authorization on endpoints
 
 ### 3.2 Implementation Notes
+
 - Supports request validation and pagination at API level
 - Implements data access using JPA, alongside HQL and Specifications
 - Database schema validated by Hibernate, and managed via Flyway migrations (executed in local environments)
 - Uses structured logging for observability
 
 ### 3.3 Runtime & Configuration
+
 - Uses Maven and Spring profiles to manage build and runtime configuration (e.g. dev, cloud)
 - Can be containerized using the provided Dockerfile for deployment scenarios
 

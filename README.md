@@ -117,12 +117,8 @@ book-social-network/
 ├── infra/                        # IaC
 │     └── cdk/                    # Java AWS CDK Project
 ├── platform/                     # Platform components
-│     ├── database/               # Database configuration
-│     │     ├── init/             # Initialization SQL scripts
-│     │     └── migrations/       # Migration SQL scripts
-│     └── iam/                    # IAM
-│           ├── keycloak-spi/     # Custom Keycloak extension
-│           └── realms/           # Base Keycloak realm configuration
+│     ├── database/               # Database initialization and migration scripts
+│     └── iam/                    # IAM realm configuration and custom extension
 └── docker-compose.yml            # Local infrastructure services
 ```
 
