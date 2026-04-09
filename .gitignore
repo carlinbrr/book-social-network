@@ -3,4 +3,4 @@
 *.iml
 
 # App
-/images/
+apps/api/images/
