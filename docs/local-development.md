@@ -69,7 +69,7 @@ Run the development server:
 
 ## 4. Access
 
-Once everything is running, the backend API will be accessible on http://localhost:8080 and frontend on http://localhost:4200.
+Once everything is running, you will be able to access to the system! The backend API will be accessible on http://localhost:8080 and frontend on http://localhost:4200.
 
 When opening http://localhost:4200 you will be redirected to the Keycloak user login page:
 
