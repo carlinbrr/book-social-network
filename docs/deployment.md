@@ -100,7 +100,7 @@ The migration task is built, published to **Docker Hub** and executed as a one-o
 
 This step updates the application schema before the main backend API service is deployed, ensuring the runtime starts against the expected database structure.
 
-## 3.5 File System
+### 3.5 File System
 
 The file system is provisioned.
 
