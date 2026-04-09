@@ -25,24 +25,24 @@ To run the project locally, you only need:
 
 Open a terminal from the project root directory and start the Docker Compose environment by running:
 
-```bash
-  docker compose up -d
+```
+docker compose up -d
 ```
 
 ### 3.2 Start the backend
 
 Move to the backend module:
 
-```bash
-  cd apps/api
+```
+cd apps/api
 ```
 
 Run the Spring Boot application using the **dev** profile and the required database resources on the classpath.
 
-```bash
-  ./mvnw spring-boot:run \
-    -Dspring-boot.run.profiles=dev \
-    -Dspring-boot.run.additional-classpath-elements=../../platform/database
+```
+./mvnw spring-boot:run \
+  -Dspring-boot.run.profiles=dev \
+  -Dspring-boot.run.additional-classpath-elements=../../platform/database
 ```
 
 This starts the backend API locally and applies the backend database migrations through Flyway.
@@ -51,40 +51,28 @@ This starts the backend API locally and applies the backend database migrations 
 
 Open a new terminal on the project root folder and go to the frontend module:
 
-```bash
-    cd apps/web
+```
+cd apps/web
 ```
 
 Install the dependencies:
 
-```bash
-    npm install
+```
+npm install
 ```
 
 Run the development server:
 
-```bash
-    npm run start
+```
+npm run start
 ```
 
 ## 4. Access
 
 Once everything is running, you will be able to access to the system! The backend API will be accessible on http://localhost:8080 and frontend on http://localhost:4200.
 
-When opening http://localhost:4200 you will be redirected to the Keycloak user login page:
-
-![...](images/local-development-login-page.png)
-
-After logging in:
-
-![...](images/local-development-web-page.png)
+![...](images/local-development-access.png)
 
 To see the development mailbox, open: http://localhost:1080
 
-You will see:
-
-![...](images/local-development-mail-page.png)
-
 And to access Keycloak console as admin user, open: http://localhost:9090
-
-![...](images/local-development-keycloak-admin-page.png)

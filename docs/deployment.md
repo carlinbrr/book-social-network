@@ -26,13 +26,13 @@ In this project:
 - `api.{domain}` routes to the API service
 - `auth.{domain}` routes to the Keycloak service
 
-This keeps internal services behind a single controlled boundary while allowing them to be exposed under separate subdomains.
+In addition to long-term running services, the system includes a dedicated migration task, which is executed as a one-off job during deployment.
 
 ### 2.2 Frontend Delivery
 
 The frontend is deployed as static assets and delivered separately from the services.
 
-Assets are stored in Data Storage Service **(S3)** and distributed through **CloudFront**. A custom domain is attached to the distribution, and **Route 53** records are used to route DNS traffic to the correct endpoints.
+Assets are stored in Data Storage Service **(S3)** and distributed through **CloudFront**.
 
 In this project:
 
@@ -72,25 +72,33 @@ Secrets such as credentials and sensitive configuration are stored externally in
 
 ---
 
+![...](images/deployment-topology.png)
+
+---
+
 ## 3. Deployment Flow
 
 Deployment is fully automated and executed in a fixed order so that infrastructure dependencies are satisfied before services start.
 
+Each stack deployment may either create resources from scratch or update existing ones, through **CloudFormation**, depending on the current state of the system.
+
+---
+
 ### 3.1 Network
 
-The network foundation is created first.
+The network foundation is deployed first.
 
 This establishes the base environment required by all other components.
 
 ### 3.2 Database
 
-The database layer is provisioned next.
+The database layer is deployed next.
 
 This prepares the relational data layer required by both the application and Keycloak services.
 
 ### 3.3 Compute
 
-The shared runtime foundation is created.
+The compute infrastructure for this stack is deployed.
 
 This prepares the environment required to execute containerized workloads.
 
@@ -102,7 +110,7 @@ This step updates the application schema before the main backend API service is 
 
 ### 3.5 File System
 
-The file system is provisioned.
+The file system infrastructure is deployed.
 
 ### 3.6 Services
 
@@ -112,13 +120,13 @@ At this point, the runtime services begin serving traffic behind the load balanc
 
 ### 3.7 Frontend
 
-The frontend delivery layer is provisioned.
+The frontend delivery layer is deployed.
 
 After that, the frontend build artifacts are uploaded, and the CloudFront cache is invalidated so the new version becomes available immediately.
 
 ### 3.8 DNS
 
-DNS records are created last.
+DNS records are created or updated last.
 
 This ensures that public domain records point only to resources that already exist and are ready to receive traffic.
 
@@ -130,7 +138,7 @@ Before deployment, a few shared resources must already exist:
 
 - The public hosted zone for the domain
 - TLS certificates covering the required root domain and subdomains
-- Deployment credentials and secrets required by the system
+- Deployment credentials and all the environment variables required by the system
 
 Without these prerequisites, the final routing and secure public exposure cannot be completed correctly.
 
@@ -138,12 +146,10 @@ Without these prerequisites, the final routing and secure public exposure cannot
 
 ## 5. Result
 
-Once the full flow completes:
+Once the full flow completes, all the **CloudFormation** stacks are deployed:
 
-- The frontend is available through the public website domain
-- API traffic is routed to the backend API service
-- Authentication traffic is routed to the Keycloak service
-- Persistent relational data and shared file storage are available
-- The system is ready to be used as a complete deployed application on `https://www.{domain}`
+![...](images/deployment-stacks.png)
 
-![...](images/aws-deployment.png)
+And the system is ready to be used as a complete deployed application on the configured domain. In my case https://www.cdcollaguazo.com
+
+![...](images/deployment-result.png)
