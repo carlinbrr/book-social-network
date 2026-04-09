@@ -1,4 +1,4 @@
-# 0003. Release-Driven CI/CD Model
+# 0002. Release-Driven CI/CD Model
 
 ## Status
 
