@@ -37,7 +37,7 @@ Move to the backend module:
   cd apps/api
 ```
 
-Run the Spring Boot application using the **dev** profile and the required database resources on the classpath. Note: Replace *BASE_PATH* with your own path.
+Run the Spring Boot application using the **dev** profile and the required database resources on the classpath.
 
 ```bash
   ./mvnw spring-boot:run \
