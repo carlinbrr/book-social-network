@@ -26,17 +26,20 @@ Frontend application responsible for user interaction and presentation, consumin
 ## 3. System Overview
 
 ### 3.1 Design
+
 - Built using standalone Angular components, following a component-based architecture
 - Uses Angular Router for structured navigation and route management
 - Protects routes using guards integrated with the authentication flow
 - Delegates authentication flows to external IAM (Keycloak)
 
 ### 3.2 Implementation Notes
+
 - Uses OpenAPI Generator to produce API services and models
 - Authentication flow handled through Keycloak JS
 - Adds JWT tokens to outgoing requests via HTTP interceptor
 
 ### 3.3 Runtime & Configuration
+
 - Uses environment-based configuration to adapt to different deployments
 - Can be containerized using the provided Dockerfile and NGINX configuration
 - In cloud environments, distributed as static assets via content delivery
