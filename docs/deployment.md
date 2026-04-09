@@ -122,7 +122,7 @@ At this point, the runtime services begin serving traffic behind the load balanc
 
 The frontend delivery layer is deployed.
 
-After that, the frontend build artifacts are uploaded, and the CloudFront cache is invalidated so the new version becomes available immediately.
+After that, the frontend build artifacts are uploaded, and the distribution cache is invalidated so the new version becomes available immediately.
 
 ### 3.8 DNS
 
@@ -146,7 +146,7 @@ Without these prerequisites, the final routing and secure public exposure cannot
 
 ## 5. Result
 
-Once the full flow completes, all the **CloudFormation** stacks are deployed:
+Once the full flow completes, all the stacks are deployed:
 
 ![...](images/deployment-stacks.png)
 
