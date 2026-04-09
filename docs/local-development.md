@@ -69,7 +69,9 @@ npm run start
 
 ## 4. Access
 
-Once everything is running, you will be able to access to the system! The backend API will be accessible on http://localhost:8080 and frontend on http://localhost:4200.
+Once everything is running, you are ready to use the system! The backend API will be accessible on http://localhost:8080 and frontend on http://localhost:4200.
+
+After logging in into the system, through Keycloak, you will be able to see the main page:
 
 ![...](images/local-development-access.png)
 
