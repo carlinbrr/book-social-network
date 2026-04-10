@@ -6,6 +6,27 @@ This project follows a structured release process where each version reflects ar
 
 ---
 
+## [v6.0.0 - Infrastructure as Code](https://github.com/carlinbrr/book-social-network/releases/tag/v6.0.0)
+
+### Added
+
+- Dedicated database module to manage initialization and schema migrations
+- Base Keycloak realm configuration for consistent identity setup across environments
+- Infrastructure as Code (IaC) for provisioning and managing cloud resources
+
+### Changed
+
+- Project structure reorganized to improve modularity and separation of concerns
+- CI/CD pipelines updated to support infrastructure provisioning and coordinated deployment
+
+### Improved
+
+- Reproducibility of environments across local and production setups
+- Consistency in database and identity configuration
+- Deployment reliability through infrastructure automation
+
+---
+
 ## [v5.0.0 - MVP Complete](https://github.com/carlinbrr/book-social-network/releases/tag/v5.0.0)
 
 ### Added
