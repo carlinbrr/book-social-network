@@ -1,4 +1,4 @@
-name: CDK
+name: CI / Keycloak
 
 on:
   pull_request:
@@ -25,7 +25,7 @@ jobs:
       - name: Compile project
         run: |
           set -eu
-          cd infra/cdk
+          cd platform/iam/keycloak-spi
 
           echo "Starting compilation..."
           chmod +x mvnw
