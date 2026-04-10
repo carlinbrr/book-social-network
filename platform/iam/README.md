@@ -20,7 +20,6 @@ iam/
 ├── keycloak-spi/        # Custom extension for identity synchronization
 ├── realms/              # Base realm configuration
 └── Dockerfile           # Container definition for execution
-
 ```
 
 ---
