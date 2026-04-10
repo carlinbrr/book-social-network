@@ -1,4 +1,4 @@
-name: CDK
+name: CDK CI Pipeline
 
 on:
   pull_request:
