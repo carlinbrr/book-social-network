@@ -1,4 +1,4 @@
-name: BSN Release CD Pipeline
+name: Release CD Pipeline
 
 on:
   push:

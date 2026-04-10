@@ -1,4 +1,4 @@
-name: BSN API CI Pipeline
+name: API CI Pipeline
 
 on:
   pull_request:

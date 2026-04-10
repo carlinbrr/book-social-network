@@ -1,4 +1,4 @@
-name: BSN CDK CI Pipeline
+name: CDK CI Pipeline
 
 on:
   pull_request:

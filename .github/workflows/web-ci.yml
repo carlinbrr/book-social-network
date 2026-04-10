@@ -1,4 +1,4 @@
-name: BSN WEB CI Pipeline
+name: Web CI Pipeline
 
 on:
   pull_request:
