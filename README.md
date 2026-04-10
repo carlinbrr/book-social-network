@@ -2,7 +2,7 @@
 
 ![Github Release](https://img.shields.io/github/v/release/carlinbrr/book-social-network)
 
-[![Deploy / Release](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml/badge.svg?branch=main)](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml)
+[![Deploy / Release](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml/badge.svg)](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml)
 
 
 A cloud platform simulating a social network for book sharing, built to demonstrate **modern software engineering practices** including scalable architecture, identity management, infrastructure as code, and CI/CD pipelines.
@@ -106,6 +106,7 @@ The project has evolved through multiple functional and architectural stages:
 - **v3.0.0** - Environment Portability
 - **v4.0.0** - Keycloak Migration
 - **v5.0.0** - MVP Complete
+- **v6.0.0** - Infrastructure as Code
 
 For a complete release history, see: [CHANGELOG.md](CHANGELOG.md)
 
