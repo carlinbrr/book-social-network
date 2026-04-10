@@ -1,6 +1,8 @@
-# Book Social Network
+# Book Social Network 
 
-[![Release Pipeline](https://github.com/carlinbrr/book-social-network/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/carlinbrr/book-social-network/actions/workflows/release.yml)
+![Github Release](https://img.shields.io/github/v/release/carlinbrr/book-social-network)
+
+[![Deploy / Release](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml/badge.svg?branch=main)](https://github.com/carlinbrr/book-social-network/actions/workflows/deploy-release.yml)
 
 
 A cloud platform simulating a social network for book sharing, built to demonstrate **modern software engineering practices** including scalable architecture, identity management, infrastructure as code, and CI/CD pipelines.
