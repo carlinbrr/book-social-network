@@ -1,4 +1,4 @@
-name: Release CD Pipeline
+name: Deploy / Release
 
 on:
   push:
