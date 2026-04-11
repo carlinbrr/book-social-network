@@ -19,16 +19,16 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
 
     @Override
-    public Optional<com.bsn.api.core.entity.User> findById(String id) {
+    public com.bsn.api.core.entity.User findById(String id) {
         Optional<User> jpaUserOptional = jpaUserRepository.findById(id);
 
         if( jpaUserOptional.isPresent() ) {
             User jpaUser = jpaUserOptional.get();
-            return Optional.of(new com.bsn.api.core.entity.User(jpaUser.getKeycloakId(), jpaUser.getFirstName(),
-                    jpaUser.getLastName(), jpaUser.getEmail()));
+            return new com.bsn.api.core.entity.User(jpaUser.getKeycloakId(), jpaUser.getFirstName(),
+                    jpaUser.getLastName(), jpaUser.getEmail());
         }
 
-        return Optional.empty();
+        return null;
     }
 
     @Override
