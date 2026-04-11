@@ -1,5 +1,7 @@
 package com.bsn.api.core.entity;
 
+import com.bsn.api.core.exception.EmailCannotChangeException;
+
 public class User {
 
     private String id;
@@ -33,6 +35,25 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public void updateProfile(String firstName, String lastName, String email) {
+        if ( !this.email.equals(email) ) {
+            throw new EmailCannotChangeException("The email can't be changed once it's set");
+        }
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 
 }

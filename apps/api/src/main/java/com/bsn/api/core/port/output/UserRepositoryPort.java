@@ -2,8 +2,12 @@ package com.bsn.api.core.port.output;
 
 import com.bsn.api.core.entity.User;
 
+import java.util.Optional;
+
 public interface UserRepositoryPort {
 
-    public void save(User user);
+    Optional<User> findById(String id);
+
+    void save(User user);
 
 }

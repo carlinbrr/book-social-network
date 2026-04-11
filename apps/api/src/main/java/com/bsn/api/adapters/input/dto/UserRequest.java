@@ -1,4 +1,4 @@
-package com.bsn.api.adapters.input;
+package com.bsn.api.adapters.input.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

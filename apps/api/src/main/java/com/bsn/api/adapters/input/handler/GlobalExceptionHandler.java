@@ -1,5 +1,6 @@
-package com.bsn.api.legacy.handler;
+package com.bsn.api.adapters.input.handler;
 
+import com.bsn.api.core.exception.EmailCannotChangeException;
 import com.bsn.api.legacy.exception.OperationNotPermittedException;
 import jakarta.mail.MessagingException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -86,6 +87,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OperationNotPermittedException.class)
     public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exception.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(EmailCannotChangeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(EmailCannotChangeException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(

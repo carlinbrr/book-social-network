@@ -1,4 +1,4 @@
-package com.bsn.api.core.port.input;
+package com.bsn.api.core.port.input.command;
 
 public record SaveUserCommand (
         String id,
@@ -6,5 +6,4 @@ public record SaveUserCommand (
         String firstName,
         String lastName
 ){
-
 }

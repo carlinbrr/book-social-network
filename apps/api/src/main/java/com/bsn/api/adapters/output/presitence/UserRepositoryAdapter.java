@@ -5,6 +5,8 @@ import com.bsn.api.adapters.output.presitence.repository.JpaUserRepository;
 import com.bsn.api.core.port.output.UserRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserRepositoryAdapter implements UserRepositoryPort {
 
@@ -13,6 +15,20 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     public UserRepositoryAdapter(JpaUserRepository jpaUserRepository) {
         this.jpaUserRepository = jpaUserRepository;
+    }
+
+
+    @Override
+    public Optional<com.bsn.api.core.entity.User> findById(String id) {
+        Optional<User> jpaUserOptional = jpaUserRepository.findById(id);
+
+        if( jpaUserOptional.isPresent() ) {
+            User jpaUser = jpaUserOptional.get();
+            return Optional.of(new com.bsn.api.core.entity.User(jpaUser.getKeycloakId(), jpaUser.getFirstName(),
+                    jpaUser.getLastName(), jpaUser.getEmail()));
+        }
+
+        return Optional.empty();
     }
 
     @Override

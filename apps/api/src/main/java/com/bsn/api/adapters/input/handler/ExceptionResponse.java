@@ -1,4 +1,4 @@
-package com.bsn.api.legacy.handler;
+package com.bsn.api.adapters.input.handler;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
