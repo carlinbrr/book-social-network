@@ -2,7 +2,7 @@ package com.bsn.api.legacy.feedback;
 
 import com.bsn.api.legacy.book.Book;
 import com.bsn.api.legacy.common.BaseEntity;
-import com.bsn.api.legacy.user.User;
+import com.bsn.api.adapters.output.presitence.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

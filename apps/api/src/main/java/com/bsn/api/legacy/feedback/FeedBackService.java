@@ -4,7 +4,7 @@ import com.bsn.api.legacy.book.Book;
 import com.bsn.api.legacy.book.BookRepository;
 import com.bsn.api.legacy.common.PageResponse;
 import com.bsn.api.legacy.exception.OperationNotPermittedException;
-import com.bsn.api.legacy.user.User;
+import com.bsn.api.adapters.output.presitence.entity.User;
 import com.bsn.api.legacy.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;

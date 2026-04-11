@@ -1,5 +1,7 @@
 package com.bsn.api.legacy.user;
 
+import com.bsn.api.adapters.input.UserRequest;
+import com.bsn.api.adapters.output.presitence.entity.User;
 import org.springframework.stereotype.Service;
 
 @Service

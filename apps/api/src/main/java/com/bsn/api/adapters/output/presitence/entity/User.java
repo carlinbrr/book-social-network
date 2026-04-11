@@ -1,4 +1,4 @@
-package com.bsn.api.legacy.user;
+package com.bsn.api.adapters.output.presitence.entity;
 
 import com.bsn.api.legacy.book.Book;
 import com.bsn.api.legacy.feedback.Feedback;

@@ -1,5 +1,7 @@
-package com.bsn.api.legacy.user;
+package com.bsn.api.adapters.input;
 
+import com.bsn.api.core.port.input.SaveUserCommand;
+import com.bsn.api.core.port.input.SaveUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,17 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("users")
 @Tag(name = "Users", description = "API For Users")
-public class UserController {
+public class UserRestController {
 
-    private final UserService userService;
+    private final SaveUserUseCase saveUserUseCase;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserRestController(SaveUserUseCase saveUserUseCase) {
+        this.saveUserUseCase = saveUserUseCase;
     }
 
     @PostMapping
     public ResponseEntity<?> saveUser(@Valid @RequestBody UserRequest userRequest) {
-        userService.saveUser( userRequest );
+        saveUserUseCase.save( new SaveUserCommand(userRequest.keycloakId(), userRequest.email(),
+                userRequest.firstName(), userRequest.lastName()));
         return new ResponseEntity<>( HttpStatus.CREATED );
     }
 

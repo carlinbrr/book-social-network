@@ -5,7 +5,7 @@ import com.bsn.api.legacy.exception.OperationNotPermittedException;
 import com.bsn.api.legacy.file.FileStorageService;
 import com.bsn.api.legacy.history.BookTransactionHistory;
 import com.bsn.api.legacy.history.BookTransactionHistoryRepository;
-import com.bsn.api.legacy.user.User;
+import com.bsn.api.adapters.output.presitence.entity.User;
 import com.bsn.api.legacy.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
