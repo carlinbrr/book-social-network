@@ -1,6 +1,7 @@
 package com.bsn.api.adapters.input.handler;
 
-import com.bsn.api.core.exception.EmailCannotChangeException;
+import com.bsn.api.core.exception.BookDetailsCannotChangeException;
+import com.bsn.api.core.exception.UserProfileCannotChangeException;
 import com.bsn.api.legacy.exception.OperationNotPermittedException;
 import jakarta.mail.MessagingException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -96,8 +97,19 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(EmailCannotChangeException.class)
-    public ResponseEntity<ExceptionResponse> handleException(EmailCannotChangeException exception) {
+    @ExceptionHandler(UserProfileCannotChangeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(UserProfileCannotChangeException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exception.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(BookDetailsCannotChangeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(BookDetailsCannotChangeException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(

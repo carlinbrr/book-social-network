@@ -1,5 +1,11 @@
-package com.bsn.api.legacy.book;
+package com.bsn.api.adapters.input;
 
+import com.bsn.api.adapters.input.mapper.BookMapper;
+import com.bsn.api.core.port.input.SaveBookUseCase;
+import com.bsn.api.adapters.input.dto.BookRequest;
+import com.bsn.api.legacy.book.BookResponse;
+import com.bsn.api.legacy.book.BookService;
+import com.bsn.api.legacy.book.BorrowedBookResponse;
 import com.bsn.api.legacy.common.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,21 +19,25 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("books")
 @Tag(name = "Book", description = "API for Books")
-public class BookController {
+public class BookRestController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
+    private final SaveBookUseCase saveBookUseCase;
+
+
+    public BookRestController(BookService bookService, SaveBookUseCase saveBookUseCase) {
         this.bookService = bookService;
+        this.saveBookUseCase = saveBookUseCase;
     }
 
     @PostMapping
     @Operation(summary = "Save a new book")
     public ResponseEntity<Integer> saveBook(
-            @Valid @RequestBody BookRequest request,
+            @Valid @RequestBody BookRequest bookRequest,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.save(request, connectedUser));
+        return ResponseEntity.ok(saveBookUseCase.save(BookMapper.toSaveBookCommand(bookRequest, connectedUser)));
     }
 
     @GetMapping("/{book-id}")

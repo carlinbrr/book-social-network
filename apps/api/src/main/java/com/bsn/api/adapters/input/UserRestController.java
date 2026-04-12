@@ -1,7 +1,7 @@
 package com.bsn.api.adapters.input;
 
 import com.bsn.api.adapters.input.dto.UserRequest;
-import com.bsn.api.core.port.input.command.SaveUserCommand;
+import com.bsn.api.adapters.input.mapper.UserMapper;
 import com.bsn.api.core.port.input.SaveUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,8 +25,7 @@ public class UserRestController {
 
     @PostMapping
     public ResponseEntity<?> saveUser(@Valid @RequestBody UserRequest userRequest) {
-        saveUserUseCase.save(new SaveUserCommand(userRequest.keycloakId(), userRequest.email(),
-                userRequest.firstName(), userRequest.lastName()));
+        saveUserUseCase.save(UserMapper.toSaveUserCommand(userRequest));
         return new ResponseEntity<>( HttpStatus.CREATED );
     }
 

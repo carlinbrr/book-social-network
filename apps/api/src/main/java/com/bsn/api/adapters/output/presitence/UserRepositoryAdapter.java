@@ -1,8 +1,10 @@
 package com.bsn.api.adapters.output.presitence;
 
 import com.bsn.api.adapters.output.presitence.entity.User;
+import com.bsn.api.adapters.output.presitence.mapper.UserMapper;
 import com.bsn.api.adapters.output.presitence.repository.JpaUserRepository;
 import com.bsn.api.core.port.output.UserRepositoryPort;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -17,28 +19,23 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         this.jpaUserRepository = jpaUserRepository;
     }
 
-
     @Override
-    public com.bsn.api.core.entity.User findById(String id) {
+    public Optional<com.bsn.api.core.entity.User> findById(String id) {
         Optional<User> jpaUserOptional = jpaUserRepository.findById(id);
-
-        if( jpaUserOptional.isPresent() ) {
-            User jpaUser = jpaUserOptional.get();
-            return new com.bsn.api.core.entity.User(jpaUser.getKeycloakId(), jpaUser.getFirstName(),
-                    jpaUser.getLastName(), jpaUser.getEmail());
-        }
-
-        return null;
+        return jpaUserOptional.map(UserMapper::toUser);
     }
 
     @Override
-    public void save(com.bsn.api.core.entity.User user) {
-        User jpaUser = User.builder()
-                .keycloakId(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .build();
+    public void create(com.bsn.api.core.entity.User user) {
+        jpaUserRepository.save(UserMapper.toJpaUser(user));
+    }
+
+    @Override
+    public void update(com.bsn.api.core.entity.User user) {
+        User jpaUser = jpaUserRepository.findById(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        UserMapper.mergeUser(jpaUser, user);
         jpaUserRepository.save(jpaUser);
     }
 

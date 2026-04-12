@@ -1,5 +1,7 @@
 package com.bsn.api.legacy.book;
 
+import com.bsn.api.adapters.input.dto.BookRequest;
+import com.bsn.api.adapters.output.presitence.entity.Book;
 import com.bsn.api.legacy.file.FileUtils;
 import com.bsn.api.legacy.history.BookTransactionHistory;
 import com.bsn.api.adapters.output.presitence.entity.User;

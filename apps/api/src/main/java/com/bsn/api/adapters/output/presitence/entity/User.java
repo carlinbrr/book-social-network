@@ -1,6 +1,5 @@
 package com.bsn.api.adapters.output.presitence.entity;
 
-import com.bsn.api.legacy.book.Book;
 import com.bsn.api.legacy.feedback.Feedback;
 import com.bsn.api.legacy.history.BookTransactionHistory;
 import jakarta.persistence.*;

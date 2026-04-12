@@ -6,6 +6,8 @@ import com.bsn.api.core.port.input.command.SaveUserCommand;
 import com.bsn.api.core.port.output.LoggingPort;
 import com.bsn.api.core.port.output.UserRepositoryPort;
 
+import java.util.Optional;
+
 public class SaveUserService implements SaveUserUseCase {
 
     private final UserRepositoryPort userRepositoryPort;
@@ -20,20 +22,21 @@ public class SaveUserService implements SaveUserUseCase {
 
     @Override
     public void save(SaveUserCommand command) {
-        User user = userRepositoryPort.findById(command.id());
+        Optional<User> userOptional = userRepositoryPort.findById(command.id());
 
-        if ( user != null ) {
-            user.updateProfile(command.firstName(), command.lastName(), command.email());
+        if ( userOptional.isPresent() ) {
+            User user = userOptional.get();
             loggingPort.info("Updating user: " + user);
-            userRepositoryPort.save(user);
-            loggingPort.info("User successfully updated");
+            user.updateProfile(command.firstName(), command.lastName(), command.email());
+            userRepositoryPort.update(user);
+            loggingPort.info("User successfully updated: " + user);
             return;
         }
 
-        user = new User(command.id(), command.firstName(), command.lastName(), command.email());
-        loggingPort.info("Saving user: " + user);
-        userRepositoryPort.save(user);
-        loggingPort.info("User successfully saved");
+        User user = new User(command.id(), command.firstName(), command.lastName(), command.email());
+        loggingPort.info("Creating user: " + user);
+        userRepositoryPort.create(user);
+        loggingPort.info("User successfully created");
     }
 
 }

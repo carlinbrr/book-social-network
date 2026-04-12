@@ -1,17 +1,16 @@
 package com.bsn.api.core.entity;
 
-import com.bsn.api.core.exception.EmailCannotChangeException;
+import com.bsn.api.core.exception.UserProfileCannotChangeException;
 
 public class User {
 
-    private String id;
+    private final String id;
 
     private String firstName;
 
     private String lastName;
 
-    private String email;
-
+    private final String email;
 
     public String getId() {
         return id;
@@ -39,7 +38,7 @@ public class User {
 
     public void updateProfile(String firstName, String lastName, String email) {
         if ( !this.email.equals(email) ) {
-            throw new EmailCannotChangeException("The email can't be changed once it's set");
+            throw new UserProfileCannotChangeException("Email can't be changed once it's set");
         }
 
         this.firstName = firstName;

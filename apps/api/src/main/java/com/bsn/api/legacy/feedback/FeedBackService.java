@@ -1,6 +1,6 @@
 package com.bsn.api.legacy.feedback;
 
-import com.bsn.api.legacy.book.Book;
+import com.bsn.api.adapters.output.presitence.entity.Book;
 import com.bsn.api.legacy.book.BookRepository;
 import com.bsn.api.legacy.common.PageResponse;
 import com.bsn.api.legacy.exception.OperationNotPermittedException;

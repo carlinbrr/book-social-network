@@ -1,5 +1,6 @@
 package com.bsn.api.legacy.book;
 
+import com.bsn.api.adapters.output.presitence.entity.Book;
 import org.springframework.data.jpa.domain.Specification;
 
 public class BookSpecification {
