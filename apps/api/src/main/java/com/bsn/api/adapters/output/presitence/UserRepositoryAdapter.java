@@ -4,7 +4,6 @@ import com.bsn.api.adapters.output.presitence.entity.User;
 import com.bsn.api.adapters.output.presitence.mapper.UserMapper;
 import com.bsn.api.adapters.output.presitence.repository.JpaUserRepository;
 import com.bsn.api.core.port.output.UserRepositoryPort;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -32,8 +31,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public void update(com.bsn.api.core.entity.User user) {
-        User jpaUser = jpaUserRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User jpaUser = jpaUserRepository.findById(user.getId()).orElseThrow( () ->
+                new IllegalStateException("User not found"));
 
         UserMapper.mergeUser(jpaUser, user);
         jpaUserRepository.save(jpaUser);
