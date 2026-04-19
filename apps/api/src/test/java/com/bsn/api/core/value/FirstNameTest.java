@@ -37,7 +37,7 @@ public class FirstNameTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class FirstNameTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class FirstNameTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -88,7 +88,7 @@ public class FirstNameTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test

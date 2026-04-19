@@ -41,7 +41,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -80,7 +80,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -134,7 +134,7 @@ public class UserTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
 }

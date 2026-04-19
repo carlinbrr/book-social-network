@@ -27,7 +27,7 @@ public class SaveUserServiceTest {
 
     @Test
     @DisplayName("Given a non existing user when save then user is created")
-    void givenNonExistingUser_whenSave_thenUserIsCreated() {
+    public void givenNonExistingUser_whenSave_thenUserIsCreated() {
         SaveUserCommand command = new SaveUserCommand("abc-123", "John", "Doe",
                 "john@mail.com");
 
@@ -47,7 +47,7 @@ public class SaveUserServiceTest {
 
     @Test
     @DisplayName("Given an existing user when save then user is updated")
-    void givenExistingUser_whenSave_thenUserIsUpdated() {
+    public void givenExistingUser_whenSave_thenUserIsUpdated() {
         SaveUserCommand command = new SaveUserCommand("abc-123", "Juan", "Pérez",
                 "john@mail.com");
 

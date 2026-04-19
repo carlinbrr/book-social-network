@@ -37,7 +37,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -88,7 +88,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -103,7 +103,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
@@ -133,7 +133,7 @@ public class EmailTest {
             return;
         }
 
-        fail();
+        fail("IllegalArgumentException should have been thrown");
     }
 
     @Test
