@@ -25,17 +25,17 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public void create(com.bsn.api.core.entity.User user) {
-        jpaUserRepository.save(UserMapper.toJpaUser(user));
+    public com.bsn.api.core.entity.User create(com.bsn.api.core.entity.User user) {
+        return UserMapper.toUser(jpaUserRepository.save(UserMapper.toJpaUser(user)));
     }
 
     @Override
-    public void update(com.bsn.api.core.entity.User user) {
-        User jpaUser = jpaUserRepository.findById(user.getId()).orElseThrow( () ->
+    public com.bsn.api.core.entity.User update(com.bsn.api.core.entity.User user) {
+        User jpaUser = jpaUserRepository.findById(user.getId().getValue()).orElseThrow( () ->
                 new IllegalStateException("User not found"));
 
         UserMapper.mergeUser(jpaUser, user);
-        jpaUserRepository.save(jpaUser);
+        return UserMapper.toUser(jpaUserRepository.save(jpaUser));
     }
 
 }

@@ -1,48 +1,78 @@
 package com.bsn.api.core.entity;
 
-import com.bsn.api.core.exception.UserProfileCannotChangeException;
+import com.bsn.api.core.value.Email;
+import com.bsn.api.core.value.FirstName;
+import com.bsn.api.core.value.LastName;
+import com.bsn.api.core.value.UserId;
 
 public class User {
 
-    private final String id;
+    private final UserId id;
 
-    private String firstName;
+    private FirstName firstName;
 
-    private String lastName;
+    private LastName lastName;
 
-    private final String email;
+    private final Email email;
 
-    public String getId() {
+
+    public UserId getId() {
         return id;
     }
 
-    public String getFirstName() {
+    public FirstName getFirstName() {
         return firstName;
     }
 
-    public String getLastName() {
+    public LastName getLastName() {
         return lastName;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
 
-    public User(String id, String firstName, String lastName, String email) {
+    private User(UserId id, FirstName firstName, LastName lastName, Email email) {
+        if (id == null) {
+            throw new IllegalArgumentException("User id cannot be null");
+        }
+
+        if (email == null) {
+            throw new IllegalArgumentException("Email cannot be null");
+        }
+
+        validateRequired(firstName, lastName);
+
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
 
-    public void updateProfile(String firstName, String lastName, String email) {
-        if ( !this.email.equals(email) ) {
-            throw new UserProfileCannotChangeException("Email can't be changed once it's set");
-        }
+    public static User createNew(UserId id, FirstName firstName, LastName lastName, Email email) {
+        return new User(id, firstName, lastName, email);
+    }
+
+    public void updateProfile(FirstName firstName, LastName lastName) {
+        validateRequired(firstName, lastName);
 
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public static User restore(UserId id, FirstName firstName, LastName lastName, Email email) {
+        return new User(id, firstName, lastName, email);
+    }
+
+    private static void validateRequired(FirstName firstName, LastName lastName) {
+        if (firstName == null) {
+            throw new IllegalArgumentException("First name cannot be null");
+        }
+
+        if (lastName == null) {
+            throw new IllegalArgumentException("Last name cannot be null");
+        }
     }
 
     @Override

@@ -8,8 +8,8 @@ public interface UserRepositoryPort {
 
     Optional<User> findById(String id);
 
-    void create(User user);
+    User create(User user);
 
-    void update(User user);
+    User update(User user);
 
 }

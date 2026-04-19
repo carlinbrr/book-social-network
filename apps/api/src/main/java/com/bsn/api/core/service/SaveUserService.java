@@ -1,6 +1,10 @@
 package com.bsn.api.core.service;
 
 import com.bsn.api.core.entity.User;
+import com.bsn.api.core.value.Email;
+import com.bsn.api.core.value.FirstName;
+import com.bsn.api.core.value.LastName;
+import com.bsn.api.core.value.UserId;
 import com.bsn.api.core.port.input.SaveUserUseCase;
 import com.bsn.api.core.port.input.command.SaveUserCommand;
 import com.bsn.api.core.port.output.LoggingPort;
@@ -21,22 +25,24 @@ public class SaveUserService implements SaveUserUseCase {
     }
 
     @Override
-    public void save(SaveUserCommand command) {
+    public User save(SaveUserCommand command) {
         Optional<User> userOptional = userRepositoryPort.findById(command.id());
 
-        if ( userOptional.isPresent() ) {
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             loggingPort.info("Updating user: " + user);
-            user.updateProfile(command.firstName(), command.lastName(), command.email());
-            userRepositoryPort.update(user);
-            loggingPort.info("User successfully updated: " + user);
-            return;
+            user.updateProfile(new FirstName(command.firstName()), new LastName(command.lastName()));
+            User updatedUser = userRepositoryPort.update(user);
+            loggingPort.info("User successfully updated: " + updatedUser);
+            return updatedUser;
         }
 
-        User user = new User(command.id(), command.firstName(), command.lastName(), command.email());
+        User user = User.createNew(new UserId(command.id()), new FirstName(command.firstName()), new LastName(command.lastName()),
+                new Email(command.email()));
         loggingPort.info("Creating user: " + user);
-        userRepositoryPort.create(user);
+        User createdUser = userRepositoryPort.create(user);
         loggingPort.info("User successfully created");
+        return createdUser;
     }
 
 }
