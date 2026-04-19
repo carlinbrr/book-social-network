@@ -1,9 +1,11 @@
-package com.bsn.api.adapters.input.handler;
+package com.bsn.api.adapters.input.rest.handler;
 
-import com.bsn.api.core.exception.BookDetailsCannotChangeException;
-import com.bsn.api.core.exception.UserProfileCannotChangeException;
+import com.bsn.api.core.exception.BookNotFoundException;
+import com.bsn.api.core.exception.UserNotFoundException;
 import com.bsn.api.legacy.exception.OperationNotPermittedException;
 import jakarta.mail.MessagingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ExceptionResponse> handleException(LockedException exception) {
@@ -97,8 +102,9 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(UserProfileCannotChangeException.class)
-    public ResponseEntity<ExceptionResponse> handleException(UserProfileCannotChangeException exception) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponse> handleException(IllegalArgumentException exception) {
+        log.error(exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(
@@ -108,8 +114,33 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(BookDetailsCannotChangeException.class)
-    public ResponseEntity<ExceptionResponse> handleException(BookDetailsCannotChangeException exception) {
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ExceptionResponse> handleException(IllegalStateException exception) {
+        log.error(exception.getMessage(), exception);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exception.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleException(UserNotFoundException exception) {
+        log.error(exception.getMessage(), exception);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exception.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleException(BookNotFoundException exception) {
+        log.error(exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(

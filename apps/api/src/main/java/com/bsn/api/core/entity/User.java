@@ -78,10 +78,10 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
+                "id='" + id.getValue() + '\'' +
+                ", firstName='" + firstName.getValue() + '\'' +
+                ", lastName='" + lastName.getValue() + '\'' +
+                ", email='" + email.getValue() + '\'' +
                 '}';
     }
 

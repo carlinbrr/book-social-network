@@ -1,4 +1,4 @@
-package com.bsn.api.adapters.input.dto;
+package com.bsn.api.adapters.input.rest.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

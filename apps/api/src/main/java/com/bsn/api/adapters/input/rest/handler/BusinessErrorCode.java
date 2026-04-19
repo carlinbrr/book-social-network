@@ -1,4 +1,4 @@
-package com.bsn.api.adapters.input.handler;
+package com.bsn.api.adapters.input.rest.handler;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
-package com.bsn.api.adapters.input.mapper;
+package com.bsn.api.adapters.input.rest.mapper;
 
-import com.bsn.api.adapters.input.dto.UserRequest;
+import com.bsn.api.adapters.input.rest.dto.UserRequest;
 import com.bsn.api.core.port.input.command.SaveUserCommand;
 
 public class UserMapper {

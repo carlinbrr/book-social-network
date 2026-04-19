@@ -1,7 +1,7 @@
-package com.bsn.api.adapters.input;
+package com.bsn.api.adapters.input.rest;
 
-import com.bsn.api.adapters.input.dto.UserRequest;
-import com.bsn.api.adapters.input.mapper.UserMapper;
+import com.bsn.api.adapters.input.rest.dto.UserRequest;
+import com.bsn.api.adapters.input.rest.mapper.UserMapper;
 import com.bsn.api.core.port.input.SaveUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

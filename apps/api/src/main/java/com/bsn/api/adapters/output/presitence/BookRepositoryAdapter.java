@@ -30,20 +30,20 @@ public class BookRepositoryAdapter implements BookRepositoryPort {
     }
 
     @Override
-    public Integer create(com.bsn.api.core.entity.Book book) {
-        User jpaUser = jpaUserRepository.findByKeycloakId(book.getOwnerId()).orElseThrow( () ->
-                new IllegalStateException("User not found with id " + book.getOwnerId()));
+    public com.bsn.api.core.entity.Book create(com.bsn.api.core.entity.Book book) {
+        User jpaUser = jpaUserRepository.findByKeycloakId(book.getOwnerId().getValue()).orElseThrow( () ->
+                new IllegalStateException("User not found with id " + book.getOwnerId().getValue()));
 
-        return jpaBookRepository.save(BookMapper.toJpaBook(book, jpaUser)).getId();
+        return BookMapper.toBook(jpaBookRepository.save(BookMapper.toJpaBook(book, jpaUser)));
     }
 
     @Override
-    public Integer update(com.bsn.api.core.entity.Book book) {
-        Book jpaBook = jpaBookRepository.findById(book.getId()).orElseThrow( () ->
+    public com.bsn.api.core.entity.Book update(com.bsn.api.core.entity.Book book) {
+        Book jpaBook = jpaBookRepository.findById(book.getId().getValue()).orElseThrow( () ->
                 new IllegalStateException("Book not found with id " + book.getId()));
 
         BookMapper.mergeBook(jpaBook, book);
-        return jpaBookRepository.save(jpaBook).getId();
+        return BookMapper.toBook(jpaBookRepository.save(jpaBook));
     }
 
 }

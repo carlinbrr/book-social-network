@@ -1,8 +1,9 @@
-package com.bsn.api.adapters.input;
+package com.bsn.api.adapters.input.rest;
 
-import com.bsn.api.adapters.input.mapper.BookMapper;
+import com.bsn.api.adapters.input.rest.mapper.BookMapper;
+import com.bsn.api.core.entity.Book;
 import com.bsn.api.core.port.input.SaveBookUseCase;
-import com.bsn.api.adapters.input.dto.BookRequest;
+import com.bsn.api.adapters.input.rest.dto.BookRequest;
 import com.bsn.api.legacy.book.BookResponse;
 import com.bsn.api.legacy.book.BookService;
 import com.bsn.api.legacy.book.BorrowedBookResponse;
@@ -37,7 +38,8 @@ public class BookRestController {
             @Valid @RequestBody BookRequest bookRequest,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(saveBookUseCase.save(BookMapper.toSaveBookCommand(bookRequest, connectedUser)));
+        Book book = saveBookUseCase.save(BookMapper.toSaveBookCommand(bookRequest, connectedUser));
+        return ResponseEntity.ok(book.getId().getValue());
     }
 
     @GetMapping("/{book-id}")

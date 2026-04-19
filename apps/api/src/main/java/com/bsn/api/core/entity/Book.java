@@ -1,49 +1,49 @@
 package com.bsn.api.core.entity;
 
-import com.bsn.api.core.exception.BookDetailsCannotChangeException;
+import com.bsn.api.core.value.*;
 
 public class Book {
 
-    private Integer id;
+    private BookId id;
 
-    private String title;
+    private Title title;
 
-    private String authorName;
+    private AuthorName authorName;
 
-    private String isbn;
+    private Isbn isbn;
 
-    private String synopsis;
+    private Synopsis synopsis;
 
-    private String bookCover;
+    private BookCover bookCover;
 
     private boolean archived;
 
     private boolean shareable;
 
-    private final String ownerId;
+    private final UserId ownerId;
 
 
-    public Integer getId() {
+    public BookId getId() {
         return id;
     }
 
-    public String getTitle() {
+    public Title getTitle() {
         return title;
     }
 
-    public String getAuthorName() {
+    public AuthorName getAuthorName() {
         return authorName;
     }
 
-    public String getIsbn() {
+    public Isbn getIsbn() {
         return isbn;
     }
 
-    public String getSynopsis() {
+    public Synopsis getSynopsis() {
         return synopsis;
     }
 
-    public String getBookCover() {
+    public BookCover getBookCover() {
         return bookCover;
     }
 
@@ -55,12 +55,13 @@ public class Book {
         return shareable;
     }
 
-    public String getOwnerId() {
+    public UserId getOwnerId() {
         return ownerId;
     }
 
 
-    public Book(String title, String authorName, String isbn, String synopsis, boolean shareable, String ownerId) {
+    private Book(Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, boolean shareable, UserId ownerId) {
+        validateRequired(title, authorName, isbn, synopsis, ownerId);
         this.title = title;
         this.authorName = authorName;
         this.isbn = isbn;
@@ -70,8 +71,16 @@ public class Book {
         this.ownerId = ownerId;
     }
 
-    public Book(Integer id, String title, String authorName, String isbn, String synopsis, String bookCover,
-                boolean archived, boolean shareable, String ownerId) {
+    private Book(BookId id, Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, BookCover bookCover,
+                 boolean archived, boolean shareable, UserId ownerId) {
+        validateRequired(title, authorName, isbn, synopsis, ownerId);
+
+        if (id == null) {
+            throw new IllegalArgumentException("Book id cannot be null");
+        }
+
+        validateState(archived, shareable);
+
         this.id = id;
         this.title = title;
         this.authorName = authorName;
@@ -83,9 +92,17 @@ public class Book {
         this.ownerId = ownerId;
     }
 
-    public void updateDetails(String title, String authorName, String isbn, String synopsis, boolean shareable,  String ownerId) {
-        if ( !this.ownerId.equals(ownerId) ) {
-            throw new BookDetailsCannotChangeException("Only book owner can update details");
+    public static Book createNew(Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, boolean shareable,
+                                 UserId ownerId) {
+        return new Book(title, authorName, isbn, synopsis, shareable, ownerId);
+    }
+
+    public void updateDetails(Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, boolean shareable,
+                              UserId userId) {
+        validateRequired(title, authorName, isbn, synopsis, ownerId);
+
+        if ( !this.ownerId.equals(userId) ) {
+            throw new IllegalStateException("Only book owner can update details");
         }
 
         this.title = title;
@@ -93,24 +110,56 @@ public class Book {
         this.isbn = isbn;
         this.synopsis = synopsis;
         this.shareable = shareable;
-
-        if ( shareable ) {
+        if (this.shareable) {
             this.archived = false;
+        }
+    }
+
+    public static Book restore(BookId id, Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, BookCover bookCover,
+                 boolean archived, boolean shareable, UserId ownerId) {
+        return new Book(id, title, authorName, isbn, synopsis, bookCover, archived, shareable, ownerId);
+    }
+
+    private static void validateRequired(Title title, AuthorName authorName, Isbn isbn, Synopsis synopsis, UserId ownerId) {
+        if (title == null) {
+            throw new IllegalArgumentException("Title cannot be null");
+        }
+
+        if (authorName == null) {
+            throw new IllegalArgumentException("Author name cannot be null");
+        }
+
+        if (isbn == null) {
+            throw new IllegalArgumentException("Isbn cannot be null");
+        }
+
+        if (synopsis == null) {
+            throw new IllegalArgumentException("Synopsis cannot be null");
+        }
+
+        if (ownerId == null) {
+            throw new IllegalArgumentException("Owner id cannot be null");
+        }
+    }
+
+    private static void validateState(boolean archived, boolean shareable) {
+        if (archived && shareable) {
+            throw new IllegalStateException("Archived book cannot be shareable");
         }
     }
 
     @Override
     public String toString() {
         return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", isbn='" + isbn + '\'' +
-                ", synopsis='" + synopsis + '\'' +
-                ", bookCover='" + bookCover + '\'' +
+                "id=" + (id != null ? id.getValue() : "") +
+                ", title='" + title.getValue() + '\'' +
+                ", authorName='" + authorName.getValue() + '\'' +
+                ", isbn='" + isbn.getValue() + '\'' +
+                ", synopsis='" + synopsis.getValue() + '\'' +
+                ", bookCover='" + (bookCover != null ? bookCover.getPath() : "") + '\'' +
                 ", archived=" + archived +
                 ", shareable=" + shareable +
-                ", ownerId='" + ownerId + '\'' +
+                ", ownerId='" + ownerId.getValue() + '\'' +
                 '}';
     }
 

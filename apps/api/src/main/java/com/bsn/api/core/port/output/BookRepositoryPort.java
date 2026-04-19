@@ -8,7 +8,7 @@ public interface BookRepositoryPort {
 
     Optional<Book> findById(Integer id);
 
-    Integer create(Book book);
+    Book create(Book book);
 
-    Integer update(Book book);
+    Book update(Book book);
 }

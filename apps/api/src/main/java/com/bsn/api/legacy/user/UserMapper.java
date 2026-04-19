@@ -1,6 +1,6 @@
 package com.bsn.api.legacy.user;
 
-import com.bsn.api.adapters.input.dto.UserRequest;
+import com.bsn.api.adapters.input.rest.dto.UserRequest;
 import com.bsn.api.adapters.output.presitence.entity.User;
 import org.springframework.stereotype.Service;
 
