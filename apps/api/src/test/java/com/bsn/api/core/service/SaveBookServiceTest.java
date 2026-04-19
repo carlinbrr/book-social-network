@@ -126,6 +126,7 @@ public class SaveBookServiceTest {
                 new Email("john@mail.com"));
 
         when(userRepositoryPort.findById("abc-123")).thenReturn(Optional.of(user));
+        when(bookRepositoryPort.findById(10)).thenReturn(Optional.empty());
 
         try {
             saveBookService.save(command);
