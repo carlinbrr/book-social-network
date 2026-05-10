@@ -12,6 +12,11 @@ public class LoggingAdapter implements LoggingPort {
 
 
     @Override
+    public void debug(String message) {
+        log.debug(message);
+    }
+
+    @Override
     public void info(String message) {
         log.info(message);
     }
