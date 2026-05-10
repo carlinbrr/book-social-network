@@ -10,11 +10,11 @@ public class BookCoverTest {
     @Test
     @DisplayName("Given a valid input when new then book cover is created")
     public void givenValidInput_whenNew_thenBookCoverIsCreated() {
-        String path = "/temp/img/profile.png";
+        String path = "/temp/img/book.png";
 
         BookCover BookCover = new BookCover(path);
 
-        assertEquals("/temp/img/profile.png", BookCover.getPath());
+        assertEquals("/temp/img/book.png", BookCover.getPath());
     }
 
     @Test
@@ -63,8 +63,8 @@ public class BookCoverTest {
     @Test
     @DisplayName("Given same inputs when equals then book covers are equal")
     public void givenSameInputs_whenEquals_thenFirstNamesAreEqual() {
-        BookCover bookCover1 = new BookCover("/temp/img/profile.png");
-        BookCover bookCover2 = new BookCover("/temp/img/profile.png");
+        BookCover bookCover1 = new BookCover("/temp/img/book.png");
+        BookCover bookCover2 = new BookCover("/temp/img/book.png");
 
         assertEquals(bookCover1, bookCover2);
     }
@@ -72,8 +72,8 @@ public class BookCoverTest {
     @Test
     @DisplayName("Given different inputs when equals then book covers are different")
     public void givenDifferentInputs_whenEquals_thenFirstNamesAreDifferent() {
-        BookCover bookCover1 = new BookCover("/temp/img/profile.png");
-        BookCover bookCover2 = new BookCover("/temp/img/profile2.png");
+        BookCover bookCover1 = new BookCover("/temp/img/book.png");
+        BookCover bookCover2 = new BookCover("/temp/img/book2.png");
 
         assertNotEquals(bookCover1, bookCover2);
     }

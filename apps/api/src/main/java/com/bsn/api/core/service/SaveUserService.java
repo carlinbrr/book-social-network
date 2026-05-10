@@ -26,7 +26,7 @@ public class SaveUserService implements SaveUserUseCase {
 
     @Override
     public User save(SaveUserCommand command) {
-        Optional<User> userOptional = userRepositoryPort.findById(command.id());
+        Optional<User> userOptional = userRepositoryPort.findById(new UserId(command.id()));
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();

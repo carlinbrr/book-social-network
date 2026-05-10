@@ -6,6 +6,7 @@ import com.bsn.api.adapters.output.presitence.mapper.BookMapper;
 import com.bsn.api.adapters.output.presitence.repository.JpaBookRepository;
 import com.bsn.api.adapters.output.presitence.repository.JpaUserRepository;
 import com.bsn.api.core.port.output.BookRepositoryPort;
+import com.bsn.api.core.value.BookId;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -24,8 +25,8 @@ public class BookRepositoryAdapter implements BookRepositoryPort {
     }
 
     @Override
-    public Optional<com.bsn.api.core.entity.Book> findById(Integer id) {
-        Optional<Book> jpaBookOptional =  jpaBookRepository.findById(id);
+    public Optional<com.bsn.api.core.entity.Book> findById(BookId id) {
+        Optional<Book> jpaBookOptional =  jpaBookRepository.findById(id.getValue());
         return jpaBookOptional.map(BookMapper::toBook);
     }
 

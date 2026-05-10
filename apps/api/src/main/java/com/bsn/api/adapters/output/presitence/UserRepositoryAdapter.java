@@ -4,6 +4,7 @@ import com.bsn.api.adapters.output.presitence.entity.User;
 import com.bsn.api.adapters.output.presitence.mapper.UserMapper;
 import com.bsn.api.adapters.output.presitence.repository.JpaUserRepository;
 import com.bsn.api.core.port.output.UserRepositoryPort;
+import com.bsn.api.core.value.UserId;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -19,8 +20,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Optional<com.bsn.api.core.entity.User> findById(String id) {
-        Optional<User> jpaUserOptional = jpaUserRepository.findById(id);
+    public Optional<com.bsn.api.core.entity.User> findById(UserId id) {
+        Optional<User> jpaUserOptional = jpaUserRepository.findById(id.getValue());
         return jpaUserOptional.map(UserMapper::toUser);
     }
 

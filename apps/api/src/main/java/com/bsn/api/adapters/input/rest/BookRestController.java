@@ -2,6 +2,8 @@ package com.bsn.api.adapters.input.rest;
 
 import com.bsn.api.adapters.input.rest.mapper.BookMapper;
 import com.bsn.api.core.entity.Book;
+import com.bsn.api.core.model.BookDetails;
+import com.bsn.api.core.port.input.FindBookDetailsUseCase;
 import com.bsn.api.core.port.input.SaveBookUseCase;
 import com.bsn.api.adapters.input.rest.dto.BookRequest;
 import com.bsn.api.legacy.book.BookResponse;
@@ -26,10 +28,14 @@ public class BookRestController {
 
     private final SaveBookUseCase saveBookUseCase;
 
+    private final FindBookDetailsUseCase findBookDetailsUseCase;
 
-    public BookRestController(BookService bookService, SaveBookUseCase saveBookUseCase) {
+
+    public BookRestController(BookService bookService, SaveBookUseCase saveBookUseCase,
+                              FindBookDetailsUseCase findBookDetailsUseCase) {
         this.bookService = bookService;
         this.saveBookUseCase = saveBookUseCase;
+        this.findBookDetailsUseCase = findBookDetailsUseCase;
     }
 
     @PostMapping
@@ -48,7 +54,13 @@ public class BookRestController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.findById(bookId, connectedUser));
+        BookDetails bookDetails = findBookDetailsUseCase.findBookDetails(bookId);
+
+        BookResponse bookResponse = new BookResponse(bookDetails.id(), bookDetails.title(), bookDetails.authorName(),
+                bookDetails.isbn(), bookDetails.synopsis(), bookDetails.owner(), bookDetails.cover(), bookDetails.rate(),
+                bookDetails.archived(), bookDetails.shareable(), bookDetails.isInWaitingList());
+
+        return ResponseEntity.ok(bookResponse);
     }
 
     @GetMapping
