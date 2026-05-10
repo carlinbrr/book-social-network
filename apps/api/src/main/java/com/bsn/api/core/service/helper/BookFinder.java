@@ -15,6 +15,7 @@ public class BookFinder {
     }
 
     public Book findExisting(BookId id) {
+        // TODO: Add logging
         return bookRepositoryPort.findById(id).orElseThrow(
                 () -> new BookNotFoundException("Book not found with id: " + id.getValue()));
     }

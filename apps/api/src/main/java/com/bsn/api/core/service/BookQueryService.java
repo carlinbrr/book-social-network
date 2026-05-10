@@ -37,6 +37,8 @@ public class BookQueryService implements FindBookDetailsUseCase {
 
         byte[] bookCoverImage = imageStoragePort.resolveFromUrl(book.getBookCover().getPath());
 
+        // TODO: Add rate and isInWaitingList information
+        // TODO: Add logging
         return new BookDetails(book.getId().getValue(), book.getTitle().getValue(), book.getAuthorName().getValue(),
                 book.getIsbn().getValue(), book.getSynopsis().getValue(), user.getFullName(), bookCoverImage, 0,
                 book.isArchived(), book.isShareable(), true);
