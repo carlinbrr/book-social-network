@@ -51,14 +51,13 @@ public class BookRestController {
     @GetMapping("/{book-id}")
     @Operation(summary = "Find a book by book-id")
     public ResponseEntity<BookResponse> findById(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
+            @PathVariable("book-id") Integer bookId
     ) {
         BookDetails bookDetails = findBookDetailsUseCase.findBookDetails(bookId);
 
         BookResponse bookResponse = new BookResponse(bookDetails.id(), bookDetails.title(), bookDetails.authorName(),
-                bookDetails.isbn(), bookDetails.synopsis(), bookDetails.owner(), bookDetails.cover(), bookDetails.rate(),
-                bookDetails.archived(), bookDetails.shareable(), bookDetails.isInWaitingList());
+                bookDetails.isbn(), bookDetails.synopsis(), bookDetails.ownerFullName(), bookDetails.coverImage(),
+                bookDetails.averageRating(), bookDetails.archived(), bookDetails.shareable(), false);
 
         return ResponseEntity.ok(bookResponse);
     }

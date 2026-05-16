@@ -1,5 +1,6 @@
 package com.bsn.api.legacy.feedback;
 
+import com.bsn.api.adapters.output.presitence.entity.Feedback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

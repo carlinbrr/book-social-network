@@ -15,7 +15,6 @@ public class UserFinder {
     }
 
     public User findExisting(UserId id) {
-        // TODO: Add logging
         return userRepositoryPort.findById(id).orElseThrow(
                 () -> new UserNotFoundException("User not found with id: " + id.getValue()));
     }

@@ -4,6 +4,6 @@ import com.bsn.api.core.model.BookDetails;
 
 public interface FindBookDetailsUseCase {
 
-    BookDetails findBookDetails(Integer id);
+    BookDetails findBookDetails(Integer bookId);
 
 }

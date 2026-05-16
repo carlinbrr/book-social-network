@@ -1,6 +1,7 @@
 package com.bsn.api.legacy.feedback;
 
 import com.bsn.api.adapters.output.presitence.entity.Book;
+import com.bsn.api.adapters.output.presitence.entity.Feedback;
 import com.bsn.api.adapters.output.presitence.entity.User;
 import com.bsn.api.legacy.user.UserMapper;
 import org.springframework.stereotype.Service;

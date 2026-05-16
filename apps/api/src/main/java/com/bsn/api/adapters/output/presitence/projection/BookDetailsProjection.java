@@ -1,15 +1,16 @@
-package com.bsn.api.core.model;
+package com.bsn.api.adapters.output.presitence.projection;
 
-public record BookDetails(
+public record BookDetailsProjection(
         Integer id,
         String title,
         String authorName,
         String isbn,
         String synopsis,
-        byte[] coverImage,
+        String bookCover,
         boolean archived,
         boolean shareable,
-        String ownerFullName,
+        String ownerFirstName,
+        String ownerLastName,
         Double averageRating
 ) {
 }
