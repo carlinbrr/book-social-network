@@ -51,13 +51,18 @@ public class BookRestController {
     @GetMapping("/{book-id}")
     @Operation(summary = "Find a book by book-id")
     public ResponseEntity<BookResponse> findById(
-            @PathVariable("book-id") Integer bookId
+            @PathVariable("book-id") Integer bookId,
+            Authentication connectedUser
     ) {
-        BookDetails bookDetails = findBookDetailsUseCase.findBookDetails(bookId);
+        // TODO: Use this endpoint to return only pure book data
+        // TODO: Separate endpoint for book and image. E.g. /books/{bookId}/cover
+        // TODO: Separate endpoint for details. E.g. /books/{bookId}/details - Including all feedbacks, rates, etc.
+        // TODO: Separate endpoint for book preview. E.g. /books/{bookId}/preview - isInWaitingList, averageRate, etc.
+        BookDetails bookDetails = findBookDetailsUseCase.findBookDetails(bookId, connectedUser.getName());
 
         BookResponse bookResponse = new BookResponse(bookDetails.id(), bookDetails.title(), bookDetails.authorName(),
                 bookDetails.isbn(), bookDetails.synopsis(), bookDetails.ownerFullName(), bookDetails.coverImage(),
-                bookDetails.averageRating(), bookDetails.archived(), bookDetails.shareable(), false);
+                bookDetails.averageRating(), bookDetails.archived(), bookDetails.shareable(), bookDetails.isInWaitingList());
 
         return ResponseEntity.ok(bookResponse);
     }

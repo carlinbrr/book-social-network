@@ -8,6 +8,7 @@ import com.bsn.api.core.port.output.BookQueryPort;
 import com.bsn.api.core.port.output.ImageStoragePort;
 import com.bsn.api.core.port.output.LoggingPort;
 import com.bsn.api.core.value.BookId;
+import com.bsn.api.core.value.UserId;
 
 public class BookQueryService implements FindBookDetailsUseCase {
 
@@ -25,10 +26,10 @@ public class BookQueryService implements FindBookDetailsUseCase {
     }
 
     @Override
-    public BookDetails findBookDetails(Integer id) {
+    public BookDetails findBookDetails(Integer id, String userId) {
         loggingPort.info("Finding book details by id " + id);
 
-        BookDetailsData bookDetailsData = bookQueryPort.findDetailsById(new BookId(id)).orElseThrow(
+        BookDetailsData bookDetailsData = bookQueryPort.findDetailsById(new BookId(id), new UserId(userId)).orElseThrow(
                 () ->  new BookNotFoundException("Book not found with id: " + id)
         );
 
@@ -38,7 +39,7 @@ public class BookQueryService implements FindBookDetailsUseCase {
 
         return new BookDetails(bookDetailsData.id().getValue(), bookDetailsData.title().getValue(), bookDetailsData.authorName().getValue(),
                 bookDetailsData.isbn().getValue(), bookDetailsData.synopsis().getValue(), bookCoverImage, bookDetailsData.archived(),
-                bookDetailsData.shareable(), bookDetailsData.getOwnerFullName(), bookDetailsData.averageRating());
+                bookDetailsData.shareable(), bookDetailsData.getOwnerFullName(), bookDetailsData.averageRating(), bookDetailsData.isInWaitingList());
     }
 
 }

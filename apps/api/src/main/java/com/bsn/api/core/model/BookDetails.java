@@ -10,6 +10,7 @@ public record BookDetails(
         boolean archived,
         boolean shareable,
         String ownerFullName,
-        Double averageRating
+        Double averageRating,
+        boolean isInWaitingList
 ) {
 }

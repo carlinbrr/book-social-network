@@ -28,30 +28,32 @@ public class BookQueryServiceTest {
     @Test
     @DisplayName("Given an existing id when find book details then book is found")
     public void givenExistingId_whenFindBookDetails_thenBookIsFound() {
-        BookId id = new BookId(10);
+        BookId bookId = new BookId(10);
+        UserId userId = new UserId("123-abc");
         String bookCoverUrl = "/temp/img/book.png";
 
-        BookDetailsData bookDetailsData = new BookDetailsData(id, new Title("Clean Code"), new AuthorName("Robert C. Martin"),
+        BookDetailsData bookDetailsData = new BookDetailsData(bookId, new Title("Clean Code"), new AuthorName("Robert C. Martin"),
                 new Isbn("1234567890"), new Synopsis("Synopsis..."), new BookCover(bookCoverUrl), false,
-                true, new FirstName("John"), new LastName("Doe"), 4.5);
+                true, new FirstName("John"), new LastName("Doe"), 4.5, false);
 
-        when(bookQueryPort.findDetailsById(id)).thenReturn(Optional.of(bookDetailsData));
+        when(bookQueryPort.findDetailsById(bookId, userId)).thenReturn(Optional.of(bookDetailsData));
         when(imageStoragePort.resolveFromUrl(bookCoverUrl)).thenReturn(new byte[2048]);
 
-        assertNotNull(bookQueryService.findBookDetails(10));
+        assertNotNull(bookQueryService.findBookDetails(10, "123-abc"));
     }
 
     @Test
     @DisplayName("Given an non existing id when find book details then BookNotFounException is thrown")
     public void givenNonExistingId_whenFindBookDetails_thenBookNotFoundExceptionIsThrown() {
-        BookId id = new BookId(10);
+        BookId bookId = new BookId(10);
+        UserId userId = new UserId("123-abc");
         String bookCoverUrl = "/temp/img/book.png";
 
-        when(bookQueryPort.findDetailsById(id)).thenReturn(Optional.empty());
+        when(bookQueryPort.findDetailsById(bookId, userId)).thenReturn(Optional.empty());
         when(imageStoragePort.resolveFromUrl(bookCoverUrl)).thenReturn(new byte[2048]);
 
         try {
-            bookQueryService.findBookDetails(10);
+            bookQueryService.findBookDetails(10, "123-abc");
         } catch (BookNotFoundException e) {
             assertEquals("Book not found with id: " + 10, e.getMessage());
             return;

@@ -26,12 +26,17 @@ public interface JpaBookQueryRepository extends JpaRepository<Book, Integer> {
                     SELECT COALESCE(ROUND(AVG(f.note), 1), 0)
                     FROM Feedback f
                     WHERE f.book.id = b.id
+                ),
+                (
+                    SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+                    FROM b.userLikes u
+                    WHERE u.keycloakId = :userId
                 )
             )
             FROM Book b
-            WHERE b.id = :id
+            WHERE b.id = :bookId
             """
     )
-    Optional<BookDetailsProjection> findDetailsById(Integer id);
+    Optional<BookDetailsProjection> findDetailsById(Integer bookId, String userId);
 
 }

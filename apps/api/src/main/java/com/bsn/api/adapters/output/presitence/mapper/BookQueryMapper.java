@@ -18,10 +18,11 @@ public class BookQueryMapper {
         FirstName ownerFirstName = new FirstName(bookDetailsProjection.ownerFirstName());
         LastName ownerLastName = new LastName(bookDetailsProjection.ownerLastName());
         Double averageRating =  bookDetailsProjection.averageRating();
+        boolean isInWaitingList = bookDetailsProjection.isInWaitingList();
 
         return new BookDetailsData(
                 bookId, title, authorName, isbn, synopsis, bookCover, archived, shareable, ownerFirstName,
-                ownerLastName, averageRating
+                ownerLastName, averageRating, isInWaitingList
         );
     }
 

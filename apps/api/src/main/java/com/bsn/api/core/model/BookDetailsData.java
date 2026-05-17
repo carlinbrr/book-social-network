@@ -13,7 +13,8 @@ public record BookDetailsData(
         boolean shareable,
         FirstName ownerFirstName,
         LastName ownerLastName,
-        Double averageRating // TODO: Update rate value
+        Double averageRating, // TODO: Update rate value
+        boolean isInWaitingList
 ) {
 
     public BookDetailsData {
@@ -46,7 +47,7 @@ public record BookDetailsData(
         }
 
         if (archived && shareable) {
-            throw new IllegalStateException("Archived book cannot be shareable");
+            throw new IllegalArgumentException("Archived book cannot be shareable");
         }
     }
 

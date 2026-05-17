@@ -11,6 +11,7 @@ public record BookDetailsProjection(
         boolean shareable,
         String ownerFirstName,
         String ownerLastName,
-        Double averageRating
+        Double averageRating,
+        boolean isInWaitingList
 ) {
 }
