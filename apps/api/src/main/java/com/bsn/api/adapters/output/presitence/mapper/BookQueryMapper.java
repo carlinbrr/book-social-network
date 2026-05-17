@@ -17,7 +17,6 @@ public class BookQueryMapper {
         boolean shareable = bookDetailsProjection.shareable();
         FirstName ownerFirstName = new FirstName(bookDetailsProjection.ownerFirstName());
         LastName ownerLastName = new LastName(bookDetailsProjection.ownerLastName());
-        // TODO: Check decimals and values
         Double averageRating =  bookDetailsProjection.averageRating();
 
         return new BookDetailsData(

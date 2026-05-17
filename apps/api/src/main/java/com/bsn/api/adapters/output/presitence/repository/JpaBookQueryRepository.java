@@ -23,7 +23,7 @@ public interface JpaBookQueryRepository extends JpaRepository<Book, Integer> {
                 b.owner.firstName,
                 b.owner.lastName,
                 (
-                    SELECT COALESCE(AVG(f.note), 0)
+                    SELECT COALESCE(ROUND(AVG(f.note), 1), 0)
                     FROM Feedback f
                     WHERE f.book.id = b.id
                 )
