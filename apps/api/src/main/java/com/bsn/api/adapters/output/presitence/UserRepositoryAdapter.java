@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+// TODO: Catch domain exceptions
 @Component
 public class UserRepositoryAdapter implements UserRepositoryPort {
 

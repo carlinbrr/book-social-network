@@ -1,11 +1,14 @@
 package com.bsn.api.adapters.input.rest;
 
 import com.bsn.api.adapters.input.rest.mapper.BookMapper;
+import com.bsn.api.adapters.input.rest.mapper.PageMapper;
 import com.bsn.api.core.entity.Book;
-import com.bsn.api.core.model.BookDetails;
+import com.bsn.api.core.model.*;
 import com.bsn.api.core.port.input.FindBookDetailsUseCase;
+import com.bsn.api.core.port.input.FindDisplayableBooksUseCase;
 import com.bsn.api.core.port.input.SaveBookUseCase;
 import com.bsn.api.adapters.input.rest.dto.BookRequest;
+import com.bsn.api.core.value.UserId;
 import com.bsn.api.legacy.book.BookResponse;
 import com.bsn.api.legacy.book.BookService;
 import com.bsn.api.legacy.book.BorrowedBookResponse;
@@ -30,12 +33,16 @@ public class BookRestController {
 
     private final FindBookDetailsUseCase findBookDetailsUseCase;
 
+    private final FindDisplayableBooksUseCase findDisplayableBooksUseCase;
 
+
+    // TODO: Send value objects to use case
     public BookRestController(BookService bookService, SaveBookUseCase saveBookUseCase,
-                              FindBookDetailsUseCase findBookDetailsUseCase) {
+                              FindBookDetailsUseCase findBookDetailsUseCase, FindDisplayableBooksUseCase findDisplayableBooksUseCase) {
         this.bookService = bookService;
         this.saveBookUseCase = saveBookUseCase;
         this.findBookDetailsUseCase = findBookDetailsUseCase;
+        this.findDisplayableBooksUseCase = findDisplayableBooksUseCase;
     }
 
     @PostMapping
@@ -60,22 +67,23 @@ public class BookRestController {
         // TODO: Separate endpoint for book preview. E.g. /books/{bookId}/preview - isInWaitingList, averageRate, etc.
         BookDetails bookDetails = findBookDetailsUseCase.findBookDetails(bookId, connectedUser.getName());
 
-        BookResponse bookResponse = new BookResponse(bookDetails.id(), bookDetails.title(), bookDetails.authorName(),
-                bookDetails.isbn(), bookDetails.synopsis(), bookDetails.ownerFullName(), bookDetails.coverImage(),
-                bookDetails.averageRating(), bookDetails.archived(), bookDetails.shareable(), bookDetails.isInWaitingList());
-
-        return ResponseEntity.ok(bookResponse);
+        return ResponseEntity.ok(BookMapper.toBookResponse(bookDetails));
     }
 
     @GetMapping
     @Operation(summary = "Find all displayable books")
-    public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
+    public ResponseEntity<com.bsn.api.adapters.input.rest.dto.PageResponse<BookResponse>> findAllBooks(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "searchTerm", defaultValue = "", required = false) String searchTerm,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.findAllBooks(page, size, searchTerm, connectedUser));
+        PageCriteria pageCriteria = new PageCriteria(new PageNumber(page), new PageSize(size), SortOrder.NEWEST);
+
+        Page<BookDetails> bookDetailsPage = findDisplayableBooksUseCase.findDisplayableBooks(pageCriteria, searchTerm,
+                new UserId(connectedUser.getName()));
+
+        return ResponseEntity.ok(PageMapper.toPageResponse(bookDetailsPage, BookMapper::toBookResponse));
     }
 
     @GetMapping("/owner")
